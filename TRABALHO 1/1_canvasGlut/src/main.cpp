@@ -4,25 +4,37 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
 
 #include "gl_canvas2d.h"
 
 #include "Bmp.h"
 
-#define MAX_TEXTURES 3
+#define MAX_IMAGES 3
 
 #define RECT_SIZE 10
 #define TEXT_COORD 2
 
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
-int screenWidth = 500, screenHeight = 500;
+int screenWidth = 1200, screenHeight = 1200;
 
 
 int opcao  = 50; //variavel global para selecao do que sera exibido na canvas.
 int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da render().
+int clicando = 0;
 
-Bmp *image_1 = NULL;
-Bmp *image_2 = NULL;
+
+
+std::vector<Bmp*> images;
+
+Bmp* draggingImage = NULL;
+
+void ArrastarImagem(Bmp* image, int x, int y) {
+   image->x_start = x - image->getWidth()/2;
+   image->y_start = y - image->getHeight()/2;
+   image->x_end = x + image->getWidth()/2;
+   image->y_end = y + image->getHeight()/2;
+}
 
 void DrawMouseScreenCoords(){
     char str[100];
@@ -32,37 +44,49 @@ void DrawMouseScreenCoords(){
     CV::text(10,320, str);
 }
 
+void InicializarParametros(Bmp *image, int offset){
+   image->x_start = offset;
+   image->y_start = 0;
+   image->x_end = offset + image->getWidth();
+   image->y_end = image->getHeight();
+}
+
+
 void DrawImage(Bmp *image){
-   for(int i = 0; i < image_1->getHeight(); i++)
+   for(int i = 0; i < image->getHeight(); i++)
    {
-      for(int j = 0; j < image_1->getWidth(); j++)
+      for(int j = 0; j < image->getWidth(); j++)
       {
-         
+         int pos = i * image->getWidth() * 3 + j * 3;
+         CV::color(image->getImage()[pos]/255.0, image->getImage()[pos+1]/255.0, image->getImage()[pos+2]/255.0);
+         CV::rectFill(j + image->x_start, i + image->y_start, j + image->x_start + 1, i + image->y_start + 1);
       }
    }
 }
 
+
+void LoadImages(){
+   images.push_back(new Bmp(".\\images\\pinguim.bmp"));
+   images.push_back(new Bmp(".\\images\\bmp_24.bmp"));
+   images.push_back(new Bmp(".\\images\\snail.bmp"));
+
+   for(int i = 0; i < images.size(); i++){
+      InicializarParametros(images[i], i * 300);
+      images[i]->convertBGRtoRGB();
+   }
+}
 
 void render()
 {
-   CV::translate(250, 250);
+   CV::translate(500, 500);
 
-   for(int i = 0; i < image_1->getHeight(); i++)
-   {
-      for(int j = 0; j < image_1->getWidth(); j++)
-      {
-         int pos = i*image_1->getWidth()*3 + j*3;
-         int pos_2 = i*image_2->getWidth()*3 + j*3;
-         CV::color(image_1->getImage()[pos]/255.0, image_1->getImage()[pos+1]/255.0, image_1->getImage()[pos+2]/255.0);
-         CV::rectFill(j, i, j + 1, i + 1);
-
-         CV::color(image_2->getImage()[pos_2]/255.0, image_2->getImage()[pos_2+1]/255.0, image_2->getImage()[pos_2+2]/255.0);
-         CV::rectFill(j + 200, i, j + 201, i + 1);
-      }
-   }
+   DrawImage(images[0]);
+   DrawImage(images[1]);
+   DrawImage(images[2]);
 
    Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
 }
+
 
 //funcao chamada toda vez que uma tecla for pressionada.
 void keyboard(int key)
@@ -90,23 +114,42 @@ void keyboardUp(int key)
 //funcao para tratamento de mouse: cliques, movimentos e arrastos
 void mouse(int button, int state, int wheel, int direction, int x, int y)
 {
-   mouseX = x; //guarda as coordenadas do mouse para exibir dentro da render()
+   x -= 500;
+   y -= 500;
+
+   mouseX = x;
    mouseY = y;
 
-   // printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction,  x, y);
+   if(clicando){
+      printf("\nArrastando imagem %d", draggingImage);
+      ArrastarImagem(draggingImage, x, y);
+   }
+
+
+   printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction, x, y);
+
+   if (button == 0) {
+      } if(state == 1) {
+         // Parar o arrasto
+         draggingImage = nullptr;
+         clicando = 0;
+      }
+      else if (state == 0) {
+         // Iniciar o arrasto
+         for (Bmp* image : images) {
+            if (image->contains(x, y)) {
+               draggingImage = image;
+               clicando = 1;
+            }
+         }
+   }
 }
 
 
 int main()
 {
    CV::init(screenHeight, screenWidth, "Canvas2D");
-
-   image_1 = new Bmp(".\\images\\pinguim.bmp");
-   image_1->convertBGRtoRGB();
-
-   image_2 = new Bmp(".\\images\\bmp_24.bmp");
-   image_2->convertBGRtoRGB();
-
+   LoadImages();
    CV::run();
    
    return 0;

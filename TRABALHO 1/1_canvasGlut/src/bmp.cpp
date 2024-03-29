@@ -55,6 +55,15 @@ void Bmp::convertBGRtoRGB()
   }
 }
 
+int Bmp::contains(int x, int y)
+{
+   printf("X do mouse: %d, x_start: %d, x_end: %d, Y do mouse: %d, y_start: %d, y_end: %d\n", x, x_start, x_end, y, y_start, y_end);
+   if( x >= x_start && x <= x_end && y >= y_start && y <= y_end )
+   {
+      return 1;
+   }
+   return 0;
+}
 
 void Bmp::load(const char *fileName)
 {
