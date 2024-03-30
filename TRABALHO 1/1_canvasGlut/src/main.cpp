@@ -146,6 +146,18 @@ void keyboard(int key)
             selectedImage->flipHorizontal();
          }
          break;
+      case 'p':
+         if (selectedImage != NULL) {
+            printf("\nFlip diagonal principal");
+            selectedImage->flipDiagonalPrincipal();
+         }
+         break;
+      case 's':
+         if (selectedImage != NULL) {
+            printf("\nFlip diagonal secundaria");
+            selectedImage->flipDiagonalSecundaria();
+         }
+         break;
       case 27:
          exit(0);
       break;

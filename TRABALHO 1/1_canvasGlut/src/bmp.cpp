@@ -88,6 +88,32 @@ void Bmp::flipHorizontal() {
     }
 }
 
+void Bmp::flipDiagonalPrincipal() {
+    unsigned char* img = this->getImage();
+    int width = this->getWidth();
+    int height = this->getHeight();
+    for (int i = 0; i < height; i++) {
+        for (int j = i+1; j < width; j++) {
+            std::swap(img[(i * width + j) * 3], img[(j * width + i) * 3]);
+            std::swap(img[(i * width + j) * 3 + 1], img[(j * width + i) * 3 + 1]);
+            std::swap(img[(i * width + j) * 3 + 2], img[(j * width + i) * 3 + 2]);
+        }
+    }
+}
+
+void Bmp::flipDiagonalSecundaria() {
+    unsigned char* img = this->getImage();
+    int width = this->getWidth();
+    int height = this->getHeight();
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width - i; j++) {
+            std::swap(img[(i * width + j) * 3], img[((height - j - 1) * width + (width - i - 1)) * 3]);
+            std::swap(img[(i * width + j) * 3 + 1], img[((height - j - 1) * width + (width - i - 1)) * 3 + 1]);
+            std::swap(img[(i * width + j) * 3 + 2], img[((height - j - 1) * width + (width - i - 1)) * 3 + 2]);
+        }
+    }
+}
+
 void Bmp::load(const char *fileName)
 {
   FILE *fp = fopen(fileName, "rb");

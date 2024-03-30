@@ -62,6 +62,8 @@ public:
    int    contains(int x, int y);
    void   flipVertical(void);
    void   flipHorizontal(void);
+   void   flipDiagonalPrincipal(void);
+   void   flipDiagonalSecundaria(void);
    int x_start, y_start, x_end, y_end;
 };
 
