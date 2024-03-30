@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <algorithm>
 
 
 #define HEADER_SIZE      14 //sizeof(HEADER) vai dar 16 devido ao alinhamento de bytes
@@ -59,6 +60,8 @@ public:
    int    getHeight(void);
    void   convertBGRtoRGB(void);
    int    contains(int x, int y);
+   void   flipVertical(void);
+   void   flipHorizontal(void);
    int x_start, y_start, x_end, y_end;
 };
 

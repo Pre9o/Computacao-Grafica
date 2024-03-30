@@ -9,6 +9,7 @@
 
 #include "Bmp.h"
 #include <string.h>
+#include <algorithm>
 
 Bmp::Bmp(const char *fileName)
 {
@@ -57,12 +58,34 @@ void Bmp::convertBGRtoRGB()
 
 int Bmp::contains(int x, int y)
 {
-   printf("X do mouse: %d, x_start: %d, x_end: %d, Y do mouse: %d, y_start: %d, y_end: %d\n", x, x_start, x_end, y, y_start, y_end);
    if( x >= x_start && x <= x_end && y >= y_start && y <= y_end )
    {
       return 1;
    }
    return 0;
+}
+
+void Bmp::flipVertical() {
+    unsigned char* img = this->getImage();
+    int width = this->getWidth();
+    int height = this->getHeight();
+    for (int i = 0; i < height; i++) {
+        std::reverse(img + i * width * 3, img + (i+1) * width * 3);
+    }
+    convertBGRtoRGB();
+}
+
+void Bmp::flipHorizontal() {
+    unsigned char* img = this->getImage();
+    int width = this->getWidth();
+    int height = this->getHeight();
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height / 2; j++) {
+            std::swap(img[(j * width + i) * 3], img[((height - j - 1) * width + i) * 3]);
+            std::swap(img[(j * width + i) * 3 + 1], img[((height - j - 1) * width + i) * 3 + 1]);
+            std::swap(img[(j * width + i) * 3 + 2], img[((height - j - 1) * width + i) * 3 + 2]);
+        }
+    }
 }
 
 void Bmp::load(const char *fileName)

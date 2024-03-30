@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <algorithm>
 
 #include "gl_canvas2d.h"
 
@@ -16,24 +17,53 @@
 #define TEXT_COORD 2
 
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
-int screenWidth = 1200, screenHeight = 1200;
+int screenWidth = 1520, screenHeight = 1080;
 
 
 int opcao  = 50; //variavel global para selecao do que sera exibido na canvas.
 int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da render().
 int clicando = 0;
 
-
-
 std::vector<Bmp*> images;
 
 Bmp* draggingImage = NULL;
+Bmp* selectedImage = NULL;
+
+void DesenharImagemSelecionadaRGB(Bmp* image){
+   for(int i = 0; i < image->getHeight(); i++)
+   {
+      for(int j = 0; j < image->getWidth(); j++)
+      {
+         int pos = i * image->getWidth() * 3 + j * 3;
+         CV::color(image->getImage()[pos]/255.0, 0, 0);
+         CV::rectFill(j + image->x_start, i + image->y_start, j + image->x_start + 1, i + image->y_start + 1);
+
+         CV::color(0, image->getImage()[pos+1]/255.0, 0);
+         CV::rectFill(j + image->x_start, i + image->y_start + image->getHeight(), j + image->x_start + 1, i + image->y_start + image->getHeight() + 1);
+
+         CV::color(0, 0, image->getImage()[pos+2]/255.0);
+         CV::rectFill(j + image->x_start, i + image->y_start + 2*image->getHeight(), j + image->x_start + 1, i + image->y_start + 2*image->getHeight() + 1);
+      }
+   }
+}
+
+void ManipularVetorImagem(Bmp* image){
+   auto it = std::find(images.begin(), images.end(), image);
+   if (it != images.end()) {
+      std::rotate(images.rbegin(), std::make_reverse_iterator(it+1), images.rend());
+   }
+}
 
 void ArrastarImagem(Bmp* image, int x, int y) {
    image->x_start = x - image->getWidth()/2;
    image->y_start = y - image->getHeight()/2;
    image->x_end = x + image->getWidth()/2;
    image->y_end = y + image->getHeight()/2;
+}
+
+void DesenharMoldura(Bmp* image) {
+   CV::color(0, 0, 0);
+   CV::rect(image->x_start, image->y_start, image->x_end, image->y_end);
 }
 
 void DrawMouseScreenCoords(){
@@ -84,6 +114,11 @@ void render()
    DrawImage(images[1]);
    DrawImage(images[2]);
 
+   if(selectedImage != NULL){
+      DesenharMoldura(selectedImage);
+      //DesenharImagemSelecionadaRGB(selectedImage);
+   }
+
    Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
 }
 
@@ -99,12 +134,23 @@ void keyboard(int key)
 
    switch(key)
    {
+      case 'v':
+         if (selectedImage != NULL) {
+            printf("\nFlip vertical");
+            selectedImage->flipVertical();
+         }
+         break;
+      case 'h':
+         if (selectedImage != NULL) {
+            printf("\nFlip horizontal");
+            selectedImage->flipHorizontal();
+         }
+         break;
       case 27:
-	     exit(0);
-	  break;
+         exit(0);
+      break;
    }
 }
-
 //funcao chamada toda vez que uma tecla for liberada
 void keyboardUp(int key)
 {
@@ -121,7 +167,6 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    mouseY = y;
 
    if(clicando){
-      printf("\nArrastando imagem %d", draggingImage);
       ArrastarImagem(draggingImage, x, y);
    }
 
@@ -129,19 +174,32 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction, x, y);
 
    if (button == 0) {
-      } if(state == 1) {
-         // Parar o arrasto
-         draggingImage = nullptr;
-         clicando = 0;
+      for (Bmp* image : images) {
+            if (image->contains(x, y)) {
+               selectedImage = image;
+               printf("\nImagem selecionada: %d", selectedImage->getWidth());
+               ManipularVetorImagem(image);
+            }
+            else {
+               selectedImage = NULL;
+            }
+      }
+      if(state == 1) {
+      // Parar o arrasto
+      draggingImage = nullptr;
+      clicando = 0;
       }
       else if (state == 0) {
          // Iniciar o arrasto
          for (Bmp* image : images) {
             if (image->contains(x, y)) {
+               selectedImage = image;
                draggingImage = image;
                clicando = 1;
+               ManipularVetorImagem(image);
             }
          }
+      }
    }
 }
 
