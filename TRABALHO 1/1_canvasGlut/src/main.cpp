@@ -8,8 +8,8 @@
 #include <algorithm>
 
 #include "gl_canvas2d.h"
-
 #include "Bmp.h"
+#include "Botao.h"
 
 #define MAX_IMAGES 3
 
@@ -25,9 +25,23 @@ int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da ren
 int clicando = 0;
 
 std::vector<Bmp*> images;
+std::vector<Botao*> botoes;
 
 Bmp* draggingImage = NULL;
 Bmp* selectedImage = NULL;
+
+void ConstruirBotoes(){
+   if(botoes.size() == 0){
+      botoes.push_back(new Botao(10, 10, 100, 30, "Flip Vertical"));
+      botoes.push_back(new Botao(10, 50, 100, 30, "Flip Horizontal"));
+      botoes.push_back(new Botao(10, 90, 100, 30, "Flip Diagonal Principal"));
+      botoes.push_back(new Botao(10, 130, 100, 30, "Flip Diagonal Secundaria"));
+   }
+
+   for (Botao* botao : botoes) {
+      botao->Render();
+   }
+}
 
 void DesenharImagemSelecionadaRGB(Bmp* image){
    for(int i = 0; i < image->getHeight(); i++)
@@ -43,6 +57,18 @@ void DesenharImagemSelecionadaRGB(Bmp* image){
 
          CV::color(0, 0, image->getImage()[pos+2]/255.0);
          CV::rectFill(j + image->x_start, i + image->y_start + 2*image->getHeight(), j + image->x_start + 1, i + image->y_start + 2*image->getHeight() + 1);
+      }
+   }
+}
+
+void DesenharImagemSelecionadaGrayscale(Bmp* image){
+   for(int i = 0; i < image->getHeight(); i++)
+   {
+      for(int j = 0; j < image->getWidth(); j++)
+      {
+         int pos = i * image->getWidth() * 3 + j * 3;
+         CV::color(image->getImage()[pos]/255.0, image->getImage()[pos]/255.0, image->getImage()[pos]/255.0);
+         CV::rectFill(j + image->x_start, i + image->y_start, j + image->x_start + 1, i + image->y_start + 1);
       }
    }
 }
@@ -114,8 +140,12 @@ void render()
    DrawImage(images[1]);
    DrawImage(images[2]);
 
+   ConstruirBotoes();
+
+
    if(selectedImage != NULL){
       DesenharMoldura(selectedImage);
+      //DesenharImagemSelecionadaGrayscale(selectedImage);
       //DesenharImagemSelecionadaRGB(selectedImage);
    }
 
@@ -187,7 +217,7 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 
    if (button == 0) {
       for (Bmp* image : images) {
-            if (image->contains(x, y)) {
+            if (image->contains(x, y && draggingImage == NULL)) {
                selectedImage = image;
                printf("\nImagem selecionada: %d", selectedImage->getWidth());
                ManipularVetorImagem(image);
