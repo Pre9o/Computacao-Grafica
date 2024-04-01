@@ -2,20 +2,27 @@
 #define __BOTAO_H__
 
 #include "gl_canvas2d.h"
+#include <functional>
 
 class Botao{
   float altura, largura, x, y;
   char label[100];
 
 public:
-  Botao(float _x, float _y, float _larg, float _alt, char *_label)
+  std::function<void()> onClick;
+
+  Botao(float _x, float _y, float _larg, float _alt, char *_label, std::function<void()> _onClick)
   {
+    //X = ponto inicial X
+    //Y = ponto inicial Y
      altura  = _alt;
      largura = _larg;
      x = _x;
      y = _y;
      strcpy(label, _label);
+     onClick = _onClick;
   }
+
 
   void Render()
   {
@@ -34,7 +41,6 @@ public:
       }
       return false;
   }
-
 };
 
 #endif

@@ -32,14 +32,30 @@ Bmp* selectedImage = NULL;
 
 void ConstruirBotoes(){
    if(botoes.size() == 0){
-      botoes.push_back(new Botao(10, 10, 100, 30, "Flip Vertical"));
-      botoes.push_back(new Botao(10, 50, 100, 30, "Flip Horizontal"));
-      botoes.push_back(new Botao(10, 90, 100, 30, "Flip Diagonal Principal"));
-      botoes.push_back(new Botao(10, 130, 100, 30, "Flip Diagonal Secundaria"));
-   }
-
-   for (Botao* botao : botoes) {
-      botao->Render();
+      botoes.push_back(new Botao(1200, 10, 200, 30, "Flip Vertical", [](){
+         if (selectedImage != NULL) {
+            printf("\nFlip vertical");
+            selectedImage->flipVertical();
+         }
+      }));
+      botoes.push_back(new Botao(1200, 50, 200, 30, "Flip Horizontal", [](){
+         if (selectedImage != NULL) {
+            printf("\nFlip horizontal");
+            selectedImage->flipHorizontal();
+         }
+      }));
+      botoes.push_back(new Botao(1200, 90, 200, 30, "Flip Diagonal", [](){
+         if (selectedImage != NULL) {
+            printf("\nFlip diagonal principal");
+            selectedImage->flipDiagonalPrincipal();
+         }
+      }));
+      botoes.push_back(new Botao(1200, 130, 200, 30, "Flip Diagonal Secundaria", [](){
+         if (selectedImage != NULL) {
+            printf("\nFlip diagonal secundaria");
+            selectedImage->flipDiagonalSecundaria();
+         }
+      }));
    }
 }
 
@@ -140,7 +156,10 @@ void render()
    DrawImage(images[1]);
    DrawImage(images[2]);
 
-   ConstruirBotoes();
+
+   for (Botao* botao : botoes) {
+      botao->Render();
+   }
 
 
    if(selectedImage != NULL){
@@ -217,15 +236,22 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 
    if (button == 0) {
       for (Bmp* image : images) {
-            if (image->contains(x, y && draggingImage == NULL)) {
+            if (image->contains(x, y && draggingImage == nullptr)) {
                selectedImage = image;
                printf("\nImagem selecionada: %d", selectedImage->getWidth());
                ManipularVetorImagem(image);
             }
-            else {
-               selectedImage = NULL;
+            else if(!image->contains(x, y) && draggingImage == nullptr){
+               //selectedImage = nullptr;
             }
       }
+
+      for (Botao* botao : botoes) {
+         if(botao->Colidiu(x, y)){
+            botao->onClick();
+         }
+      }
+
       if(state == 1) {
       // Parar o arrasto
       draggingImage = nullptr;
@@ -250,7 +276,9 @@ int main()
 {
    CV::init(screenHeight, screenWidth, "Canvas2D");
    LoadImages();
+   ConstruirBotoes();
    CV::run();
+   
    
    return 0;
 }
