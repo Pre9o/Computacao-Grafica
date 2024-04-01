@@ -19,6 +19,7 @@
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int screenWidth = 1520, screenHeight = 1080;
 
+bool grayscale = false;
 
 int opcao  = 50; //variavel global para selecao do que sera exibido na canvas.
 int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da render().
@@ -26,6 +27,8 @@ int clicando = 0;
 
 std::vector<Bmp*> images;
 std::vector<Botao*> botoes;
+
+void DesenharImagemSelecionadaGrayscale(Bmp* image);
 
 Bmp* draggingImage = NULL;
 Bmp* selectedImage = NULL;
@@ -54,6 +57,13 @@ void ConstruirBotoes(){
          if (selectedImage != NULL) {
             printf("\nFlip diagonal secundaria");
             selectedImage->flipDiagonalSecundaria();
+         }
+      }));
+
+      botoes.push_back(new Botao(1200, 170, 200, 30, "Grayscale", [](){
+         if (selectedImage != NULL) {
+            printf("\nGrayscale");
+            grayscale = !grayscale;
          }
       }));
    }
@@ -159,6 +169,10 @@ void render()
 
    for (Botao* botao : botoes) {
       botao->Render();
+   }
+
+   if(grayscale){
+      DesenharImagemSelecionadaGrayscale(selectedImage);
    }
 
 
