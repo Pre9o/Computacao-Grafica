@@ -138,6 +138,26 @@ void CV::text(float x, float y, const char *t)
     }
 }
 
+void CV::text(float x, float y, const char *t, void *bitmap)
+{
+    int tam = (int)strlen(t);
+    for(int c=0; c < tam; c++)
+    {
+        int charWidth = glutBitmapWidth(bitmap, t[c]);
+        glRasterPos2i(x, y);
+        x+=charWidth;
+        glutBitmapCharacter(bitmap, t[c]);
+    }
+}
+
+int CV::getTextWidth(const char *s, void *bitmap){
+    return glutBitmapLength(bitmap, (const unsigned char*)s);
+}
+
+int CV::getBitmapHeight(void *bitmap){
+    return glutBitmapHeight(bitmap);
+}
+
 void CV::clear(float r, float g, float b)
 {
    glClearColor( r, g, b, 1 );

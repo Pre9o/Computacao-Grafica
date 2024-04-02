@@ -7,11 +7,14 @@
 class Botao{
   float altura, largura, x, y;
   char label[100];
+  float r_color;
+  float g_color;
+  float b_color;
 
 public:
   std::function<void()> onClick;
 
-  Botao(float _x, float _y, float _larg, float _alt, char *_label, std::function<void()> _onClick)
+  Botao(float _x, float _y, float _larg, float _alt, char *_label, float _r_color, float _g_color, float _b_color, std::function<void()> _onClick)
   {
     //X = ponto inicial X
     //Y = ponto inicial Y
@@ -21,16 +24,27 @@ public:
      y = _y;
      strcpy(label, _label);
      onClick = _onClick;
+      r_color = _r_color;
+      g_color = _g_color;
+      b_color = _b_color;
   }
 
 
   void Render()
   {
-      CV::color(0, 1, 0);
+      CV::color(r_color, g_color, b_color);
       CV::rectFill(x, y, x + largura, y + altura);
       CV::color(0, 0, 0);
-      CV::text(x+5, y+altura/2, label); //escreve o label do botao mais ou menos ao centro.
+      CV::text(x - (CV::getTextWidth(label, GLUT_BITMAP_HELVETICA_18)/2) + (largura/2),
+               y + (altura/10) + (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
+               label,
+               GLUT_BITMAP_HELVETICA_18);
   }
+
+  /*CV::text(metade_tela_horizontal-(CV::getTextWidth("WELCOME TO TETRIS", GLUT_BITMAP_TIMES_ROMAN_24)/2),
+             metade_tela_vertical-(CV::getBitmapHeight(GLUT_BITMAP_TIMES_ROMAN_24)/2)+(2*TAMANHO_BLOCO),
+             "WELCOME TO TETRIS",
+             GLUT_BITMAP_TIMES_ROMAN_24);*/
 
   //recebe as coordenadas do mouse para tratar clique ou detectar quando o mouse esta em cima do botao
   bool Colidiu(int mx, int my)

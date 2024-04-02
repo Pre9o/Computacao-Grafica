@@ -10,6 +10,7 @@
 #include "gl_canvas2d.h"
 #include "Bmp.h"
 #include "Botao.h"
+#include "ImagesFunctions.h"
 
 #define MAX_IMAGES 3
 
@@ -28,95 +29,38 @@ int clicando = 0;
 std::vector<Bmp*> images;
 std::vector<Botao*> botoes;
 
-void DesenharImagemSelecionadaGrayscale(Bmp* image);
-
 Bmp* draggingImage = NULL;
 Bmp* selectedImage = NULL;
 
 void ConstruirBotoes(){
    if(botoes.size() == 0){
-      botoes.push_back(new Botao(1200, 10, 200, 30, "Flip Vertical", [](){
+      botoes.push_back(new Botao(1250, -400, 150, 50, "Flip Vertical", 1, 1, 0, [](){
          if (selectedImage != NULL) {
             printf("\nFlip vertical");
             selectedImage->flipVertical();
          }
       }));
-      botoes.push_back(new Botao(1200, 50, 200, 30, "Flip Horizontal", [](){
+      botoes.push_back(new Botao(1075, -400, 150, 50, "Flip Horizontal", 0, 1, 0, [](){
          if (selectedImage != NULL) {
             printf("\nFlip horizontal");
             selectedImage->flipHorizontal();
          }
       }));
-      botoes.push_back(new Botao(1200, 90, 200, 30, "Flip Diagonal", [](){
-         if (selectedImage != NULL) {
-            printf("\nFlip diagonal principal");
-            selectedImage->flipDiagonalPrincipal();
-         }
-      }));
-      botoes.push_back(new Botao(1200, 130, 200, 30, "Flip Diagonal Secundaria", [](){
-         if (selectedImage != NULL) {
-            printf("\nFlip diagonal secundaria");
-            selectedImage->flipDiagonalSecundaria();
-         }
-      }));
-
-      botoes.push_back(new Botao(1200, 170, 200, 30, "Grayscale", [](){
+      botoes.push_back(new Botao(1250, -325, 150, 50, "Grayscale", 0.5, 0.5, 0.5, [](){
          if (selectedImage != NULL) {
             printf("\nGrayscale");
             grayscale = !grayscale;
          }
       }));
+      botoes.push_back(new Botao(1075, -325, 150, 50, "Blue", 0, 0, 1, [](){
+         if (selectedImage != NULL) {
+            printf("\nBlue");
+            DesenharImagemSelecionadaBlue(selectedImage);
+         }
+      }));
    }
 }
 
-void DesenharImagemSelecionadaRGB(Bmp* image){
-   for(int i = 0; i < image->getHeight(); i++)
-   {
-      for(int j = 0; j < image->getWidth(); j++)
-      {
-         int pos = i * image->getWidth() * 3 + j * 3;
-         CV::color(image->getImage()[pos]/255.0, 0, 0);
-         CV::rectFill(j + image->x_start, i + image->y_start, j + image->x_start + 1, i + image->y_start + 1);
-
-         CV::color(0, image->getImage()[pos+1]/255.0, 0);
-         CV::rectFill(j + image->x_start, i + image->y_start + image->getHeight(), j + image->x_start + 1, i + image->y_start + image->getHeight() + 1);
-
-         CV::color(0, 0, image->getImage()[pos+2]/255.0);
-         CV::rectFill(j + image->x_start, i + image->y_start + 2*image->getHeight(), j + image->x_start + 1, i + image->y_start + 2*image->getHeight() + 1);
-      }
-   }
-}
-
-void DesenharImagemSelecionadaGrayscale(Bmp* image){
-   for(int i = 0; i < image->getHeight(); i++)
-   {
-      for(int j = 0; j < image->getWidth(); j++)
-      {
-         int pos = i * image->getWidth() * 3 + j * 3;
-         CV::color(image->getImage()[pos]/255.0, image->getImage()[pos]/255.0, image->getImage()[pos]/255.0);
-         CV::rectFill(j + image->x_start, i + image->y_start, j + image->x_start + 1, i + image->y_start + 1);
-      }
-   }
-}
-
-void ManipularVetorImagem(Bmp* image){
-   auto it = std::find(images.begin(), images.end(), image);
-   if (it != images.end()) {
-      std::rotate(images.rbegin(), std::make_reverse_iterator(it+1), images.rend());
-   }
-}
-
-void ArrastarImagem(Bmp* image, int x, int y) {
-   image->x_start = x - image->getWidth()/2;
-   image->y_start = y - image->getHeight()/2;
-   image->x_end = x + image->getWidth()/2;
-   image->y_end = y + image->getHeight()/2;
-}
-
-void DesenharMoldura(Bmp* image) {
-   CV::color(0, 0, 0);
-   CV::rect(image->x_start, image->y_start, image->x_end, image->y_end);
-}
 
 void DrawMouseScreenCoords(){
     char str[100];
@@ -126,53 +70,20 @@ void DrawMouseScreenCoords(){
     CV::text(10,320, str);
 }
 
-void InicializarParametros(Bmp *image, int offset){
-   image->x_start = offset;
-   image->y_start = 0;
-   image->x_end = offset + image->getWidth();
-   image->y_end = image->getHeight();
-}
-
-
-void DrawImage(Bmp *image){
-   for(int i = 0; i < image->getHeight(); i++)
-   {
-      for(int j = 0; j < image->getWidth(); j++)
-      {
-         int pos = i * image->getWidth() * 3 + j * 3;
-         CV::color(image->getImage()[pos]/255.0, image->getImage()[pos+1]/255.0, image->getImage()[pos+2]/255.0);
-         CV::rectFill(j + image->x_start, i + image->y_start, j + image->x_start + 1, i + image->y_start + 1);
-      }
-   }
-}
-
-
-void LoadImages(){
-   images.push_back(new Bmp(".\\images\\pinguim.bmp"));
-   images.push_back(new Bmp(".\\images\\bmp_24.bmp"));
-   images.push_back(new Bmp(".\\images\\snail.bmp"));
-
-   for(int i = 0; i < images.size(); i++){
-      InicializarParametros(images[i], i * 300);
-      images[i]->convertBGRtoRGB();
-   }
-}
 
 void render()
 {
    CV::translate(500, 500);
-
    DrawImage(images[0]);
    DrawImage(images[1]);
    DrawImage(images[2]);
-
 
    for (Botao* botao : botoes) {
       botao->Render();
    }
 
    if(grayscale){
-      DesenharImagemSelecionadaGrayscale(selectedImage);
+      DesenharImagemSelecionadaGray(selectedImage);
    }
 
 
@@ -197,30 +108,6 @@ void keyboard(int key)
 
    switch(key)
    {
-      case 'v':
-         if (selectedImage != NULL) {
-            printf("\nFlip vertical");
-            selectedImage->flipVertical();
-         }
-         break;
-      case 'h':
-         if (selectedImage != NULL) {
-            printf("\nFlip horizontal");
-            selectedImage->flipHorizontal();
-         }
-         break;
-      case 'p':
-         if (selectedImage != NULL) {
-            printf("\nFlip diagonal principal");
-            selectedImage->flipDiagonalPrincipal();
-         }
-         break;
-      case 's':
-         if (selectedImage != NULL) {
-            printf("\nFlip diagonal secundaria");
-            selectedImage->flipDiagonalSecundaria();
-         }
-         break;
       case 27:
          exit(0);
       break;
@@ -253,19 +140,12 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
             if (image->contains(x, y && draggingImage == nullptr)) {
                selectedImage = image;
                printf("\nImagem selecionada: %d", selectedImage->getWidth());
-               ManipularVetorImagem(image);
+               ManipularVetorImagem(images, image);
             }
             else if(!image->contains(x, y) && draggingImage == nullptr){
                //selectedImage = nullptr;
             }
       }
-
-      for (Botao* botao : botoes) {
-         if(botao->Colidiu(x, y)){
-            botao->onClick();
-         }
-      }
-
       if(state == 1) {
       // Parar o arrasto
       draggingImage = nullptr;
@@ -278,7 +158,13 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
                selectedImage = image;
                draggingImage = image;
                clicando = 1;
-               ManipularVetorImagem(image);
+               ManipularVetorImagem(images, image);
+            }
+         }
+
+         for (Botao* botao : botoes) {
+            if(botao->Colidiu(x, y)){
+               botao->onClick();
             }
          }
       }
@@ -289,10 +175,9 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 int main()
 {
    CV::init(screenHeight, screenWidth, "Canvas2D");
-   LoadImages();
+   LoadImages(images);
    ConstruirBotoes();
    CV::run();
-   
    
    return 0;
 }
