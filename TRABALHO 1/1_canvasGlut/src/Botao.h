@@ -41,12 +41,6 @@ public:
                GLUT_BITMAP_HELVETICA_18);
   }
 
-  /*CV::text(metade_tela_horizontal-(CV::getTextWidth("WELCOME TO TETRIS", GLUT_BITMAP_TIMES_ROMAN_24)/2),
-             metade_tela_vertical-(CV::getBitmapHeight(GLUT_BITMAP_TIMES_ROMAN_24)/2)+(2*TAMANHO_BLOCO),
-             "WELCOME TO TETRIS",
-             GLUT_BITMAP_TIMES_ROMAN_24);*/
-
-  //recebe as coordenadas do mouse para tratar clique ou detectar quando o mouse esta em cima do botao
   bool Colidiu(int mx, int my)
   {
       if( mx >= x && mx <= (x + largura) && my >= y && my <= (y + altura) )

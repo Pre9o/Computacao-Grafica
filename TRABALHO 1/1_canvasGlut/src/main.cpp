@@ -21,6 +21,9 @@
 int screenWidth = 1520, screenHeight = 1080;
 
 bool grayscale = false;
+bool red = false;
+bool green = false;
+bool blue = false;
 
 int opcao  = 50; //variavel global para selecao do que sera exibido na canvas.
 int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da render().
@@ -40,7 +43,7 @@ void ConstruirBotoes(){
             selectedImage->flipVertical();
          }
       }));
-      botoes.push_back(new Botao(1075, -400, 150, 50, "Flip Horizontal", 0, 1, 0, [](){
+      botoes.push_back(new Botao(1075, -400, 150, 50, "Flip Horizontal", 1, 1, 0, [](){
          if (selectedImage != NULL) {
             printf("\nFlip horizontal");
             selectedImage->flipHorizontal();
@@ -52,10 +55,22 @@ void ConstruirBotoes(){
             grayscale = !grayscale;
          }
       }));
-      botoes.push_back(new Botao(1075, -325, 150, 50, "Blue", 0, 0, 1, [](){
+      botoes.push_back(new Botao(1075, -325, 150, 50, "Red", 1, 0, 0, [](){
+         if (selectedImage != NULL) {
+            printf("\nRed");
+            red = !red;
+         }
+      }));
+      botoes.push_back(new Botao(1250, -250, 150, 50, "Green", 0, 1, 0, [](){
+         if (selectedImage != NULL) {
+            printf("\nGreen");
+            green = !green;
+         }
+      }));
+      botoes.push_back(new Botao(1075, -250, 150, 50, "Blue", 0, 0, 1, [](){
          if (selectedImage != NULL) {
             printf("\nBlue");
-            DesenharImagemSelecionadaBlue(selectedImage);
+            blue = !blue;
          }
       }));
    }
@@ -71,12 +86,11 @@ void DrawMouseScreenCoords(){
 }
 
 
-void render()
-{
+void render(){
    CV::translate(500, 500);
-   DrawImage(images[0]);
-   DrawImage(images[1]);
-   DrawImage(images[2]);
+   for (Bmp* image : images) {
+      DrawImage(image);
+   }
 
    for (Botao* botao : botoes) {
       botao->Render();
@@ -86,6 +100,19 @@ void render()
       DesenharImagemSelecionadaGray(selectedImage);
    }
 
+   if(blue){
+      DesenharImagemSelecionadaBlue(selectedImage);
+   }
+   if(red){
+      DesenharImagemSelecionadaRed(selectedImage);
+   }
+   if(green){
+      DesenharImagemSelecionadaGreen(selectedImage);
+   }
+
+   if(draggingImage != NULL){
+      ManipularVetorImagem(images, draggingImage);
+   }
 
    if(selectedImage != NULL){
       DesenharMoldura(selectedImage);
@@ -133,14 +160,13 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    }
 
 
-   printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction, x, y);
+   //printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction, x, y);
 
    if (button == 0) {
       for (Bmp* image : images) {
             if (image->contains(x, y && draggingImage == nullptr)) {
                selectedImage = image;
                printf("\nImagem selecionada: %d", selectedImage->getWidth());
-               ManipularVetorImagem(images, image);
             }
             else if(!image->contains(x, y) && draggingImage == nullptr){
                //selectedImage = nullptr;
@@ -150,6 +176,7 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
       // Parar o arrasto
       draggingImage = nullptr;
       clicando = 0;
+
       }
       else if (state == 0) {
          // Iniciar o arrasto
@@ -158,7 +185,6 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
                selectedImage = image;
                draggingImage = image;
                clicando = 1;
-               ManipularVetorImagem(images, image);
             }
          }
 

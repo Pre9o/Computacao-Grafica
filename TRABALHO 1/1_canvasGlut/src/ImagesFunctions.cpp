@@ -22,7 +22,7 @@ void DesenharImagemSelecionadaGreen(Bmp* image){
       {
          int pos = i * image->getWidth() * 3 + j * 3;
          CV::color(0, image->getImage()[pos+1]/255.0, 0);
-         CV::rectFill(j + image->x_start, i + image->y_start + image->getHeight(), j + image->x_start + 1, i + image->y_start + image->getHeight() + 1);
+         CV::rectFill(j + image->x_start, i + image->y_start, j + image->x_start + 1, i + image->y_start + 1);
       }
    }
 }
@@ -34,7 +34,7 @@ void DesenharImagemSelecionadaBlue(Bmp* image){
       {
          int pos = i * image->getWidth() * 3 + j * 3;
          CV::color(0, 0, image->getImage()[pos+2]/255.0);
-         CV::rectFill(j + image->x_start, i + image->y_start + 2*image->getHeight(), j + image->x_start + 1, i + image->y_start + 2*image->getHeight() + 1);
+         CV::rectFill(j + image->x_start, i + image->y_start, j + image->x_start + 1, i + image->y_start + 1);
       }
    }
 }
@@ -51,10 +51,11 @@ void DesenharImagemSelecionadaGray(Bmp* image){
    }
 }
 
-void ManipularVetorImagem(std::vector<Bmp*> images, Bmp* image){
-   auto it = std::find(images.begin(), images.end(), image);
-   if (it != images.end()) {
-      std::rotate(images.rbegin(), std::make_reverse_iterator(it+1), images.rend());
+void ManipularVetorImagem(std::vector<Bmp*>& images, Bmp* &image){
+   // mover a image para a última posição do vetor
+   std::vector<Bmp*>::iterator it = std::find(images.begin(), images.end(), image);
+   if(it != images.end()){
+      std::iter_swap(it, images.end() - 1);
    }
 }
 

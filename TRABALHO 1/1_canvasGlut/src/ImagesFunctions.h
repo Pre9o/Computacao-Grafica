@@ -9,7 +9,7 @@ void DesenharImagemSelecionadaBlue(Bmp* image);
 
 void DesenharImagemSelecionadaGray(Bmp* image);
 
-void ManipularVetorImagem(std::vector<Bmp*> images, Bmp* image);
+void ManipularVetorImagem(std::vector<Bmp*> &images, Bmp* &image);
 
 void ArrastarImagem(Bmp* image, int x, int y);
 

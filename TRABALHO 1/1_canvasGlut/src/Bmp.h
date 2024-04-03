@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <algorithm>
 
-
 #define HEADER_SIZE      14 //sizeof(HEADER) vai dar 16 devido ao alinhamento de bytes
 #define INFOHEADER_SIZE  40 //sizeof(INFOHEADER) da 40 e esta correto.
 #define uchar unsigned char
