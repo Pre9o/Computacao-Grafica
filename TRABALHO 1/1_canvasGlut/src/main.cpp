@@ -39,39 +39,42 @@ void ConstruirBotoes(){
    if(botoes.size() == 0){
       botoes.push_back(new Botao(1250, -400, 150, 50, "Flip Vertical", 1, 1, 0, [](){
          if (selectedImage != NULL) {
-            printf("\nFlip vertical");
             selectedImage->flipVertical();
          }
       }));
       botoes.push_back(new Botao(1075, -400, 150, 50, "Flip Horizontal", 1, 1, 0, [](){
          if (selectedImage != NULL) {
-            printf("\nFlip horizontal");
             selectedImage->flipHorizontal();
          }
       }));
       botoes.push_back(new Botao(1250, -325, 150, 50, "Grayscale", 0.5, 0.5, 0.5, [](){
          if (selectedImage != NULL) {
-            printf("\nGrayscale");
             grayscale = !grayscale;
          }
       }));
       botoes.push_back(new Botao(1075, -325, 150, 50, "Red", 1, 0, 0, [](){
          if (selectedImage != NULL) {
-            printf("\nRed");
             red = !red;
          }
       }));
       botoes.push_back(new Botao(1250, -250, 150, 50, "Green", 0, 1, 0, [](){
          if (selectedImage != NULL) {
-            printf("\nGreen");
             green = !green;
          }
       }));
       botoes.push_back(new Botao(1075, -250, 150, 50, "Blue", 0, 0, 1, [](){
          if (selectedImage != NULL) {
-            printf("\nBlue");
             blue = !blue;
          }
+      }));
+      botoes.push_back(new Botao(1162, -175, 150, 50, "Load Image 3", 1, 1, 1, [](){
+         LoadImages(images, ".\\images\\pinguim.bmp");
+      }));
+      botoes.push_back(new Botao(1162, -100, 150, 50, "Load Image 2", 1, 1, 1, [](){
+         LoadImages(images, ".\\images\\teste.bmp");
+      }));
+      botoes.push_back(new Botao(1162, -25, 150, 50, "Load Image 1", 1, 1, 1, [](){
+         LoadImages(images, ".\\images\\snail.bmp");
       }));
    }
 }
@@ -116,18 +119,15 @@ void render(){
 
    if(selectedImage != NULL){
       DesenharMoldura(selectedImage);
-      //DesenharImagemSelecionadaGrayscale(selectedImage);
-      //DesenharImagemSelecionadaRGB(selectedImage);
    }
 
-   Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
+   //Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
 }
 
 
 //funcao chamada toda vez que uma tecla for pressionada.
 void keyboard(int key)
 {
-   printf("\nTecla: %d" , key);
    if( key < 200 )
    {
       opcao = key;
@@ -143,7 +143,6 @@ void keyboard(int key)
 //funcao chamada toda vez que uma tecla for liberada
 void keyboardUp(int key)
 {
-   printf("\nLiberou: %d" , key);
 }
 
 //funcao para tratamento de mouse: cliques, movimentos e arrastos
@@ -159,14 +158,12 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
       ArrastarImagem(draggingImage, x, y);
    }
 
-
    //printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction, x, y);
 
    if (button == 0) {
       for (Bmp* image : images) {
             if (image->contains(x, y && draggingImage == nullptr)) {
                selectedImage = image;
-               printf("\nImagem selecionada: %d", selectedImage->getWidth());
             }
             else if(!image->contains(x, y) && draggingImage == nullptr){
                //selectedImage = nullptr;
@@ -201,7 +198,7 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 int main()
 {
    CV::init(screenHeight, screenWidth, "Canvas2D");
-   LoadImages(images);
+   //LoadImages(images);
    ConstruirBotoes();
    CV::run();
    

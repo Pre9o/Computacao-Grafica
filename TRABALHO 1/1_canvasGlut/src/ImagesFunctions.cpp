@@ -88,17 +88,12 @@ void InicializarParametros(Bmp* image, int offset){
    image->y_start = 0;
    image->x_end = offset + image->getWidth();
    image->y_end = image->getHeight();
-   printf("inicializado");
 }
 
 
-void LoadImages(std::vector<Bmp*> &images){
-   images.push_back(new Bmp(".\\images\\pinguim.bmp"));
-   images.push_back(new Bmp(".\\images\\bmp_24.bmp"));
-   images.push_back(new Bmp(".\\images\\snail.bmp"));
-
-   for(int i = 0; i < images.size(); i++){
-      InicializarParametros(images[i], i * 300);
-      images[i]->convertBGRtoRGB();
-   }
+void LoadImages(std::vector<Bmp*> &images, const char* path){
+   Bmp* image_loaded = new Bmp(path);
+   InicializarParametros(image_loaded, images.size() * 100);
+   image_loaded->convertBGRtoRGB();
+   images.push_back(image_loaded);
 }

@@ -27,33 +27,33 @@ Bmp::Bmp(const char *fileName)
 
 uchar* Bmp::getImage()
 {
-  return data;
+return data;
 }
 
 int Bmp::getWidth(void)
 {
-  return width;
+return width;
 }
 
 int Bmp::getHeight(void)
 {
-  return height;
+return height;
 }
 
 void Bmp::convertBGRtoRGB()
 {
-  unsigned char tmp;
-  if( data != NULL )
-  {
-     for(int y=0; y<height; y++)
-     for(int x=0; x<width*3; x+=3)
-     {
-        int pos = y*bytesPerLine + x;
-        tmp = data[pos];
-        data[pos] = data[pos+2];
-        data[pos+2] = tmp;
-     }
-  }
+unsigned char tmp;
+if( data != NULL )
+{
+   for(int y=0; y<height; y++)
+   for(int x=0; x<width*3; x+=3)
+   {
+      int pos = y * width * 3 + x;
+      tmp = data[pos];
+      data[pos] = data[pos+2];
+      data[pos+2] = tmp;
+   }
+}
 }
 
 int Bmp::contains(int x, int y)
@@ -66,136 +66,140 @@ int Bmp::contains(int x, int y)
 }
 
 void Bmp::flipVertical() {
-    unsigned char* img = this->getImage();
-    int width = this->getWidth();
-    int height = this->getHeight();
-    for (int i = 0; i < height; i++) {
-        std::reverse(img + i * width * 3, img + (i+1) * width * 3);
-    }
-    convertBGRtoRGB();
+   unsigned char* img = this->getImage();
+   int width = this->getWidth();
+   int height = this->getHeight();
+   for (int i = 0; i < height; i++) {
+      std::reverse(img + i * width * 3, img + (i+1) * width * 3);
+   }
+   convertBGRtoRGB();
 }
 
 void Bmp::flipHorizontal() {
-    unsigned char* img = this->getImage();
-    int width = this->getWidth();
-    int height = this->getHeight();
-    for (int i = 0; i < width; i++) {
-        for (int j = 0; j < height / 2; j++) {
+   unsigned char* img = this->getImage();
+   int width = this->getWidth();
+   int height = this->getHeight();
+   for (int i = 0; i < width; i++) {
+      for (int j = 0; j < height / 2; j++) {
             std::swap(img[(j * width + i) * 3], img[((height - j - 1) * width + i) * 3]);
             std::swap(img[(j * width + i) * 3 + 1], img[((height - j - 1) * width + i) * 3 + 1]);
             std::swap(img[(j * width + i) * 3 + 2], img[((height - j - 1) * width + i) * 3 + 2]);
-        }
-    }
+      }
+   }
 }
 
 void Bmp::flipDiagonalPrincipal() {
-    unsigned char* img = this->getImage();
-    int width = this->getWidth();
-    int height = this->getHeight();
-    for (int i = 0; i < height; i++) {
-        for (int j = i+1; j < width; j++) {
+   unsigned char* img = this->getImage();
+   int width = this->getWidth();
+   int height = this->getHeight();
+   for (int i = 0; i < height; i++) {
+      for (int j = i+1; j < width; j++) {
             std::swap(img[(i * width + j) * 3], img[(j * width + i) * 3]);
             std::swap(img[(i * width + j) * 3 + 1], img[(j * width + i) * 3 + 1]);
             std::swap(img[(i * width + j) * 3 + 2], img[(j * width + i) * 3 + 2]);
-        }
-    }
+      }
+   }
 }
 
 void Bmp::flipDiagonalSecundaria() {
-    unsigned char* img = this->getImage();
-    int width = this->getWidth();
-    int height = this->getHeight();
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width - i; j++) {
+   unsigned char* img = this->getImage();
+   int width = this->getWidth();
+   int height = this->getHeight();
+   for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width - i; j++) {
             std::swap(img[(i * width + j) * 3], img[((height - j - 1) * width + (width - i - 1)) * 3]);
             std::swap(img[(i * width + j) * 3 + 1], img[((height - j - 1) * width + (width - i - 1)) * 3 + 1]);
             std::swap(img[(i * width + j) * 3 + 2], img[((height - j - 1) * width + (width - i - 1)) * 3 + 2]);
-        }
-    }
+      }
+   }
 }
 
 void Bmp::load(const char *fileName)
 {
-  FILE *fp = fopen(fileName, "rb");
-  if( fp == NULL )
-  {
-     printf("\nErro ao abrir arquivo %s para leitura", fileName);
-     return;
-  }
+FILE *fp = fopen(fileName, "rb");
+if( fp == NULL )
+{
+   printf("\nErro ao abrir arquivo %s para leitura", fileName);
+   return;
+}
 
-  printf("\n\nCarregando arquivo %s", fileName);
+printf("\n\nCarregando arquivo %s", fileName);
 
-  //le o HEADER componente a componente devido ao problema de alinhamento de bytes. Usando
-  //o comando fread(header, sizeof(HEADER),1,fp) sao lidos 16 bytes ao inves de 14
-  fread(&header.type,      sizeof(unsigned short int), 1, fp);
-  fread(&header.size,      sizeof(unsigned int),       1, fp);
-  fread(&header.reserved1, sizeof(unsigned short int), 1, fp);
-  fread(&header.reserved2, sizeof(unsigned short int), 1, fp);
-  fread(&header.offset,    sizeof(unsigned int),       1, fp); //indica inicio do bloco de pixels
+//le o HEADER componente a componente devido ao problema de alinhamento de bytes. Usando
+//o comando fread(header, sizeof(HEADER),1,fp) sao lidos 16 bytes ao inves de 14
+fread(&header.type,      sizeof(unsigned short int), 1, fp);
+fread(&header.size,      sizeof(unsigned int),       1, fp);
+fread(&header.reserved1, sizeof(unsigned short int), 1, fp);
+fread(&header.reserved2, sizeof(unsigned short int), 1, fp);
+fread(&header.offset,    sizeof(unsigned int),       1, fp); //indica inicio do bloco de pixels
 
-  //le o INFOHEADER componente a componente devido ao problema de alinhamento de bytes
-  fread(&info.size,        sizeof(unsigned int),       1, fp);
-  fread(&info.width,       sizeof(int),                1, fp);
-  fread(&info.height,      sizeof(int),                1, fp);
-  fread(&info.planes,      sizeof(unsigned short int), 1, fp);
-  fread(&info.bits,        sizeof(unsigned short int), 1, fp);
-  fread(&info.compression, sizeof(unsigned int),       1, fp);
-  fread(&info.imagesize,   sizeof(unsigned int),       1, fp);
-  fread(&info.xresolution, sizeof(int),                1, fp);
-  fread(&info.yresolution, sizeof(int),                1, fp);
-  fread(&info.ncolours,    sizeof(unsigned int),       1, fp);
-  fread(&info.impcolours,  sizeof(unsigned int),       1, fp);
+//le o INFOHEADER componente a componente devido ao problema de alinhamento de bytes
+fread(&info.size,        sizeof(unsigned int),       1, fp);
+fread(&info.width,       sizeof(int),                1, fp);
+fread(&info.height,      sizeof(int),                1, fp);
+fread(&info.planes,      sizeof(unsigned short int), 1, fp);
+fread(&info.bits,        sizeof(unsigned short int), 1, fp);
+fread(&info.compression, sizeof(unsigned int),       1, fp);
+fread(&info.imagesize,   sizeof(unsigned int),       1, fp);
+fread(&info.xresolution, sizeof(int),                1, fp);
+fread(&info.yresolution, sizeof(int),                1, fp);
+fread(&info.ncolours,    sizeof(unsigned int),       1, fp);
+fread(&info.impcolours,  sizeof(unsigned int),       1, fp);
 
-  width  = info.width;
-  height = info.height;
-  bits   = info.bits;
-  bytesPerLine =(3 * (width + 1) / 4) * 4;
-  imagesize    = bytesPerLine*height;
-  int delta    = bytesPerLine - (3 * width);
+width  = info.width;
+height = info.height;
+bits   = info.bits;
 
-  printf("\nImagem: %dx%d - Bits: %d", width, height, bits);
-  printf("\nbytesPerLine: %d", bytesPerLine);
-  printf("\nbytesPerLine: %d", width * 3);
-  printf("\ndelta: %d", delta);
-  printf("\nimagesize: %d %d", imagesize, info.imagesize);
+bytesPerLine = (3 * (width + 1) / 4) * 4;
+imagesize    = bytesPerLine * height;
+int delta    = bytesPerLine - (3 * width);
 
-  //realiza diversas verificacoes de erro e compatibilidade
-  if( header.type != 19778 )
-  {
-     printf("\nError: Arquivo BMP invalido");
-     getchar();
-     exit(0);
-  }
+printf("\nImagem: %dx%d - Bits: %d", width, height, bits);
+printf("\nbytesPerLine: %d", bytesPerLine);
+printf("\nbytesPerLine: %d", width * 3);
+printf("\ndelta: %d", delta);
+printf("\nimagesize: %d %d", imagesize, info.imagesize);
 
-  if( width*height*3 != imagesize )
-  {
-     printf("\nWarning: Arquivo BMP nao tem largura multipla de 4");
-     getchar();
-  }
+//realiza diversas verificacoes de erro e compatibilidade
+if( header.type != 19778 )
+{
+   printf("\nError: Arquivo BMP invalido");
+   getchar();
+   exit(0);
+}
 
-  if( info.compression != 0 )
-  {
-     printf("\nError: Formato BMP comprimido nao suportado");
-     getchar();
-     return;
-  }
-  if( bits != 24 )
-  {
-     printf("\nError: Formato BMP com %d bits/pixel nao suportado", bits);
-     getchar();
-     return;
-  }
+if( width*height*3 != imagesize )
+{
+   printf("\nWarning: Arquivo BMP nao tem largura multipla de 4");
+   //getchar();
+}
 
-  if( info.planes != 1 )
-  {
-     printf("\nError: Numero de Planes nao suportado: %d", info.planes);
-     getchar();
-     return;
-  }
+if( info.compression != 0 )
+{
+   printf("\nError: Formato BMP comprimido nao suportado");
+   getchar();
+   return;
+}
+if( bits != 24 )
+{
+   printf("\nError: Formato BMP com %d bits/pixel nao suportado", bits);
+   getchar();
+   return;
+}
 
-  data = new unsigned char[imagesize];
-  fseek(fp, header.offset, SEEK_SET);
-  fread(data, sizeof(unsigned char), imagesize, fp);
+if( info.planes != 1 )
+{
+   printf("\nError: Numero de Planes nao suportado: %d", info.planes);
+   getchar();
+   return;
+}
 
-  fclose(fp);
+data = new unsigned char[3 * width * height];
+for(int i = 0; i < height; i++){
+   int pos = i * bytesPerLine;
+   fseek(fp, header.offset + pos, SEEK_SET);
+   fread(data + width * 3 * i, sizeof(unsigned char), width * 3, fp);
+}
+
+fclose(fp);
 }

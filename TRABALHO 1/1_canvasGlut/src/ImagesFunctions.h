@@ -1,5 +1,6 @@
 #include <vector>
 #include <algorithm>
+#include <string>
 #include "gl_canvas2d.h"
 #include "Bmp.h"
 
@@ -19,4 +20,4 @@ void DrawImage(Bmp* image);
 
 void InicializarParametros(Bmp* image, int offset);
 
-void LoadImages(std::vector<Bmp*> &images);
+void LoadImages(std::vector<Bmp*> &images, const char* path);
