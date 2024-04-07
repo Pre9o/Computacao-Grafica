@@ -8,9 +8,9 @@
 #include <algorithm>
 
 #include "gl_canvas2d.h"
-#include "Bmp.h"
-#include "Botao.h"
+#include "Image.h"
 #include "ImagesFunctions.h"
+#include "Botao.h"
 
 #define MAX_IMAGES 3
 
@@ -19,11 +19,6 @@
 
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int screenWidth = 1520, screenHeight = 1080;
-
-bool grayscale = false;
-bool red = false;
-bool green = false;
-bool blue = false;
 
 int opcao  = 50; //variavel global para selecao do que sera exibido na canvas.
 int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da render().
@@ -34,6 +29,10 @@ std::vector<Botao*> botoes;
 
 Bmp* draggingImage = NULL;
 Bmp* selectedImage = NULL;
+
+Bmp* fourthImage = NULL;
+
+bool histograma = false;
 
 void ConstruirBotoes(){
    if(botoes.size() == 0){
@@ -49,44 +48,59 @@ void ConstruirBotoes(){
       }));
       botoes.push_back(new Botao(1250, -325, 150, 50, "Grayscale", 0.5, 0.5, 0.5, [](){
          if (selectedImage != NULL) {
-            grayscale = !grayscale;
+            // Deleta a imagem anterior para evitar vazamento de memória
+            if (fourthImage != NULL) {
+               delete fourthImage;
+            }
+         // Cria uma cópia da imagem selecionada
+         fourthImage = new Bmp(*selectedImage);
+         fourthImage->image_Gray();
          }
       }));
       botoes.push_back(new Botao(1075, -325, 150, 50, "Red", 1, 0, 0, [](){
          if (selectedImage != NULL) {
-            red = !red;
+            if(fourthImage != NULL){
+               delete fourthImage;
+            }
+            fourthImage = new Bmp(*selectedImage);
+            fourthImage->image_R();
          }
       }));
       botoes.push_back(new Botao(1250, -250, 150, 50, "Green", 0, 1, 0, [](){
          if (selectedImage != NULL) {
-            green = !green;
+            if(fourthImage != NULL){
+               delete fourthImage;
+            }
+            fourthImage = new Bmp(*selectedImage);
+            fourthImage->image_G();
          }
       }));
       botoes.push_back(new Botao(1075, -250, 150, 50, "Blue", 0, 0, 1, [](){
          if (selectedImage != NULL) {
-            blue = !blue;
+            if(fourthImage != NULL){
+               delete fourthImage;
+            }
+            fourthImage = new Bmp(*selectedImage);
+            fourthImage->image_B();
          }
       }));
-      botoes.push_back(new Botao(1162, -175, 150, 50, "Load Image 3", 1, 1, 1, [](){
+      botoes.push_back(new Botao(1075, -175, 150, 50, "Load Image 3", 0.75, 1, 1, [](){
          LoadImages(images, ".\\images\\pinguim.bmp");
       }));
-      botoes.push_back(new Botao(1162, -100, 150, 50, "Load Image 2", 1, 1, 1, [](){
+      botoes.push_back(new Botao(1075, -100, 150, 50, "Load Image 2", 1, 0.75, 1, [](){
          LoadImages(images, ".\\images\\teste.bmp");
       }));
-      botoes.push_back(new Botao(1162, -25, 150, 50, "Load Image 1", 1, 1, 1, [](){
+      botoes.push_back(new Botao(1075, -25, 150, 50, "Load Image 1", 1, 1, 0.75, [](){
          LoadImages(images, ".\\images\\snail.bmp");
+      }));
+      botoes.push_back(new Botao(1250, -100, 150, 50, "Histograma Red", 1, 0, 0, [](){
+         if (selectedImage != NULL) {
+            !histograma ? histograma = true : histograma = false;
+         }
       }));
    }
 }
 
-
-void DrawMouseScreenCoords(){
-    char str[100];
-    sprintf(str, "Mouse: (%d,%d)", mouseX, mouseY);
-    CV::text(10,300, str);
-    sprintf(str, "Screen: (%d,%d)", screenWidth, screenHeight);
-    CV::text(10,320, str);
-}
 
 
 void render(){
@@ -95,22 +109,13 @@ void render(){
       DrawImage(image);
    }
 
+   if (fourthImage != NULL) {
+      // Renderiza a quarta imagem em uma posição fixa
+      Draw4thImage(fourthImage);
+   }
+
    for (Botao* botao : botoes) {
       botao->Render();
-   }
-
-   if(grayscale){
-      DesenharImagemSelecionadaGray(selectedImage);
-   }
-
-   if(blue){
-      DesenharImagemSelecionadaBlue(selectedImage);
-   }
-   if(red){
-      DesenharImagemSelecionadaRed(selectedImage);
-   }
-   if(green){
-      DesenharImagemSelecionadaGreen(selectedImage);
    }
 
    if(draggingImage != NULL){
@@ -119,6 +124,10 @@ void render(){
 
    if(selectedImage != NULL){
       DesenharMoldura(selectedImage);
+   }
+
+   if(histograma){
+      DesenharHistogramaRed(selectedImage);
    }
 
    //Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.

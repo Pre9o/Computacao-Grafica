@@ -7,9 +7,10 @@
 //
 //**********************************************************
 
-#include "Bmp.h"
+#include "Image.h"
 #include <string.h>
 #include <algorithm>
+#include "gl_canvas2d.h"
 
 Bmp::Bmp(const char *fileName)
 {
@@ -88,31 +89,63 @@ void Bmp::flipHorizontal() {
    }
 }
 
-void Bmp::flipDiagonalPrincipal() {
+void Bmp::image_R(void) {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
    int height = this->getHeight();
    for (int i = 0; i < height; i++) {
-      for (int j = i+1; j < width; j++) {
-            std::swap(img[(i * width + j) * 3], img[(j * width + i) * 3]);
-            std::swap(img[(i * width + j) * 3 + 1], img[(j * width + i) * 3 + 1]);
-            std::swap(img[(i * width + j) * 3 + 2], img[(j * width + i) * 3 + 2]);
+      for (int j = 0; j < width; j++) {
+         int pos = i * width * 3 + j * 3;
+         img[pos + 1] = 0;
+         img[pos + 2] = 0;
       }
    }
 }
 
-void Bmp::flipDiagonalSecundaria() {
+void Bmp::image_G(void) {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
    int height = this->getHeight();
    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width - i; j++) {
-            std::swap(img[(i * width + j) * 3], img[((height - j - 1) * width + (width - i - 1)) * 3]);
-            std::swap(img[(i * width + j) * 3 + 1], img[((height - j - 1) * width + (width - i - 1)) * 3 + 1]);
-            std::swap(img[(i * width + j) * 3 + 2], img[((height - j - 1) * width + (width - i - 1)) * 3 + 2]);
+      for (int j = 0; j < width; j++) {
+         int pos = i * width * 3 + j * 3;
+         img[pos] = 0;
+         img[pos + 2] = 0;
       }
    }
 }
+
+void Bmp::image_B(void) {
+   unsigned char* img = this->getImage();
+   int width = this->getWidth();
+   int height = this->getHeight();
+   
+   for(int i = 0; i < height; i++) {
+      for(int j = 0; j < width; j++){
+         int pos = i * width * 3 + j * 3;
+         img[pos] = 0;
+         img[pos + 1] = 0;
+      }
+   }
+}
+
+void Bmp::image_Gray(void) {
+   // colocar os valores cinza na imagem
+   unsigned char* img = this->getImage();
+   int width = this->getWidth();
+   int height = this->getHeight();
+   //nao eh pra desenhar
+   for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+         int pos = i * width * 3 + j * 3;
+         float gray = 0.299 * img[pos] + 0.587 * img[pos + 1] + 0.114 * img[pos + 2];
+         img[pos] = gray;
+         img[pos + 1] = gray;
+         img[pos + 2] = gray;
+      }
+   }
+}
+
 
 void Bmp::load(const char *fileName)
 {

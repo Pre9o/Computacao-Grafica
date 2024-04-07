@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <algorithm>
+#include <string.h>
 
 #define HEADER_SIZE      14 //sizeof(HEADER) vai dar 16 devido ao alinhamento de bytes
 #define INFOHEADER_SIZE  40 //sizeof(INFOHEADER) da 40 e esta correto.
@@ -61,9 +62,27 @@ public:
    int    contains(int x, int y);
    void   flipVertical(void);
    void   flipHorizontal(void);
-   void   flipDiagonalPrincipal(void);
-   void   flipDiagonalSecundaria(void);
-   int x_start, y_start, x_end, y_end;
+   void   image_R(void);
+   void   image_G(void);
+   void   image_B(void);
+   void   image_Gray(void);
+   int    x_start, y_start, x_end, y_end;
+
+   Bmp(const Bmp& other) {
+      width = other.width;
+      height = other.height;
+      x_start = other.x_start;
+      y_start = other.y_start;
+      x_end = other.x_end;
+      y_end = other.y_end;
+      bits = other.bits;
+      bytesPerLine = other.bytesPerLine;
+
+      
+      // Para o campo 'data', você precisa alocar nova memória e copiar os dados
+      data = new unsigned char[3 * other.width * other.height];
+      memcpy(data, other.data, 3 * other.width * other.height);
+   }
 };
 
 #endif
