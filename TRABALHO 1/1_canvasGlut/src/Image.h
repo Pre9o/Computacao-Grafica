@@ -56,9 +56,11 @@ private:
 public:
    Bmp(const char *fileName);
    uchar* getImage();
-   void   setImage(uchar* img, int w, int h);
+   void   setImage(uchar* img);
    int    getWidth(void);
+   void   setWidth(int w);
    int    getHeight(void);
+   void   setHeight(int h);
    void   convertBGRtoRGB(void);
    int    contains(int x, int y);
    void   flipVertical(void);

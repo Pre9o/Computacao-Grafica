@@ -12,6 +12,12 @@
 #include "ImagesFunctions.h"
 #include "Botao.h"
 
+#include <chrono>
+
+// ...
+
+std::chrono::steady_clock::time_point inicio;
+
 #define MAX_IMAGES 3
 
 #define RECT_SIZE 10
@@ -163,7 +169,15 @@ void render(){
       }
    }
 
-   drawDigit(1100, 100, 0, 10);
+   auto agora = std::chrono::steady_clock::now();
+   auto duracao = std::chrono::duration_cast<std::chrono::seconds>(agora - inicio);
+
+   int horas = duracao.count() / 3600;
+   int minutos = (duracao.count() % 3600) / 60;
+   int segundos = duracao.count() % 60;
+
+   desenharTempo(horas, minutos, segundos);
+
 
    //Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
 }
@@ -182,9 +196,13 @@ void keyboard(int key)
       case 27:
          exit(0);
       break;
-      case 32:
+      case 200:
          //espaço
-         rotateImage(selectedImage, 1);
+         rotateImage(selectedImage, 90);
+      break;
+      case 202:
+         //espaço
+         rotateImage(selectedImage, -90);
    }
 }
 //funcao chamada toda vez que uma tecla for liberada
@@ -244,8 +262,9 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 
 int main()
 {
-   CV::init(screenHeight, screenWidth, "Canvas2D");
-   //LoadImages(images);
+   CV::init(screenHeight, screenWidth, "Rafael Carneiro Pregardier");
+   inicio = std::chrono::steady_clock::now();
+
    ConstruirBotoes();
    CV::run();
    

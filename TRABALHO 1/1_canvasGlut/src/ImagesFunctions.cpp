@@ -81,14 +81,11 @@ void DesenharHistogramaRed(Bmp* image){
    int max = *std::max_element(histogram, histogram + 256);
    int min = *std::min_element(histogram, histogram + 256);
 
-   // Desenhar o fundo
-   CV::color(1, 1, 1);
-   CV::rectFill(1100, 100, 1356, 400);
 
-   for(int i = 0; i < 256; i++){
-   CV::color(1, 0, 0); 
-   float barHeight = (std::log(1 + histogram[i]) / std::log(1 + max) * 300);
-   CV::rectFill(i + 1100, 400 - barHeight, i + 1101, 400);
+   for(int i = 1; i < 255; i++){
+      CV::color(1, 0, 0); 
+      float barHeight = (std::log(1 + histogram[i]) / std::log(1 + max) * 300);
+      CV::rectFill(i + 1100, -100, i + 1101, -100 + barHeight);
    }
 }
 
@@ -110,14 +107,11 @@ void DesenharHistogramaGreen(Bmp* image){
    int max = *std::max_element(histogram, histogram + 256);
    int min = *std::min_element(histogram, histogram + 256);
 
-   // Desenhar o fundo
-   CV::color(1, 1, 1);
-   CV::rectFill(1100, 100, 1356, 400);
 
-   for(int i = 0; i < 256; i++){
+   for(int i = 1; i < 255; i++){
       CV::color(0, 1, 0); 
-      float height = 300 - (std::log(1 + histogram[i]) / std::log(1 + max) * 300);
-      CV::rectFill(i + 1100, height, i + 1101, 400);
+      float barHeight = (std::log(1 + histogram[i]) / std::log(1 + max) * 300);
+      CV::rectFill(i + 1100, -100, i + 1101, -100 + barHeight);
    }
 }
 
@@ -138,12 +132,12 @@ void DesenharHistogramaBlue(Bmp* image){
 
    int max = *std::max_element(histogram, histogram + 256);
    int min = *std::min_element(histogram, histogram + 256);
-   
+
 
    for(int i = 1; i < 255; i++){
       CV::color(0, 0, 1); 
-      float height = 300 - (std::log(1 + histogram[i]) / std::log(1 + max) * 300);
-      CV::rectFill(i + 1100, height, i + 1101, 400);
+      float barHeight = (std::log(1 + histogram[i]) / std::log(1 + max) * 300);
+      CV::rectFill(i + 1100, -100, i + 1101, -100 + barHeight);
    }
 }
 
@@ -167,10 +161,10 @@ void DesenharHistogramaGray(Bmp* image){
    int min = *std::min_element(histogram, histogram + 256);
 
 
-   for(int i = 0; i < 256; i++){
-      CV::color(1, 0, 1); 
-      float height = 300 - (std::log(1 + histogram[i]) / std::log(1 + max) * 300);
-      CV::rectFill(i + 1100, height, i + 1101, 400);
+   for(int i = 1; i < 255; i++){
+      CV::color(0.5, 0.5, 0.5); 
+      float barHeight = (std::log(1 + histogram[i]) / std::log(1 + max) * 300);
+      CV::rectFill(i + 1100, -100, i + 1101, -100 + barHeight);
    }
 }
 
@@ -189,91 +183,105 @@ void rotateImage(Bmp* image, double angle) {
 
     int centerX = width / 2;
     int centerY = height / 2;
-    int newCenterX = newWidth / 2;
-    int newCenterY = newHeight / 2;
 
     for (int y = 0; y < newHeight; y++) {
         for (int x = 0; x < newWidth; x++) {
-            int oldX = cosAngle * (x - newCenterX) - sinAngle * (y - newCenterY) + centerX;
-            int oldY = sinAngle * (x - newCenterX) + cosAngle * (y - newCenterY) + centerY;
+            int oldX = round(cosAngle * (x - newWidth / 2) + sinAngle * (y - newHeight / 2) + centerX);
+            int oldY = round(-sinAngle * (x - newWidth / 2) + cosAngle * (y - newHeight / 2) + centerY);
 
             if (oldX >= 0 && oldX < width && oldY >= 0 && oldY < height) {
-                for (int c = 0; c < 3; c++) {
-                    newImage[(y * newWidth + x) * 3 + c] = image->getImage()[(oldY * width + oldX) * 3 + c];
-                }
+                newImage[(y * newWidth + x) * 3] = image->getImage()[(oldY * width + oldX) * 3];
+                newImage[(y * newWidth + x) * 3 + 1] = image->getImage()[(oldY * width + oldX) * 3 + 1];
+                newImage[(y * newWidth + x) * 3 + 2] = image->getImage()[(oldY * width + oldX) * 3 + 2];
             } else {
-                for (int c = 0; c < 3; c++) {
-                    newImage[(y * newWidth + x) * 3 + c] = 0;
-                }
+                newImage[(y * newWidth + x) * 3] = 0;
+                newImage[(y * newWidth + x) * 3 + 1] = 0;
+                newImage[(y * newWidth + x) * 3 + 2] = 0;
             }
         }
     }
 
-    delete[] image->getImage();
-    image->setImage(newImage, newWidth, newHeight);
+    // Após a rotação, mas antes de definir a nova imagem...
+
+   int minX = newWidth, minY = newHeight, maxX = 0, maxY = 0;
+
+   for (int y = 0; y < newHeight; y++) {
+      for (int x = 0; x < newWidth; x++) {
+         if (newImage[(y * newWidth + x) * 3] != 0 ||
+            newImage[(y * newWidth + x) * 3 + 1] != 0 ||
+            newImage[(y * newWidth + x) * 3 + 2] != 0) {
+            minX = std::min(minX, x);
+            minY = std::min(minY, y);
+            maxX = std::max(maxX, x);
+            maxY = std::max(maxY, y);
+         }
+      }
+   }
+
+   int croppedWidth = maxX - minX + 1;
+   int croppedHeight = maxY - minY + 1;
+
+   unsigned char* croppedImage = new unsigned char[croppedWidth * croppedHeight * 3];
+
+   for (int y = 0; y < croppedHeight; y++) {
+      for (int x = 0; x < croppedWidth; x++) {
+         for (int c = 0; c < 3; c++) {
+            croppedImage[(y * croppedWidth + x) * 3 + c] = newImage[((y + minY) * newWidth + (x + minX)) * 3 + c];
+         }
+      }
+   }
+
+   delete[] newImage;
+   image->setImage(croppedImage);
+   image->setWidth(croppedWidth);
+   image->setHeight(croppedHeight);
 }
 
-void drawSegment(int x, int y, int segment, int size, bool on) {
-    int thickness = size / 10;
-    int length = size * 4;
-    int height = size * 5;
+typedef struct {
+    int posX, posY, posX2, posY2;
+} Segmento;
+    
+// Defina as posições e tamanhos dos segmentos
+Segmento segmentos[7] = {
+   {0, 0, 50, 5},  // Segmento A
+   {50, 0, 55, -55},  // Segmento B
+   {50, -55, 55, -110},  // Segmento C
+   {0, -110, 50, -115},  // Segmento D
+   {-5, -55, 0, -110},  // Segmento E
+   {-5, 0, 0, -55},  // Segmento F
+   {0, -55, 50, -60} // Segmento G
+};
 
-    switch (segment) {
-        case 0: // Top
-            if (on) CV::color(1, 0, 0);
-            else CV::color(0.5, 0.5, 0.5);
-            CV::line(x + length, y + height, x + length, y + height / 2);
-            break;
-        case 1: // Top right
-            if (on) CV::color(1, 0, 0);
-            else CV::color(0.5, 0.5, 0.5);
-            CV::line(x + length, y + height, x + length, y + height / 2);
-            break;
-        case 2: // Bottom right
-            if (on) CV::color(1, 0, 0);
-            else CV::color(0.5, 0.5, 0.5);
-            CV::line(x + length, y + height / 2, x + length, y);
-            break;
-        case 3: // Bottom
-            if (on) CV::color(1, 0, 0);
-            else CV::color(0.5, 0.5, 0.5);
-            CV::line(x, y, x + length, y);
-            break;
-        case 4: // Bottom left
-            if (on) CV::color(1, 0, 0);
-            else CV::color(0.5, 0.5, 0.5);
-            CV::line(x, y + height / 2, x, y);
-            break;
-        case 5: // Top left
-            if (on) CV::color(1, 0, 0);
-            else CV::color(0.5, 0.5, 0.5);
-            CV::line(x, y + height, x, y + height / 2);
-            break;
-        case 6: // Middle
-            if (on) CV::color(1, 0, 0);
-            else CV::color(0.5, 0.5, 0.5);
-            CV::line(x, y + height / 2, x + length, y + height / 2);
-            break;
-    }
+// Defina quais segmentos devem ser acesos para cada dígito
+bool digitos[10][7] = {
+   {true, true, true, true, true, true, false},  // 0
+   {false, true, true, false, false, false, false},  // 1
+   {true, true, false, true, true, false, true},  // 2
+   {true, true, true, true, false, false, true},  // 3
+   {false, true, true, false, true, true, false},  // 4 corrigido
+   {true, false, true, true, false, true, true},  // 5
+   {true, false, true, true, true, true, true},  // 6
+   {true, true, true, false, false, false, false},  // 7
+   {true, true, true, true, true, true, true},  // 8
+   {true, true, true, true, false, true, true}  // 9 corrigido
+};
+
+// Para desenhar um dígito, acenda os segmentos apropriados
+void desenharDigito(int digito, int posX, int posY) {
+   for (int i = 0; i < 7; i++) {
+      if (digitos[digito][i]) {
+         CV::rectFill(segmentos[i].posX + posX, segmentos[i].posY + posY, segmentos[i].posX2 + posX, segmentos[i].posY2 + posY);
+      }
+   }
 }
 
-void drawDigit(int x, int y, int digit, int size) {
-    bool segments[7] = {false, false, false, false, false, false, false};
 
-    switch (digit) {
-        case 0: segments[0] = segments[1] = segments[2] = segments[3] = segments[4] = segments[5] = true; break;
-        case 1: segments[1] = segments[2] = true; break;
-        case 2: segments[0] = segments[1] = segments[6] = segments[4] = segments[3] = true; break;
-        case 3: segments[0] = segments[1] = segments[6] = segments[2] = segments[3] = true; break;
-        case 4: segments[5] = segments[6] = segments[1] = segments[2] = true; break;
-        case 5: segments[0] = segments[5] = segments[6] = segments[2] = segments[3] = true; break;
-        case 6: segments[0] = segments[5] = segments[4] = segments[3] = segments[2] = segments[6] = true; break;
-        case 7: segments[0] = segments[1] = segments[2] = true; break;
-        case 8: segments[0] = segments[1] = segments[2] = segments[3] = segments[4] = segments[5] = segments[6] = true; break;
-        case 9: segments[0] = segments[1] = segments[2] = segments[5] = segments[6] = true; break;
-    }
-
-    for (int i = 0; i < 7; i++) {
-        drawSegment(x, y, i, size, segments[i]);
-    }
+// Para desenhar o tempo, desenhe cada dígito em uma posição apropriada
+void desenharTempo(int horas, int minutos, int segundos) {
+   desenharDigito(horas / 10, 0, 0);
+   desenharDigito(horas % 10, 80, 0); // alterado de 60 para 80
+   desenharDigito(minutos / 10, 160, 0); // alterado de 120 para 160
+   desenharDigito(minutos % 10, 240, 0); // alterado de 180 para 240
+   desenharDigito(segundos / 10, 320, 0); // alterado de 240 para 320
+   desenharDigito(segundos % 10, 400, 0); // alterado de 300 para 400
 }

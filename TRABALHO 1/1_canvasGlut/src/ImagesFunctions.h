@@ -24,5 +24,5 @@ void DesenharHistogramaGray(Bmp* image);
 
 void rotateImage(Bmp* image, double angle);
 
-void drawSegment(int x, int y, int segment, int size, bool on);
-void drawDigit(int x, int y, int digit, int size);
+void desenharDigito(int digito, int posX, int posY);
+void desenharTempo(int horas, int minutos, int segundos);

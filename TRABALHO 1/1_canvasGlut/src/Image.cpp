@@ -31,22 +31,29 @@ uchar* Bmp::getImage()
 return data;
 }
 
-void Bmp::setImage(uchar* img, int w, int h)
+void Bmp::setImage(uchar* img)
 {
-  this->width = w;
-  this->height = h;
   this->data = img;
 }
-
 
 int Bmp::getWidth(void)
 {
 return width;
 }
 
+void Bmp::setWidth(int w)
+{
+   this->width = w;
+}
+
 int Bmp::getHeight(void)
 {
 return height;
+}
+
+void Bmp::setHeight(int h)
+{
+   this->height = h;
 }
 
 void Bmp::convertBGRtoRGB()
