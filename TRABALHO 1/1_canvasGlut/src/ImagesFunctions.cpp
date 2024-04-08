@@ -79,8 +79,6 @@ void DesenharHistogramaRed(Bmp* image){
    }
 
    int max = *std::max_element(histogram, histogram + 256);
-   int min = *std::min_element(histogram, histogram + 256);
-
 
    for(int i = 1; i < 255; i++){
       CV::color(1, 0, 0); 
@@ -105,8 +103,6 @@ void DesenharHistogramaGreen(Bmp* image){
    }
 
    int max = *std::max_element(histogram, histogram + 256);
-   int min = *std::min_element(histogram, histogram + 256);
-
 
    for(int i = 1; i < 255; i++){
       CV::color(0, 1, 0); 
@@ -131,8 +127,6 @@ void DesenharHistogramaBlue(Bmp* image){
    }
 
    int max = *std::max_element(histogram, histogram + 256);
-   int min = *std::min_element(histogram, histogram + 256);
-
 
    for(int i = 1; i < 255; i++){
       CV::color(0, 0, 1); 
@@ -158,8 +152,6 @@ void DesenharHistogramaGray(Bmp* image){
    }
 
    int max = *std::max_element(histogram, histogram + 256);
-   int min = *std::min_element(histogram, histogram + 256);
-
 
    for(int i = 1; i < 255; i++){
       CV::color(0.5, 0.5, 0.5); 
@@ -243,13 +235,13 @@ typedef struct {
     
 // Defina as posições e tamanhos dos segmentos
 Segmento segmentos[7] = {
-   {0, 0, 50, 5},  // Segmento A
-   {50, 0, 55, -55},  // Segmento B
-   {50, -55, 55, -110},  // Segmento C
-   {0, -110, 50, -115},  // Segmento D
-   {-5, -55, 0, -110},  // Segmento E
-   {-5, 0, 0, -55},  // Segmento F
-   {0, -55, 50, -60} // Segmento G
+   {0, -350, 50, -355},  // Segmento A
+   {50, -355, 55, -410},  // Segmento B
+   {50, -410, 55, -465},  // Segmento C
+   {0, -465, 50, -470},  // Segmento D
+   {-5, -410, 0, -465},  // Segmento E
+   {-5, -355, 0, -410},  // Segmento F
+   {0, -410, 50, -415} // Segmento G
 };
 
 // Defina quais segmentos devem ser acesos para cada dígito
@@ -258,7 +250,7 @@ bool digitos[10][7] = {
    {false, true, true, false, false, false, false},  // 1
    {true, true, false, true, true, false, true},  // 2
    {true, true, true, true, false, false, true},  // 3
-   {false, true, true, false, true, true, false},  // 4 corrigido
+   {false, true, true, false, false, true, true},  // 4 corrigido
    {true, false, true, true, false, true, true},  // 5
    {true, false, true, true, true, true, true},  // 6
    {true, true, true, false, false, false, false},  // 7
@@ -270,6 +262,7 @@ bool digitos[10][7] = {
 void desenharDigito(int digito, int posX, int posY) {
    for (int i = 0; i < 7; i++) {
       if (digitos[digito][i]) {
+         CV::color(0, 0, 0);
          CV::rectFill(segmentos[i].posX + posX, segmentos[i].posY + posY, segmentos[i].posX2 + posX, segmentos[i].posY2 + posY);
       }
    }

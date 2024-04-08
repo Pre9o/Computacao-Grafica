@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <string.h>
+#include <vector>
 
 #define HEADER_SIZE      14 //sizeof(HEADER) vai dar 16 devido ao alinhamento de bytes
 #define INFOHEADER_SIZE  40 //sizeof(INFOHEADER) da 40 e esta correto.
@@ -52,6 +53,7 @@ private:
    INFOHEADER info;
 
    void load(const char *fileName);
+   unsigned char* originalData;
 
 public:
    Bmp(const char *fileName);
@@ -62,6 +64,8 @@ public:
    int    getHeight(void);
    void   setHeight(int h);
    void   convertBGRtoRGB(void);
+   void   adjustBrightness(int brightness);
+   void   adjustContrast(float contrast);
    int    contains(int x, int y);
    void   flipVertical(void);
    void   flipHorizontal(void);
@@ -70,6 +74,7 @@ public:
    void   image_B(void);
    void   image_Gray(void);
    int    x_start, y_start, x_end, y_end;
+
 
    Bmp(const Bmp& other) {
       width = other.width;

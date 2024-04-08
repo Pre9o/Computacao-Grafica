@@ -71,6 +71,36 @@ if( data != NULL )
    }
 }
 }
+void Bmp::adjustBrightness(int brightness) {
+   unsigned char* img = this->getImage();
+   int width = this->getWidth();
+   int height = this->getHeight();
+   
+   for(int i = 0; i < height; i++) {
+      for(int j = 0; j < width; j++){
+         int pos = i * width * 3 + j * 3;
+         img[pos] = std::min(255, std::max(0, img[pos] + brightness));
+         img[pos + 1] = std::min(255, std::max(0, img[pos + 1] + brightness));
+         img[pos + 2] = std::min(255, std::max(0, img[pos + 2] + brightness));
+      }
+   }
+}
+
+void Bmp::adjustContrast(float contrast) {
+   unsigned char* img = this->getImage();
+   int width = this->getWidth();
+   int height = this->getHeight();
+   float factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+
+   for(int i = 0; i < height; i++) {
+      for(int j = 0; j < width; j++){
+         int pos = i * width * 3 + j * 3;
+         img[pos] = std::min(255.0f, std::max(0.0f, factor * (img[pos] - 128) + 128));
+         img[pos + 1] = std::min(255.0f, std::max(0.0f, factor * (img[pos + 1] - 128) + 128));
+         img[pos + 2] = std::min(255.0f, std::max(0.0f, factor * (img[pos + 2] - 128) + 128));
+      }
+   }
+}
 
 int Bmp::contains(int x, int y)
 {

@@ -11,6 +11,8 @@
 #include "Image.h"
 #include "ImagesFunctions.h"
 #include "Botao.h"
+#include "Sidebar.h"
+#include "ImageManager.h"
 
 #include <chrono>
 
@@ -30,141 +32,46 @@ int opcao  = 50; //variavel global para selecao do que sera exibido na canvas.
 int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da render().
 int clicando = 0;
 
-std::vector<Bmp*> images;
-std::vector<Botao*> botoes;
-
-Bmp* draggingImage = NULL;
-Bmp* selectedImage = NULL;
-
-Bmp* fourthImage = NULL;
-
-bool histograma = false;
-int OpcaoHistograma = NULL;
-
-void ConstruirBotoes(){
-   if(botoes.size() == 0){
-      botoes.push_back(new Botao(1075, -475, 150, 50, "Flip Vertical", 1, 1, 0, [](){
-         if (selectedImage != NULL) {
-            selectedImage->flipVertical();
-         }
-      }));
-      botoes.push_back(new Botao(1250, -475, 150, 50, "Flip Horizontal", 1, 1, 0, [](){
-         if (selectedImage != NULL) {
-            selectedImage->flipHorizontal();
-         }
-      }));
-      botoes.push_back(new Botao(1250, -175, 150, 50, "Grayscale", 0.5, 0.5, 0.5, [](){
-         if (selectedImage != NULL) {
-            // Deleta a imagem anterior para evitar vazamento de memória
-            if (fourthImage != NULL) {
-               delete fourthImage;
-            }
-         // Cria uma cópia da imagem selecionada
-         fourthImage = new Bmp(*selectedImage);
-         fourthImage->image_Gray();
-         }
-      }));
-      botoes.push_back(new Botao(1250, -250, 150, 50, "Red", 1, 0, 0, [](){
-         if (selectedImage != NULL) {
-            if(fourthImage != NULL){
-               delete fourthImage;
-            }
-            fourthImage = new Bmp(*selectedImage);
-            fourthImage->image_R();
-         }
-      }));
-      botoes.push_back(new Botao(1250, -325, 150, 50, "Green", 0, 1, 0, [](){
-         if (selectedImage != NULL) {
-            if(fourthImage != NULL){
-               delete fourthImage;
-            }
-            fourthImage = new Bmp(*selectedImage);
-            fourthImage->image_G();
-         }
-      }));
-      botoes.push_back(new Botao(1250, -400, 150, 50, "Blue", 0, 0, 1, [](){
-         if (selectedImage != NULL) {
-            if(fourthImage != NULL){
-               delete fourthImage;
-            }
-            fourthImage = new Bmp(*selectedImage);
-            fourthImage->image_B();
-         }
-      }));
-      botoes.push_back(new Botao(900, -400, 150, 50, "Load Image 3", 0.75, 1, 1, [](){
-         LoadImages(images, ".\\images\\pinguim.bmp");
-      }));
-      botoes.push_back(new Botao(900, -325, 150, 50, "Load Image 2", 1, 0.75, 1, [](){
-         LoadImages(images, ".\\images\\teste.bmp");
-      }));
-      botoes.push_back(new Botao(900, -250, 150, 50, "Load Image 1", 1, 1, 0.75, [](){
-         LoadImages(images, ".\\images\\snail.bmp");
-      }));
-      botoes.push_back(new Botao(1075, -250, 150, 50, "Histograma Red", 1, 0, 0, [](){
-         if (selectedImage != NULL) {
-            !histograma ? histograma = true : histograma = false;
-            OpcaoHistograma = 1;
-         }
-      }));
-      botoes.push_back(new Botao(1075, -325, 150, 50, "Histograma Green", 0, 1, 0, [](){
-         if (selectedImage != NULL) {
-            !histograma ? histograma = true : histograma = false;
-            OpcaoHistograma = 2;
-         }
-      }));
-      botoes.push_back(new Botao(1075, -400, 150, 50, "Histograma Blue", 0, 0, 1, [](){
-         if (selectedImage != NULL) {
-            !histograma ? histograma = true : histograma = false;
-            OpcaoHistograma = 3;
-         }
-      }));
-      botoes.push_back(new Botao(1075, -175, 150, 50, "Histograma Gray", 0.5, 0.5, 0.5, [](){
-         if (selectedImage != NULL) {
-            !histograma ? histograma = true : histograma = false;
-            OpcaoHistograma = 4;
-         }
-      }));
-   }
-}
-
+Sidebar sidebar;
+ImageManager imageManager;
 
 
 void render(){
    CV::translate(500, 500);
-   for (Bmp* image : images) {
+   for (Bmp* image : imageManager.images) {
       DrawImage(image);
    }
 
-   if (fourthImage != NULL) {
+   if (imageManager.fourthImage != NULL) {
       // Renderiza a quarta imagem em uma posição fixa
-      Draw4thImage(fourthImage);
+      Draw4thImage(imageManager.fourthImage);
    }
 
-   for (Botao* botao : botoes) {
+   for (Botao* botao : sidebar.botoes) {
       botao->Render();
    }
 
-   if(draggingImage != NULL){
-      ManipularVetorImagem(images, draggingImage);
+   if(imageManager.draggingImage != NULL){
+      ManipularVetorImagem(imageManager.images, imageManager.draggingImage);
    }
 
-   if(selectedImage != NULL){
-      DesenharMoldura(selectedImage);
+   if(imageManager.selectedImage != NULL){
+      DesenharMoldura(imageManager.selectedImage);
    }
 
-   if(histograma){
-      switch(OpcaoHistograma){
+   if(imageManager.histograma){
+      switch(imageManager.OpcaoHistograma){
          case 1:
-            DesenharHistogramaRed(selectedImage);
+            DesenharHistogramaRed(imageManager.selectedImage);
             break;
          case 2:
-            DesenharHistogramaGreen(selectedImage);
+            DesenharHistogramaGreen(imageManager.selectedImage);
             break;
          case 3:
-            DesenharHistogramaBlue(selectedImage);
+            DesenharHistogramaBlue(imageManager.selectedImage);
             break;
          case 4:
-            DesenharHistogramaGray(selectedImage);
+            DesenharHistogramaGray(imageManager.selectedImage);
             break;
       }
    }
@@ -198,11 +105,24 @@ void keyboard(int key)
       break;
       case 200:
          //espaço
-         rotateImage(selectedImage, 90);
+         rotateImage(imageManager.selectedImage, 90);
       break;
       case 202:
          //espaço
-         rotateImage(selectedImage, -90);
+         rotateImage(imageManager.selectedImage, -90);
+      break;
+      case 'B':
+         imageManager.selectedImage->adjustBrightness(5);
+      break;
+      case 'b':
+         imageManager.selectedImage->adjustBrightness(-5);
+      break;
+      case 'C':
+         imageManager.selectedImage->adjustContrast(5);
+      break;
+      case 'c':
+         imageManager.selectedImage->adjustContrast(-5);
+      break;
    }
 }
 //funcao chamada toda vez que uma tecla for liberada
@@ -220,37 +140,37 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    mouseY = y;
 
    if(clicando){
-      ArrastarImagem(draggingImage, x, y);
+      ArrastarImagem(imageManager.draggingImage, x, y);
    }
 
    //printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction, x, y);
 
    if (button == 0) {
-      for (Bmp* image : images) {
-            if (image->contains(x, y && draggingImage == nullptr)) {
-               selectedImage = image;
+      for (Bmp* image : imageManager.images) {
+            if (image->contains(x, y && imageManager.draggingImage == nullptr)) {
+               imageManager.selectedImage = image;
             }
-            else if(!image->contains(x, y) && draggingImage == nullptr){
+            else if(!image->contains(x, y) && imageManager.draggingImage == nullptr){
                //selectedImage = nullptr;
             }
       }
       if(state == 1) {
       // Parar o arrasto
-      draggingImage = nullptr;
+      imageManager.draggingImage = nullptr;
       clicando = 0;
 
       }
       else if (state == 0) {
          // Iniciar o arrasto
-         for (Bmp* image : images) {
+         for (Bmp* image : imageManager.images) {
             if (image->contains(x, y)) {
-               selectedImage = image;
-               draggingImage = image;
+               imageManager.selectedImage = image;
+               imageManager.draggingImage = image;
                clicando = 1;
             }
          }
 
-         for (Botao* botao : botoes) {
+         for (Botao* botao : sidebar.botoes) {
             if(botao->Colidiu(x, y)){
                botao->onClick();
             }
@@ -263,9 +183,11 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 int main()
 {
    CV::init(screenHeight, screenWidth, "Rafael Carneiro Pregardier");
+
    inicio = std::chrono::steady_clock::now();
 
-   ConstruirBotoes();
+   sidebar.ConstruirBotoes(imageManager);
+
    CV::run();
    
    return 0;
