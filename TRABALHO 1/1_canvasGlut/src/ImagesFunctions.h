@@ -18,3 +18,11 @@ void LoadImages(std::vector<Bmp*> &images, const char* path);
 void Draw4thImage(Bmp* image);
 
 void DesenharHistogramaRed(Bmp* image);
+void DesenharHistogramaGreen(Bmp* image);
+void DesenharHistogramaBlue(Bmp* image);
+void DesenharHistogramaGray(Bmp* image);
+
+void rotateImage(Bmp* image, double angle);
+
+void drawSegment(int x, int y, int segment, int size, bool on);
+void drawDigit(int x, int y, int digit, int size);

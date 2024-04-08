@@ -33,20 +33,21 @@ Bmp* selectedImage = NULL;
 Bmp* fourthImage = NULL;
 
 bool histograma = false;
+int OpcaoHistograma = NULL;
 
 void ConstruirBotoes(){
    if(botoes.size() == 0){
-      botoes.push_back(new Botao(1250, -400, 150, 50, "Flip Vertical", 1, 1, 0, [](){
+      botoes.push_back(new Botao(1075, -475, 150, 50, "Flip Vertical", 1, 1, 0, [](){
          if (selectedImage != NULL) {
             selectedImage->flipVertical();
          }
       }));
-      botoes.push_back(new Botao(1075, -400, 150, 50, "Flip Horizontal", 1, 1, 0, [](){
+      botoes.push_back(new Botao(1250, -475, 150, 50, "Flip Horizontal", 1, 1, 0, [](){
          if (selectedImage != NULL) {
             selectedImage->flipHorizontal();
          }
       }));
-      botoes.push_back(new Botao(1250, -325, 150, 50, "Grayscale", 0.5, 0.5, 0.5, [](){
+      botoes.push_back(new Botao(1250, -175, 150, 50, "Grayscale", 0.5, 0.5, 0.5, [](){
          if (selectedImage != NULL) {
             // Deleta a imagem anterior para evitar vazamento de memória
             if (fourthImage != NULL) {
@@ -57,7 +58,7 @@ void ConstruirBotoes(){
          fourthImage->image_Gray();
          }
       }));
-      botoes.push_back(new Botao(1075, -325, 150, 50, "Red", 1, 0, 0, [](){
+      botoes.push_back(new Botao(1250, -250, 150, 50, "Red", 1, 0, 0, [](){
          if (selectedImage != NULL) {
             if(fourthImage != NULL){
                delete fourthImage;
@@ -66,7 +67,7 @@ void ConstruirBotoes(){
             fourthImage->image_R();
          }
       }));
-      botoes.push_back(new Botao(1250, -250, 150, 50, "Green", 0, 1, 0, [](){
+      botoes.push_back(new Botao(1250, -325, 150, 50, "Green", 0, 1, 0, [](){
          if (selectedImage != NULL) {
             if(fourthImage != NULL){
                delete fourthImage;
@@ -75,7 +76,7 @@ void ConstruirBotoes(){
             fourthImage->image_G();
          }
       }));
-      botoes.push_back(new Botao(1075, -250, 150, 50, "Blue", 0, 0, 1, [](){
+      botoes.push_back(new Botao(1250, -400, 150, 50, "Blue", 0, 0, 1, [](){
          if (selectedImage != NULL) {
             if(fourthImage != NULL){
                delete fourthImage;
@@ -84,18 +85,37 @@ void ConstruirBotoes(){
             fourthImage->image_B();
          }
       }));
-      botoes.push_back(new Botao(1075, -175, 150, 50, "Load Image 3", 0.75, 1, 1, [](){
+      botoes.push_back(new Botao(900, -400, 150, 50, "Load Image 3", 0.75, 1, 1, [](){
          LoadImages(images, ".\\images\\pinguim.bmp");
       }));
-      botoes.push_back(new Botao(1075, -100, 150, 50, "Load Image 2", 1, 0.75, 1, [](){
+      botoes.push_back(new Botao(900, -325, 150, 50, "Load Image 2", 1, 0.75, 1, [](){
          LoadImages(images, ".\\images\\teste.bmp");
       }));
-      botoes.push_back(new Botao(1075, -25, 150, 50, "Load Image 1", 1, 1, 0.75, [](){
+      botoes.push_back(new Botao(900, -250, 150, 50, "Load Image 1", 1, 1, 0.75, [](){
          LoadImages(images, ".\\images\\snail.bmp");
       }));
-      botoes.push_back(new Botao(1250, -100, 150, 50, "Histograma Red", 1, 0, 0, [](){
+      botoes.push_back(new Botao(1075, -250, 150, 50, "Histograma Red", 1, 0, 0, [](){
          if (selectedImage != NULL) {
             !histograma ? histograma = true : histograma = false;
+            OpcaoHistograma = 1;
+         }
+      }));
+      botoes.push_back(new Botao(1075, -325, 150, 50, "Histograma Green", 0, 1, 0, [](){
+         if (selectedImage != NULL) {
+            !histograma ? histograma = true : histograma = false;
+            OpcaoHistograma = 2;
+         }
+      }));
+      botoes.push_back(new Botao(1075, -400, 150, 50, "Histograma Blue", 0, 0, 1, [](){
+         if (selectedImage != NULL) {
+            !histograma ? histograma = true : histograma = false;
+            OpcaoHistograma = 3;
+         }
+      }));
+      botoes.push_back(new Botao(1075, -175, 150, 50, "Histograma Gray", 0.5, 0.5, 0.5, [](){
+         if (selectedImage != NULL) {
+            !histograma ? histograma = true : histograma = false;
+            OpcaoHistograma = 4;
          }
       }));
    }
@@ -127,8 +147,23 @@ void render(){
    }
 
    if(histograma){
-      DesenharHistogramaRed(selectedImage);
+      switch(OpcaoHistograma){
+         case 1:
+            DesenharHistogramaRed(selectedImage);
+            break;
+         case 2:
+            DesenharHistogramaGreen(selectedImage);
+            break;
+         case 3:
+            DesenharHistogramaBlue(selectedImage);
+            break;
+         case 4:
+            DesenharHistogramaGray(selectedImage);
+            break;
+      }
    }
+
+   drawDigit(1100, 100, 0, 10);
 
    //Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
 }
@@ -147,6 +182,9 @@ void keyboard(int key)
       case 27:
          exit(0);
       break;
+      case 32:
+         //espaço
+         rotateImage(selectedImage, 1);
    }
 }
 //funcao chamada toda vez que uma tecla for liberada

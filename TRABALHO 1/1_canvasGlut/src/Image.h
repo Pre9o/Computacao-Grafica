@@ -56,6 +56,7 @@ private:
 public:
    Bmp(const char *fileName);
    uchar* getImage();
+   void   setImage(uchar* img, int w, int h);
    int    getWidth(void);
    int    getHeight(void);
    void   convertBGRtoRGB(void);

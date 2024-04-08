@@ -31,6 +31,14 @@ uchar* Bmp::getImage()
 return data;
 }
 
+void Bmp::setImage(uchar* img, int w, int h)
+{
+  this->width = w;
+  this->height = h;
+  this->data = img;
+}
+
+
 int Bmp::getWidth(void)
 {
 return width;
