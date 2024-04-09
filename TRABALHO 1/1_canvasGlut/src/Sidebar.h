@@ -65,7 +65,7 @@ public:
             LoadImages(imageManager.images, ".\\images\\cEdDG.bmp");
         }));
         botoes.push_back(new Botao(900, -325, 150, 50, "Load Image 2", 1, 0.75, 1, [&imageManager](){
-            LoadImages(imageManager.images, ".\\images\\teste.bmp");
+            LoadImages(imageManager.images, ".\\images\\gato.bmp");
         }));
         botoes.push_back(new Botao(900, -250, 150, 50, "Load Image 1", 1, 1, 0.75, [&imageManager](){
             LoadImages(imageManager.images, ".\\images\\snail.bmp");

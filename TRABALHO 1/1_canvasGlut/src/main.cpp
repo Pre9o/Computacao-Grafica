@@ -126,12 +126,12 @@ void keyboard(int key)
    }
 }
 //funcao chamada toda vez que uma tecla for liberada
-void keyboardUp(int key)
+void keyboardUp(int /*key*/)
 {
 }
 
 //funcao para tratamento de mouse: cliques, movimentos e arrastos
-void mouse(int button, int state, int wheel, int direction, int x, int y)
+void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y)
 {
    x -= 500;
    y -= 500;

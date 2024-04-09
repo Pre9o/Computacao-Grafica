@@ -14,7 +14,7 @@ class Botao{
 public:
   std::function<void()> onClick;
 
-  Botao(float _x, float _y, float _larg, float _alt, char *_label, float _r_color, float _g_color, float _b_color, std::function<void()> _onClick)
+  Botao(float _x, float _y, float _larg, float _alt, const char* _label, float _r_color, float _g_color, float _b_color, std::function<void()> _onClick)
   {
     //X = ponto inicial X
     //Y = ponto inicial Y
