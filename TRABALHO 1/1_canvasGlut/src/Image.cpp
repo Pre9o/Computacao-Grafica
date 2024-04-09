@@ -1,10 +1,17 @@
+/*
+  A classe Bmp é usada para manipular imagens no formato BMP. Ela fornece funcionalidades para carregar uma imagem BMP de um arquivo,
+  obter e definir os dados da imagem, obter e definir a largura e a altura da imagem, converter a imagem de BGR para RGB,
+  ajustar o brilho e o contraste da imagem, verificar se um ponto está contido na imagem, inverter a imagem vertical e horizontalmente,
+  alterar a imagem para mostrar apenas o canal vermelho, verde, azul ou cinza, e carregar uma imagem BMP do arquivo especificado.
+ */
+
 #include "Image.h"
 #include <string.h>
 #include <algorithm>
 #include "gl_canvas2d.h"
 #include <iostream>
-#include <unistd.h>
 
+// Construtor da classe Bmp. Carrega uma imagem BMP do arquivo especificado.
 Bmp::Bmp(const char *fileName)
 {
    width = height = 0;
@@ -19,36 +26,43 @@ Bmp::Bmp(const char *fileName)
    }
 }
 
+// Retorna um ponteiro para os dados da imagem.
 uchar* Bmp::getImage()
 {
 return data;
 }
 
+// Define os dados da imagem.
 void Bmp::setImage(uchar* img)
 {
   this->data = img;
 }
 
+// Retorna a largura da imagem.
 int Bmp::getWidth(void)
 {
 return width;
 }
 
+// Define a largura da imagem.
 void Bmp::setWidth(int w)
 {
    this->width = w;
 }
 
+// Retorna a altura da imagem.
 int Bmp::getHeight(void)
 {
 return height;
 }
 
+// Define a altura da imagem.
 void Bmp::setHeight(int h)
 {
    this->height = h;
 }
 
+// Converte a imagem de BGR para RGB.
 void Bmp::convertBGRtoRGB()
 {
 unsigned char tmp;
@@ -64,6 +78,8 @@ if( data != NULL )
    }
 }
 }
+
+// Ajusta o brilho da imagem.
 void Bmp::adjustBrightness(int brightness) {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
@@ -79,6 +95,7 @@ void Bmp::adjustBrightness(int brightness) {
    }
 }
 
+// Ajusta o contraste da imagem.
 void Bmp::adjustContrast(float contrast) {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
@@ -95,6 +112,7 @@ void Bmp::adjustContrast(float contrast) {
    }
 }
 
+// Verifica se um ponto está contido na imagem.
 int Bmp::contains(int x, int y)
 {
    if( x >= x_start && x <= x_end && y >= y_start && y <= y_end )
@@ -104,6 +122,7 @@ int Bmp::contains(int x, int y)
    return 0;
 }
 
+// Inverte a imagem verticalmente.
 void Bmp::flipVertical() {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
@@ -114,6 +133,7 @@ void Bmp::flipVertical() {
    convertBGRtoRGB();
 }
 
+// Inverte a imagem horizontalmente.
 void Bmp::flipHorizontal() {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
@@ -127,6 +147,7 @@ void Bmp::flipHorizontal() {
    }
 }
 
+// Altera a imagem para mostrar apenas o canal vermelho.
 void Bmp::image_R(void) {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
@@ -140,6 +161,7 @@ void Bmp::image_R(void) {
    }
 }
 
+// Altera a imagem para mostrar apenas o canal verde.
 void Bmp::image_G(void) {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
@@ -153,6 +175,7 @@ void Bmp::image_G(void) {
    }
 }
 
+// Altera a imagem para mostrar apenas o canal azul.
 void Bmp::image_B(void) {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
@@ -167,6 +190,7 @@ void Bmp::image_B(void) {
    }
 }
 
+// Altera a imagem para mostrar apenas o canal cinza.
 void Bmp::image_Gray(void) {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
@@ -182,23 +206,13 @@ void Bmp::image_Gray(void) {
    }
 }
 
-
+// Carrega uma imagem BMP do arquivo especificado.
 void Bmp::load(const char *fileName)
 {
-std::cout << fileName << std::endl;
 
 FILE *fp = fopen(fileName, "rb");
 if( fp == NULL )
 {
-    printf("cuardido %s", strerror(errno));
-
-    char cwd[255];
-   if (getcwd(cwd, sizeof(cwd)) != NULL) {
-       printf("Current working dir: %s\n", cwd);
-   } else {
-       perror("getcwd() error");
-   }
-
    printf("\nErro ao abrir arquivo %s para leitura", fileName);
    return;
 }
