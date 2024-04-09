@@ -16,8 +16,6 @@ public:
 
   Botao(float _x, float _y, float _larg, float _alt, const char* _label, float _r_color, float _g_color, float _b_color, std::function<void()> _onClick)
   {
-    //X = ponto inicial X
-    //Y = ponto inicial Y
      altura  = _alt;
      largura = _larg;
      x = _x;

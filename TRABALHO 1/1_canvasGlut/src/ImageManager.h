@@ -16,4 +16,4 @@ public:
     int OpcaoHistograma = 0;
 };
 
-#endif // IMAGEMANAGER_H
+#endif

@@ -1,16 +1,9 @@
-//*********************************************************
-//
-// classe para fazer o carregamento de arquivos no formato BMP
-// Autor: Cesar Tadeu Pozzer
-//        pozzer@inf.ufsm.br
-//  Versao 09/2010
-//
-//**********************************************************
-
 #include "Image.h"
 #include <string.h>
 #include <algorithm>
 #include "gl_canvas2d.h"
+#include <iostream>
+#include <unistd.h>
 
 Bmp::Bmp(const char *fileName)
 {
@@ -75,7 +68,7 @@ void Bmp::adjustBrightness(int brightness) {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
    int height = this->getHeight();
-   
+
    for(int i = 0; i < height; i++) {
       for(int j = 0; j < width; j++){
          int pos = i * width * 3 + j * 3;
@@ -164,7 +157,7 @@ void Bmp::image_B(void) {
    unsigned char* img = this->getImage();
    int width = this->getWidth();
    int height = this->getHeight();
-   
+
    for(int i = 0; i < height; i++) {
       for(int j = 0; j < width; j++){
          int pos = i * width * 3 + j * 3;
@@ -175,11 +168,9 @@ void Bmp::image_B(void) {
 }
 
 void Bmp::image_Gray(void) {
-   // colocar os valores cinza na imagem
    unsigned char* img = this->getImage();
    int width = this->getWidth();
    int height = this->getHeight();
-   //nao eh pra desenhar
    for (int i = 0; i < height; i++) {
       for (int j = 0; j < width; j++) {
          int pos = i * width * 3 + j * 3;
@@ -194,24 +185,32 @@ void Bmp::image_Gray(void) {
 
 void Bmp::load(const char *fileName)
 {
+std::cout << fileName << std::endl;
+
 FILE *fp = fopen(fileName, "rb");
 if( fp == NULL )
 {
+    printf("cuardido %s", strerror(errno));
+
+    char cwd[255];
+   if (getcwd(cwd, sizeof(cwd)) != NULL) {
+       printf("Current working dir: %s\n", cwd);
+   } else {
+       perror("getcwd() error");
+   }
+
    printf("\nErro ao abrir arquivo %s para leitura", fileName);
    return;
 }
 
 printf("\n\nCarregando arquivo %s", fileName);
 
-//le o HEADER componente a componente devido ao problema de alinhamento de bytes. Usando
-//o comando fread(header, sizeof(HEADER),1,fp) sao lidos 16 bytes ao inves de 14
 fread(&header.type,      sizeof(unsigned short int), 1, fp);
 fread(&header.size,      sizeof(unsigned int),       1, fp);
 fread(&header.reserved1, sizeof(unsigned short int), 1, fp);
 fread(&header.reserved2, sizeof(unsigned short int), 1, fp);
-fread(&header.offset,    sizeof(unsigned int),       1, fp); //indica inicio do bloco de pixels
+fread(&header.offset,    sizeof(unsigned int),       1, fp);
 
-//le o INFOHEADER componente a componente devido ao problema de alinhamento de bytes
 fread(&info.size,        sizeof(unsigned int),       1, fp);
 fread(&info.width,       sizeof(int),                1, fp);
 fread(&info.height,      sizeof(int),                1, fp);
@@ -238,7 +237,6 @@ printf("\nbytesPerLine: %d", width * 3);
 printf("\ndelta: %d", delta);
 printf("\nimagesize: %d %d", imagesize, info.imagesize);
 
-//realiza diversas verificacoes de erro e compatibilidade
 if( header.type != 19778 )
 {
    printf("\nError: Arquivo BMP invalido");
@@ -249,7 +247,6 @@ if( header.type != 19778 )
 if( width*height*3 != imagesize )
 {
    printf("\nWarning: Arquivo BMP nao tem largura multipla de 4");
-   //getchar();
 }
 
 if( info.compression != 0 )

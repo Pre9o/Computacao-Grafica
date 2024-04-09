@@ -1,5 +1,5 @@
 #include <GL/glut.h>
-#include <GL/freeglut_ext.h> //callback da wheel do mouse.
+#include <GL/freeglut_ext.h>
 
 #include <math.h>
 #include <stdio.h>
@@ -16,8 +16,6 @@
 
 #include <chrono>
 
-// ...
-
 std::chrono::steady_clock::time_point inicio;
 
 #define MAX_IMAGES 3
@@ -25,11 +23,10 @@ std::chrono::steady_clock::time_point inicio;
 #define RECT_SIZE 10
 #define TEXT_COORD 2
 
-//largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int screenWidth = 1520, screenHeight = 1080;
 
-int opcao  = 50; //variavel global para selecao do que sera exibido na canvas.
-int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da render().
+int opcao  = 50;
+int mouseX, mouseY;
 int clicando = 0;
 
 Sidebar sidebar;
@@ -43,7 +40,6 @@ void render(){
    }
 
    if (imageManager.fourthImage != NULL) {
-      // Renderiza a quarta imagem em uma posição fixa
       Draw4thImage(imageManager.fourthImage);
    }
 
@@ -85,30 +81,22 @@ void render(){
 
    desenharTempo(horas, minutos, segundos);
 
-
-   //Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
 }
 
 
-//funcao chamada toda vez que uma tecla for pressionada.
-void keyboard(int key)
-{
-   if( key < 200 )
-   {
+void keyboard(int key){
+   if( key < 200 ){
       opcao = key;
    }
 
-   switch(key)
-   {
+   switch(key){
       case 27:
          exit(0);
       break;
       case 200:
-         //espaço
          rotateImage(imageManager.selectedImage, 90);
       break;
       case 202:
-         //espaço
          rotateImage(imageManager.selectedImage, -90);
       break;
       case 'B':
@@ -125,12 +113,10 @@ void keyboard(int key)
       break;
    }
 }
-//funcao chamada toda vez que uma tecla for liberada
-void keyboardUp(int /*key*/)
-{
+
+void keyboardUp(int /*key*/){
 }
 
-//funcao para tratamento de mouse: cliques, movimentos e arrastos
 void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y)
 {
    x -= 500;
@@ -143,25 +129,20 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
       ArrastarImagem(imageManager.draggingImage, x, y);
    }
 
-   //printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction, x, y);
-
    if (button == 0) {
       for (Bmp* image : imageManager.images) {
             if (image->contains(x, y && imageManager.draggingImage == nullptr)) {
                imageManager.selectedImage = image;
             }
             else if(!image->contains(x, y) && imageManager.draggingImage == nullptr){
-               //selectedImage = nullptr;
             }
       }
       if(state == 1) {
-      // Parar o arrasto
       imageManager.draggingImage = nullptr;
       clicando = 0;
 
       }
       else if (state == 0) {
-         // Iniciar o arrasto
          for (Bmp* image : imageManager.images) {
             if (image->contains(x, y)) {
                imageManager.selectedImage = image;
@@ -180,8 +161,7 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
 }
 
 
-int main()
-{
+int main(){
    CV::init(screenHeight, screenWidth, "Rafael Carneiro Pregardier");
 
    inicio = std::chrono::steady_clock::now();
@@ -189,6 +169,6 @@ int main()
    sidebar.ConstruirBotoes(imageManager);
 
    CV::run();
-   
+
    return 0;
 }

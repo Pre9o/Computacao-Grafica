@@ -6,7 +6,6 @@
 #include "ImagesFunctions.h"
 #include "ImageManager.h"
 
-//criar uma classe para renderizar a barra lateral com os botoes que manipulam as imagens.
 class Sidebar {
 public:
     std::vector<Botao*> botoes;
@@ -25,11 +24,9 @@ public:
         }));
         botoes.push_back(new Botao(1250, -175, 150, 50, "Grayscale", 0.5, 0.5, 0.5, [&imageManager](){
             if (imageManager.selectedImage != NULL) {
-                // Deleta a imagem anterior para evitar vazamento de memória
                 if (imageManager.fourthImage != NULL) {
                 delete imageManager.fourthImage;
                 }
-            // Cria uma cópia da imagem selecionada
             imageManager.fourthImage = new Bmp(*imageManager.selectedImage);
             imageManager.fourthImage->image_Gray();
             }
@@ -62,13 +59,13 @@ public:
             }
         }));
         botoes.push_back(new Botao(900, -400, 150, 50, "Load Image 3", 0.75, 1, 1, [&imageManager](){
-            LoadImages(imageManager.images, ".\\images\\cEdDG.bmp");
+            LoadImages(imageManager.images, ".\\1_canvasGlut\\images\\img1.bmp");
         }));
         botoes.push_back(new Botao(900, -325, 150, 50, "Load Image 2", 1, 0.75, 1, [&imageManager](){
-            LoadImages(imageManager.images, ".\\images\\gato.bmp");
+            LoadImages(imageManager.images, ".\\1_canvasGlut\\images\\gato.bmp");
         }));
         botoes.push_back(new Botao(900, -250, 150, 50, "Load Image 1", 1, 1, 0.75, [&imageManager](){
-            LoadImages(imageManager.images, ".\\images\\snail.bmp");
+            LoadImages(imageManager.images, ".\\1_canvasGlut\\images\\snail.bmp");
         }));
         botoes.push_back(new Botao(1075, -250, 150, 50, "Histograma Red", 1, 0, 0, [&imageManager](){
             if (imageManager.selectedImage != NULL) {

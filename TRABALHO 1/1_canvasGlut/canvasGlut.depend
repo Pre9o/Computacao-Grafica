@@ -109,3 +109,96 @@
 1589214891 c:\users\naoca\desktop\cg\demos\1_canvasglut\src\botao.h
 	"gl_canvas2d.h"
 
+1712621259 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 1\1_canvasglut\src\gl_canvas2d.cpp
+	"gl_canvas2d.h"
+	<GL/glut.h>
+
+1712621259 c:\users\naoca\documents\github\computacao-grafica\trabalho 1\1_canvasglut\src\gl_canvas2d.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<string.h>
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	"Vector2.h"
+
+1632060799 c:\users\naoca\documents\github\computacao-grafica\trabalho 1\include\gl\glut.h
+	"freeglut_std.h"
+
+1632060797 c:\users\naoca\documents\github\computacao-grafica\trabalho 1\include\gl\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+
+1632060794 c:\users\naoca\documents\github\computacao-grafica\trabalho 1\include\gl\freeglut_ext.h
+	<stdarg.h>
+
+1712621259 c:\users\naoca\documents\github\computacao-grafica\trabalho 1\1_canvasglut\src\vector2.h
+
+1712623237 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 1\1_canvasglut\src\image.cpp
+	"Image.h"
+	<string.h>
+	<algorithm>
+	"gl_canvas2d.h"
+	<iostream>
+	<unistd.h>
+
+1712620210 c:\users\naoca\documents\github\computacao-grafica\trabalho 1\1_canvasglut\src\image.h
+	<stdio.h>
+	<stdlib.h>
+	<algorithm>
+	<string.h>
+	<vector>
+
+1712621335 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 1\1_canvasglut\src\imagesfunctions.cpp
+	<vector>
+	<algorithm>
+	"gl_canvas2d.h"
+	"Image.h"
+	<numeric>
+
+1712622241 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 1\1_canvasglut\src\main.cpp
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<algorithm>
+	"gl_canvas2d.h"
+	"Image.h"
+	"ImagesFunctions.h"
+	"Botao.h"
+	"Sidebar.h"
+	"ImageManager.h"
+	<chrono>
+
+1712618979 c:\users\naoca\documents\github\computacao-grafica\trabalho 1\1_canvasglut\src\imagesfunctions.h
+	<vector>
+	<algorithm>
+	<string>
+	"gl_canvas2d.h"
+
+1712621046 c:\users\naoca\documents\github\computacao-grafica\trabalho 1\1_canvasglut\src\botao.h
+	"gl_canvas2d.h"
+	<functional>
+
+1712623421 c:\users\naoca\documents\github\computacao-grafica\trabalho 1\1_canvasglut\src\sidebar.h
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	"Botao.h"
+	"Image.h"
+	"ImagesFunctions.h"
+	"ImageManager.h"
+
+1712618686 c:\users\naoca\documents\github\computacao-grafica\trabalho 1\1_canvasglut\src\imagemanager.h
+	<vector>
+	"Image.h"
+
