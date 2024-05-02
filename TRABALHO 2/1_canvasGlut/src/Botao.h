@@ -10,6 +10,7 @@ class Botao{
   float r_color;
   float g_color;
   float b_color;
+  float x_render, y_render;
 
 public:
   std::function<void()> onClick;
@@ -20,6 +21,8 @@ public:
     largura = _larg;
     x = _x;
     y = _y;
+    x_render = x;
+    y_render = y;
     strcpy(label, _label);
     onClick = _onClick;
     r_color = _r_color;
@@ -31,18 +34,18 @@ public:
   void Render()
   {
       CV::color(r_color, g_color, b_color);
-      CV::rectFill(x, y, x + largura, y + altura);
+      CV::rectFill(x_render, y_render, x_render + largura, y_render + altura);
       CV::color(0, 0, 0);
-      CV::text(x - (CV::getTextWidth(label, GLUT_BITMAP_HELVETICA_18)/2) + (largura/2),
-               y + (altura/10) + (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
+      CV::text(x_render - (CV::getTextWidth(label, GLUT_BITMAP_HELVETICA_18)/2) + (largura/2),
+               y_render + (altura/10) + (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
                label,
                GLUT_BITMAP_HELVETICA_18);
   }
 
-  void AtualizarPosicaoMeioTela(float _x, float _y)
+  void AtualizarPosicaoMeioTela(float metade_horizontal, float metade_vertical)
   {
-      x = _x;
-      y = _y;
+      x_render = x + metade_horizontal;
+      y_render = y + metade_vertical;
   }
 
   void OnClick()

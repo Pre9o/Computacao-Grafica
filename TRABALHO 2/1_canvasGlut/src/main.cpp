@@ -32,6 +32,7 @@ Feito por Rafael Carneiro Pregardier.
 #include "Botao.h"
 #include "Sidebar.h"
 #include "ImageManager.h"
+#include "Game.h"
 
 #include <chrono>
 
@@ -52,16 +53,19 @@ Sidebar sidebar;
 // Gerenciador de imagens que contém as imagens carregadas e a imagem selecionada
 ImageManager imageManager;
 
+Tabuleiro tabuleiro;
+
 // Função para renderizar a tela
 void render(){
    // Translada o sistema de coordenadas para o centro da tela
    CV::clear(0, 0, 0);
 
    for(Botao* botao : sidebar.botoes){
-      botao->AtualizarPosicao(screenWidth / 2, screenHeight / 2);
+      botao->AtualizarPosicaoMeioTela(screenWidth / 2, screenHeight / 2);
       botao->Render();
    }
 
+   tabuleiro.desenhaTabuleiro();
 }
 
 // Função para lidar com a entrada do teclado
@@ -163,7 +167,12 @@ int main(){
    inicio = std::chrono::steady_clock::now();
 
    // Constrói os botões na barra lateral
-   sidebar.ConstruirBotoesMenuInicial(screenWidth, screenHeight);
+   sidebar.ConstruirBotoesMenuInicial();
+
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 200, screenHeight/2 + 200));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 200, screenHeight/2 + 200));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 200, screenHeight/2 - 400));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 200, screenHeight/2 - 400));
 
    // Inicia o loop principal do programa
    CV::run();
