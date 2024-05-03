@@ -27,11 +27,9 @@ class Tabuleiro {
     }
 
     void setExtremosTabuleiro(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4) {
-        extremos_tabuleiro.push_back(p1);
-        extremos_tabuleiro.push_back(p2);
-        extremos_tabuleiro.push_back(p3);
-        extremos_tabuleiro.push_back(p4);
-
-        printf("%d\n", extremos_tabuleiro.size());
+        extremos_tabuleiro[0] = p1;
+        extremos_tabuleiro[1] = p2;
+        extremos_tabuleiro[2] = p3;
+        extremos_tabuleiro[3] = p4;
     }
 };

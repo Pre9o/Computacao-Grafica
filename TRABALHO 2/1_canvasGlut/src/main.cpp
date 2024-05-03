@@ -48,6 +48,9 @@ int opcao  = 50;
 int mouseX, mouseY;
 int clicando = 0;
 
+
+int menuOpcao = 0;
+
 // Sidebar que contém os botões para manipular as imagens
 Sidebar sidebar;
 // Gerenciador de imagens que contém as imagens carregadas e a imagem selecionada
@@ -60,11 +63,14 @@ void render(){
    // Translada o sistema de coordenadas para o centro da tela
    CV::clear(0, 0, 0);
 
+   switch
+
    for(Botao* botao : sidebar.botoes){
       botao->AtualizarPosicaoMeioTela(screenWidth / 2, screenHeight / 2);
       botao->Render();
    }
 
+   tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 300, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
    tabuleiro.desenhaTabuleiro();
 }
 
@@ -169,10 +175,10 @@ int main(){
    // Constrói os botões na barra lateral
    sidebar.ConstruirBotoesMenuInicial();
 
-   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 200, screenHeight/2 + 200));
-   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 200, screenHeight/2 + 200));
-   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 200, screenHeight/2 - 400));
-   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 200, screenHeight/2 - 400));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 400, screenHeight/2 + 400));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 400, screenHeight/2 + 400));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 400, screenHeight/2 - 400));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 400, screenHeight/2 - 400));
 
    // Inicia o loop principal do programa
    CV::run();
