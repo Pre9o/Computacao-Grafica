@@ -48,6 +48,9 @@ int opcaoMenu = 0;
 int mouseX, mouseY;
 int clicando = 0;
 
+
+int menuOpcao = 0;
+
 // Sidebar que contém os botões para manipular as imagens
 Sidebar sidebar;
 // Gerenciador de imagens que contém as imagens carregadas e a imagem selecionada
@@ -58,6 +61,8 @@ Tabuleiro tabuleiro;
 // Função para renderizar a tela
 void render(){
    CV::clear(0, 0, 0);
+
+   switch
 
 
    switch (opcaoMenu)
