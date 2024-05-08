@@ -62,9 +62,6 @@ Tabuleiro tabuleiro;
 void render(){
    CV::clear(0, 0, 0);
 
-   switch
-
-
    switch (opcaoMenu)
    {
    case 0:
