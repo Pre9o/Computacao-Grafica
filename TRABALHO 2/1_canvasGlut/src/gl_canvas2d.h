@@ -56,11 +56,13 @@ public:
     //desenha texto na coordenada (x,y)
     static void text(float x, float y, const char *t);
     static void text(float x, float y, const char *t, void *bitmap);
+    static void text(float x, float y, int valor, void *bitmap);
     static void text(Vector2 pos, const char *t);  //varias funcoes ainda nao tem implementacao. Faca como exercicio
     static void text(Vector2 pos, int valor);      //varias funcoes ainda nao tem implementacao. Faca como exercicio
     static void text(Vector2 pos, float valor);    //varias funcoes ainda nao tem implementacao. Faca como exercicio
     static int getBitmapHeight(void *bitmap);
     static int getTextWidth(const char *s, void *bitmap);
+    static int getTextWidth(int n, void *bitmap);
 
     //coordenada de offset para desenho de objetos.
     static void translate(float x, float y);

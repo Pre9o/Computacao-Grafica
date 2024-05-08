@@ -44,7 +44,7 @@ std::chrono::steady_clock::time_point inicio;
 // Dimensões da tela
 int screenWidth = 1620, screenHeight = 700;
 
-int opcao  = 50;
+int opcaoMenu = 0;
 int mouseX, mouseY;
 int clicando = 0;
 
@@ -57,23 +57,34 @@ Tabuleiro tabuleiro;
 
 // Função para renderizar a tela
 void render(){
-   // Translada o sistema de coordenadas para o centro da tela
    CV::clear(0, 0, 0);
 
-   for(Botao* botao : sidebar.botoes){
-      botao->AtualizarPosicaoMeioTela(screenWidth / 2, screenHeight / 2);
-      botao->Render();
-   }
 
-   tabuleiro.desenhaTabuleiro();
+   switch (opcaoMenu)
+   {
+   case 0:
+      for(Botao* botao : sidebar.botoes){
+         botao->AtualizarPosicaoMeioTela(screenWidth / 2, screenHeight / 2);
+         botao->Render();
+      }
+      break;
+   case 1:
+      tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
+      tabuleiro.setTabuleiro();
+      tabuleiro.desenhaTabuleiro();
+      for(auto& linha : tabuleiro.matriz_tabuleiro){
+         for(Bloco& bloco : linha){
+            bloco.desenhaBloco();
+         }
+      }
+      break;
+   default:
+      break;
+   }
 }
 
 // Função para lidar com a entrada do teclado
 void keyboard(int key){
-   if( key < 200 ){
-      opcao = key;
-   }
-
    switch(key){
       case 27:
          // Se a tecla ESC for pressionada, sai do programa
@@ -113,9 +124,6 @@ void keyboardUp(int /*key*/){
 // Função para lidar com a entrada do mouse
 void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y)
 {
-   x -= 500;
-   y -= 500;
-
    mouseX = x;
    mouseY = y;
 
@@ -167,12 +175,19 @@ int main(){
    inicio = std::chrono::steady_clock::now();
 
    // Constrói os botões na barra lateral
-   sidebar.ConstruirBotoesMenuInicial();
+   sidebar.ConstruirBotoesMenuInicial(&opcaoMenu);
 
-   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 200, screenHeight/2 + 200));
-   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 200, screenHeight/2 + 200));
-   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 200, screenHeight/2 - 400));
-   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 200, screenHeight/2 - 400));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 300, screenHeight/2 + 400));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 260, screenHeight/2 + 400));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 260, screenHeight/2 - 400));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
+
+   printf("Extremos: X:%f Y:%f X:%f Y:%f\n", tabuleiro.extremos_tabuleiro[0].x, tabuleiro.extremos_tabuleiro[0].y, tabuleiro.extremos_tabuleiro[2].x, tabuleiro.extremos_tabuleiro[2].y);
+
+   tabuleiro.definirBlocos();
+
+
+   srand(time(NULL));
 
    // Inicia o loop principal do programa
    CV::run();

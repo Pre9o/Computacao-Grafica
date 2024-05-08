@@ -17,7 +17,7 @@
 #include <GL/glut.h>
 
 //conjunto de cores predefinidas. Pode-se adicionar mais cores.
-float Colors[14][3]=
+float Colors[20][3]=
 {
     {0, 0, 0}, //Black
     {0.5, 0.5, 0.5}, //Gray
@@ -33,6 +33,12 @@ float Colors[14][3]=
     {0, 0.5, 0.5}, //
     {0.5, 0, 0.5}, //
     {1, 1, 1}, //white
+    {0.3, 0.3, 0.3},
+    {0.7, 0.7, 0.7},
+    {1, 0.2, 0.1},
+    {0.1, 1, 0.2},
+    {0.1, 0.2, 1},
+    {0.2, 1, 1}
 };
 
 void ConvertMouseCoord(int button, int state, int wheel, int direction, int x, int y);
@@ -158,7 +164,20 @@ void CV::text(float x, float y, const char *t, void *bitmap)
     }
 }
 
+void CV::text(float x, float y, int valor, void *bitmap)
+{
+    char s[100];
+    sprintf(s, "%d", valor);
+    text(x, y, s, bitmap);
+}
+
 int CV::getTextWidth(const char *s, void *bitmap){
+    return glutBitmapLength(bitmap, (const unsigned char*)s);
+}
+
+int CV::getTextWidth(int n, void *bitmap){
+    char s[100];
+    sprintf(s, "%d", n);
     return glutBitmapLength(bitmap, (const unsigned char*)s);
 }
 

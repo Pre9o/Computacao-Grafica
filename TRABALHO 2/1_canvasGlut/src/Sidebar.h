@@ -19,11 +19,12 @@ public:
     std::vector<Botao*> botoes;
 
     // Método para construir os botões na barra lateral
-    void ConstruirBotoesMenuInicial(){
+    void ConstruirBotoesMenuInicial(int *opcaoMenu){
         // Se a barra lateral ainda não tem botões, cria os botões
         if(botoes.size() == 0){
-            botoes.push_back(new Botao(-100, 100, 200, 50, "Play", 1, 1, 1, [](){
+            botoes.push_back(new Botao(-100, 100, 200, 50, "Play", 1, 1, 1, [opcaoMenu](){
                 printf("Botão Play clicado\n");
+                *opcaoMenu = 1;
             }));
             botoes.push_back(new Botao(-100, 0, 200, 50, "Settings", 1, 1, 1, [](){
                 printf("Botão Settings clicado\n");

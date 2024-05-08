@@ -55,7 +55,7 @@ public:
 
   bool Colidiu(int mx, int my)
   {
-      if( mx >= x && mx <= (x + largura) && my >= y && my <= (y + altura) )
+      if( mx >= x_render && mx <= (x_render + largura) && my >= y_render && my <= (y_render + altura) )
       {
           return true;
       }
