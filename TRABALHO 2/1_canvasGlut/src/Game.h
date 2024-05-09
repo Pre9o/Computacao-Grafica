@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <time.h>
+#include <chrono>
 
 class Bloco{
     public:
@@ -171,26 +172,26 @@ class Bola{
 
     Bola(){
         posicao = Vector2(0, 0);
-        velocidade = 0;
+        velocidade = 5;
         direcao = Vector2(0, 0);
         raio = 5;
-        cor = 4;
+        cor = 2;
     }
 
     void lancarBola(Canhao& canhao){
-        posicao = canhao.origem + canhao.vetor_direcao * 10;
-        printf("Posicao da bola: (%f, %f)\n", posicao.x, posicao.y);
+        posicao = canhao.origem;
         direcao = canhao.vetor_direcao;
+        direcao.normalize();
         velocidade = 5;
     }
 
     void desenhaBola(){
         CV::color(cor);
-        CV::circle(posicao, raio, 20);
+        CV::circle(posicao, raio, 50);
     }
 
-    void moverBola(){
-        posicao = posicao.operator+(direcao.operator*(velocidade));
+    void moverBola(float deltaTime){
+        posicao = posicao + direcao * velocidade * deltaTime;
     }
 
 };
@@ -215,20 +216,22 @@ class Controle{
         bolas.push_back(bola);
     }
 
-    void executaJogada(Canhao& canhao){
+    void executaJogada(Canhao& canhao, std::chrono::steady_clock::time_point inicio, bool *primeira_vez){
+        auto currentTime = std::chrono::steady_clock::now();
+        std::chrono::duration<float> elapsed = currentTime - inicio;
+        float deltaTime = elapsed.count();
+
         printf("Quantidade de bolas: %d\n", bolas.size());
-        if(bolas.size() == 0){
-            Bola bola;
-            bolas.push_back(bola);
+        if(primeira_vez){
             bolas[0].lancarBola(canhao);
-        }
+            *primeira_vez = false;    
+        }    
 
         for(auto& bola: bolas){
-            printf("Posicao da bola: (%f, %f)\n", bola.posicao.x, bola.posicao.y);
-            bola.moverBola();
+            bola.moverBola(deltaTime);
         }
 
-
+        inicio = currentTime; // Update the last time
     }
 
 };

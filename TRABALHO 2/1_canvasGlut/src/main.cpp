@@ -35,6 +35,7 @@ Feito por Rafael Carneiro Pregardier.
 #include "Game.h"
 
 #include <chrono>
+#include <thread>
 
 // Início do tempo para calcular a duração da execução do programa
 std::chrono::steady_clock::time_point inicio;
@@ -64,8 +65,11 @@ Controle controle;
 
 Bola bola;
 
+
+
 // Função para renderizar a tela
 void render(){
+
    CV::clear(0, 0, 0);
 
    switch (opcaoMenu)
@@ -96,6 +100,7 @@ void render(){
    default:
       break;
    }
+
 }
 
 // Função para lidar com a entrada do teclado
@@ -112,6 +117,8 @@ void keyboard(int key){
 void keyboardUp(int /*key*/){
 }
 
+bool primeira_vez = true;
+
 // Função para lidar com a entrada do mouse
 void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y)
 {
@@ -127,7 +134,9 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
 
    if (button == 0) {
       // Se o botão esquerdo do mouse foi pressionado, verifica se uma imagem foi clicada
-      controle.executaJogada(canhao);
+      while(true){
+         controle.executaJogada(canhao, inicio, &primeira_vez);
+      }
 
 
       for (Bmp* image : imageManager.images) {
