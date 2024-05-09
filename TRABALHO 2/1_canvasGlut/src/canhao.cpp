@@ -1,38 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
 #include <GL/glut.h>
 #include <GL/freeglut_ext.h> //callback da wheel do mouse.
 
@@ -81,7 +46,6 @@ float angulo_circulo_mouse = 0;
 };
 
 std::vector<Bola> bolas;*/
-/*
 void DesenhaSenoide()
 {
    float x=0, y;
@@ -229,4 +193,3 @@ int main(void)
    CV::init(screenWidth, screenHeight, "Titulo da Janela: Canvas 2D - Pressione 1, 2, 3");
    CV::run();
 }
-*/

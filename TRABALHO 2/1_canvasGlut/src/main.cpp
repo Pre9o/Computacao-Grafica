@@ -58,6 +58,12 @@ ImageManager imageManager;
 
 Tabuleiro tabuleiro;
 
+Canhao canhao;
+
+Controle controle;
+
+Bola bola;
+
 // Função para renderizar a tela
 void render(){
    CV::clear(0, 0, 0);
@@ -71,13 +77,20 @@ void render(){
       }
       break;
    case 1:
-      tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
+      tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 + 401), Vector2(screenWidth/2 + 261, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
       tabuleiro.setTabuleiro();
       tabuleiro.desenhaTabuleiro();
+
       for(auto& linha : tabuleiro.matriz_tabuleiro){
          for(Bloco& bloco : linha){
             bloco.desenhaBloco();
          }
+      }
+
+      canhao.desenhaCanhao(tabuleiro.extremos_tabuleiro);
+
+      for(auto& bola: controle.bolas){
+         bola.desenhaBola();
       }
       break;
    default:
@@ -92,30 +105,6 @@ void keyboard(int key){
          // Se a tecla ESC for pressionada, sai do programa
          exit(0);
       break;
-      case 200:
-         // Se a tecla 200 for pressionada, rotaciona a imagem selecionada 90 graus
-         rotateImage(imageManager.selectedImage, 90);
-      break;
-      case 202:
-         // Se a tecla 202 for pressionada, rotaciona a imagem selecionada -90 graus
-         rotateImage(imageManager.selectedImage, -90);
-      break;
-      case 'B':
-         // Se a tecla 'B' for pressionada, aumenta o brilho da imagem selecionada
-         imageManager.selectedImage->adjustBrightness(5);
-      break;
-      case 'b':
-         // Se a tecla 'b' for pressionada, diminui o brilho da imagem selecionada
-         imageManager.selectedImage->adjustBrightness(-5);
-      break;
-      case 'C':
-         // Se a tecla 'C' for pressionada, aumenta o contraste da imagem selecionada
-         imageManager.selectedImage->adjustContrast(5);
-      break;
-      case 'c':
-         // Se a tecla 'c' for pressionada, diminui o contraste da imagem selecionada
-         imageManager.selectedImage->adjustContrast(-5);
-      break;
    }
 }
 
@@ -129,6 +118,8 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
    mouseX = x;
    mouseY = y;
 
+   canhao.setMousePos(Vector2(x, y));
+
    // Se o botão esquerdo do mouse está sendo pressionado, arrasta a imagem selecionada
    if(clicando){
       ArrastarImagem(imageManager.draggingImage, x, y);
@@ -136,6 +127,9 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
 
    if (button == 0) {
       // Se o botão esquerdo do mouse foi pressionado, verifica se uma imagem foi clicada
+      controle.executaJogada(canhao);
+
+
       for (Bmp* image : imageManager.images) {
             if (image->contains(x, y && imageManager.draggingImage == nullptr)) {
                imageManager.selectedImage = image;
@@ -161,7 +155,9 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
 
          for (Botao* botao : sidebar.botoes) {
             if(botao->Colidiu(x, y)){
-               botao->onClick();
+               if(opcaoMenu == 0){
+                  botao->onClick();
+               }
             }
          }
       }
@@ -180,13 +176,15 @@ int main(){
    sidebar.ConstruirBotoesMenuInicial(&opcaoMenu);
 
    tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 300, screenHeight/2 + 400));
-   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 260, screenHeight/2 + 400));
-   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 260, screenHeight/2 - 400));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 260, screenHeight/2 + 401));
+   tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 261, screenHeight/2 - 400));
    tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
 
    printf("Extremos: X:%f Y:%f X:%f Y:%f\n", tabuleiro.extremos_tabuleiro[0].x, tabuleiro.extremos_tabuleiro[0].y, tabuleiro.extremos_tabuleiro[2].x, tabuleiro.extremos_tabuleiro[2].y);
 
    tabuleiro.definirBlocos();
+
+   controle.setBolas();
 
 
    srand(time(NULL));

@@ -40,7 +40,8 @@ class Bloco{
         for(int i = 0; i < extremos_bloco.size(); i++){
             if(selecionado){
                 CV::color(cor);
-                CV::line(extremos_bloco[i], extremos_bloco[(i + 1) % 4]);
+                CV::rectFill(extremos_bloco[0], extremos_bloco[1], extremos_bloco[2], extremos_bloco[3]);
+                CV::color(1, 1, 1);
                 CV::color(1, 1, 1);
                 CV::text(extremos_bloco[0].x - (CV::getTextWidth(pontos, GLUT_BITMAP_HELVETICA_18)/2) + (tamanho.y/2),
                         extremos_bloco[0].y + (tamanho.x/10) + (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
@@ -66,11 +67,13 @@ class Tabuleiro {
     void setTabuleiro() {
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 7; j++){
-                Vector2 p1 = Vector2(extremos_tabuleiro[0].x + (j * 80), extremos_tabuleiro[3].y + (i * 80));
-                Vector2 p2 = Vector2(extremos_tabuleiro[0].x + (j * 80) + 80, extremos_tabuleiro[3].y + (i * 80));
-                Vector2 p3 = Vector2(extremos_tabuleiro[0].x + (j * 80) + 80, extremos_tabuleiro[3].y + (i * 80) + 80);
-                Vector2 p4 = Vector2(extremos_tabuleiro[0].x + (j * 80), extremos_tabuleiro[3].y + (i * 80) + 80);
-                matriz_tabuleiro[i][j].setExtremosBloco({p1, p2, p3, p4});
+                if(i == 7){
+                    Vector2 p1 = Vector2(extremos_tabuleiro[0].x + (j * 80), extremos_tabuleiro[3].y + (i * 80));
+                    Vector2 p2 = Vector2(extremos_tabuleiro[0].x + (j * 80) + 80, extremos_tabuleiro[3].y + (i * 80));
+                    Vector2 p3 = Vector2(extremos_tabuleiro[0].x + (j * 80) + 80, extremos_tabuleiro[3].y + (i * 80) + 80);
+                    Vector2 p4 = Vector2(extremos_tabuleiro[0].x + (j * 80), extremos_tabuleiro[3].y + (i * 80) + 80);
+                    matriz_tabuleiro[i][j].setExtremosBloco({p1, p2, p3, p4});
+                }
             }
         }
     }
@@ -85,7 +88,7 @@ class Tabuleiro {
 
     void desenhaTabuleiro() {
         for(int i = 0; i < extremos_tabuleiro.size(); i++){
-            CV::color(1, 1, 0);
+            CV::color(1, 1, 1);
 		    CV::line(extremos_tabuleiro[i], extremos_tabuleiro[(i + 1) % 4]);
 	    }
     }
@@ -96,4 +99,136 @@ class Tabuleiro {
         extremos_tabuleiro[2] = p3;
         extremos_tabuleiro[3] = p4;
     }
+};
+
+class Canhao{
+    public:
+    Vector2 mouse_pos;
+    Vector2 origem;
+    Vector2 vetor_direcao;
+
+    Vector2 inicio_linha;
+    Vector2 inicio_linha_oposta;
+
+    float angulo_circulo_mouse;
+
+    Canhao(){
+        mouse_pos = Vector2(0, 0);
+        origem = Vector2(0, 0);
+        vetor_direcao = Vector2(0, 0);
+        angulo_circulo_mouse = 0;
+    }
+
+    void setMousePos(Vector2 pos){
+        Vector2 vetor_direcao_temp = pos - origem;
+        float angulo = atan2(vetor_direcao_temp.y, vetor_direcao_temp.x);
+
+        // Convertendo o ângulo para graus e ajustando para que 0º seja para cima
+        angulo = (angulo * 180 / M_PI);
+        if (angulo < 0) angulo += 360;
+
+        // Verificando se o ângulo está entre 0º e 180º
+        if (angulo >= 0 && angulo <= 180) {
+            mouse_pos = pos;
+            vetor_direcao = vetor_direcao_temp;
+        }
+    }
+
+    void desenhaCanhao(std::vector<Vector2> extremos_tabuleiro){
+        origem = Vector2((extremos_tabuleiro[0].x + extremos_tabuleiro[1].x) / 2, extremos_tabuleiro[3].y + 10);
+        angulo_circulo_mouse = atan2(mouse_pos.y - origem.y, mouse_pos.x - origem.x);
+
+        Vector2 vetor_direcao = mouse_pos - origem;
+        vetor_direcao.normalize();
+
+        // Calcular a posição inicial da linha na borda do círculo
+        Vector2 inicio_linha = origem + Vector2(cos(angulo_circulo_mouse - M_PI/2), sin(angulo_circulo_mouse - M_PI/2)) * 10;
+
+        CV::color(1, 0, 0);
+        CV::line(inicio_linha, inicio_linha + vetor_direcao * 50);
+
+        // Calcular a posição inicial da segunda linha na borda oposta do círculo
+        Vector2 inicio_linha_oposta = origem + Vector2(cos(angulo_circulo_mouse + M_PI/2), sin(angulo_circulo_mouse + M_PI/2)) * 10;
+
+        CV::color(0, 1, 0);
+        CV::line(inicio_linha_oposta, inicio_linha_oposta + vetor_direcao * 50);
+
+        CV::color(1, 1, 1);
+        CV::circle(origem, 10, 20);
+
+        CV::circle((inicio_linha.operator+(inicio_linha_oposta)).operator/(2) + vetor_direcao * 50, 10, 20);
+    }
+};
+
+
+class Bola{
+    public:
+        Vector2 posicao;
+        int velocidade;
+        Vector2 direcao;
+        float raio;
+        int cor;
+
+    Bola(){
+        posicao = Vector2(0, 0);
+        velocidade = 0;
+        direcao = Vector2(0, 0);
+        raio = 5;
+        cor = 4;
+    }
+
+    void lancarBola(Canhao& canhao){
+        posicao = canhao.origem + canhao.vetor_direcao * 10;
+        printf("Posicao da bola: (%f, %f)\n", posicao.x, posicao.y);
+        direcao = canhao.vetor_direcao;
+        velocidade = 5;
+    }
+
+    void desenhaBola(){
+        CV::color(cor);
+        CV::circle(posicao, raio, 20);
+    }
+
+    void moverBola(){
+        posicao = posicao.operator+(direcao.operator*(velocidade));
+    }
+
+};
+
+
+class Controle{
+    public:
+    int nivel;
+    int pontos;
+    std::vector<Bola> bolas;
+
+    bool jogando;
+
+    Controle(){
+        nivel = 1;
+        pontos = 0;
+        jogando = true;
+    }
+
+    void setBolas(){
+        Bola bola;
+        bolas.push_back(bola);
+    }
+
+    void executaJogada(Canhao& canhao){
+        printf("Quantidade de bolas: %d\n", bolas.size());
+        if(bolas.size() == 0){
+            Bola bola;
+            bolas.push_back(bola);
+            bolas[0].lancarBola(canhao);
+        }
+
+        for(auto& bola: bolas){
+            printf("Posicao da bola: (%f, %f)\n", bola.posicao.x, bola.posicao.y);
+            bola.moverBola();
+        }
+
+
+    }
+
 };

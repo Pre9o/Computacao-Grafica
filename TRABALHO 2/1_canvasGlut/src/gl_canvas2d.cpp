@@ -19,7 +19,7 @@
 //conjunto de cores predefinidas. Pode-se adicionar mais cores.
 float Colors[20][3]=
 {
-    {0, 0, 0}, //Black
+    {0.2, 1, 0.7}, //Black
     {0.5, 0.5, 0.5}, //Gray
     {1, 0, 0}, //Red
     {0, 1, 0}, //Green
@@ -32,7 +32,7 @@ float Colors[20][3]=
     {0.5, 0.5, 0}, //Olive
     {0, 0.5, 0.5}, //
     {0.5, 0, 0.5}, //
-    {1, 1, 1}, //white
+    {0.5, 0.1, 1}, //white
     {0.3, 0.3, 0.3},
     {0.7, 0.7, 0.7},
     {1, 0.2, 0.1},
@@ -108,6 +108,15 @@ void CV::rectFill( Vector2 p1, Vector2 p2 )
       glVertex2d(p1.x, p2.y);
       glVertex2d(p2.x, p2.y);
       glVertex2d(p2.x, p1.y);
+   glEnd();
+}
+void CV::rectFill( Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4 )
+{
+   glBegin(GL_QUADS);
+      glVertex2d(p1.x, p1.y);
+      glVertex2d(p2.x, p2.y);
+      glVertex2d(p3.x, p3.y);
+      glVertex2d(p4.x, p4.y);
    glEnd();
 }
 

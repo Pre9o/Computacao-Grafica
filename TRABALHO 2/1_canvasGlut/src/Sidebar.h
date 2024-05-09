@@ -31,6 +31,7 @@ public:
             }));
             botoes.push_back(new Botao(-100, -100, 200, 50, "Quit", 1, 1, 1, [](){
                 printf("Botão Quit clicado\n");
+                exit(0);
             }));
         }
     }
