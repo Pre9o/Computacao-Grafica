@@ -39,7 +39,7 @@ Feito por Rafael Carneiro Pregardier.
 
 // Início do tempo para calcular a duração da execução do programa
 std::chrono::steady_clock::time_point inicio;
-clock_t start = clock();
+clock_t inicio_a = clock();
 
 #define MAX_IMAGES 3
 
@@ -49,6 +49,9 @@ int screenWidth = 1620, screenHeight = 700;
 int opcaoMenu = 0;
 int mouseX, mouseY;
 int clicando = 0;
+
+bool jogando = false;
+bool primeira_vez = true;
 
 
 int menuOpcao = 0;
@@ -102,7 +105,17 @@ clock_t start = clock();
    default:
       break;
    }
-   clock_t end = clock();
+
+   clock_t now = clock();
+   double time = (double)(now - inicio_a) / CLOCKS_PER_SEC;
+
+   if(time > 1.0/60.0){
+      controle.executaJogada(canhao, time, &jogando);
+      inicio_a = time;
+   }
+   
+
+    clock_t end = clock();
     float duration = (float)(end - start) / CLOCKS_PER_SEC;
     float frameTime = 1.0f / 60.0f; // Para 60 FPS
 
@@ -126,8 +139,6 @@ void keyboard(int key){
 void keyboardUp(int /*key*/){
 }
 
-bool primeira_vez = true;
-bool jogando = true;
 
 // Função para lidar com a entrada do mouse
 void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y)
@@ -144,15 +155,9 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
 
    if (button == 0) {
       // Se o botão esquerdo do mouse foi pressionado, verifica se uma imagem foi clicada
-      while (jogando) {
-            clock_t tempo_atual = clock();
 
-            clock_t deltaTime = tempo_atual - start;
-            
-            controle.executaJogada(canhao, deltaTime, &primeira_vez);
-
-            start = tempo_atual;
-        }
+      jogando = true;
+        
 
 
       for (Bmp* image : imageManager.images) {

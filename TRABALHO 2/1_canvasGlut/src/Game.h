@@ -193,7 +193,11 @@ class Bola{
     }
 
     void moverBola(float deltaTime){
-        posicao = posicao + direcao * velocidade * deltaTime;
+        posicao = posicao + direcao * velocidade * deltaTime * 0.1;
+        printf("Posicao: %f %f\n", posicao.x, posicao.y);
+        printf("Direcao: %f %f\n", direcao.x, direcao.y);
+        printf("Velocidade: %d\n", velocidade);
+        printf("DeltaTime: %f\n", deltaTime);
     }
 
 };
@@ -219,7 +223,6 @@ class Controle{
     }
 
     void executaJogada(Canhao& canhao, clock_t deltaTime, bool *primeira_vez){
-    printf("Quantidade de bolas: %d\n", bolas.size());
     if(*primeira_vez){
         bolas[0].lancarBola(canhao);
         *primeira_vez = false;
