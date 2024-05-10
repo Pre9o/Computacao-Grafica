@@ -39,6 +39,7 @@ Feito por Rafael Carneiro Pregardier.
 
 // Início do tempo para calcular a duração da execução do programa
 std::chrono::steady_clock::time_point inicio;
+clock_t start = clock();
 
 #define MAX_IMAGES 3
 
@@ -69,6 +70,7 @@ Bola bola;
 
 // Função para renderizar a tela
 void render(){
+clock_t start = clock();
 
    CV::clear(0, 0, 0);
 
@@ -100,6 +102,13 @@ void render(){
    default:
       break;
    }
+   clock_t end = clock();
+    float duration = (float)(end - start) / CLOCKS_PER_SEC;
+    float frameTime = 1.0f / 60.0f; // Para 60 FPS
+
+    if (duration < frameTime) {
+        Sleep((frameTime - duration) * 1000);
+    }
 
 }
 
@@ -118,6 +127,7 @@ void keyboardUp(int /*key*/){
 }
 
 bool primeira_vez = true;
+bool jogando = true;
 
 // Função para lidar com a entrada do mouse
 void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y)
@@ -134,9 +144,15 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
 
    if (button == 0) {
       // Se o botão esquerdo do mouse foi pressionado, verifica se uma imagem foi clicada
-      while(true){
-         controle.executaJogada(canhao, inicio, &primeira_vez);
-      }
+      while (jogando) {
+            clock_t tempo_atual = clock();
+
+            clock_t deltaTime = tempo_atual - start;
+            
+            controle.executaJogada(canhao, deltaTime, &primeira_vez);
+
+            start = tempo_atual;
+        }
 
 
       for (Bmp* image : imageManager.images) {

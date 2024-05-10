@@ -6,6 +6,8 @@
 #include <time.h>
 #include <chrono>
 
+#define M_PI 3.14159265358979323846
+
 class Bloco{
     public:
     Vector2 tamanho;
@@ -95,7 +97,7 @@ class Tabuleiro {
     }
 
     void setExtremosTabuleiro(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4) {
-        extremos_tabuleiro[0] = p1; 
+        extremos_tabuleiro[0] = p1;
         extremos_tabuleiro[1] = p2;
         extremos_tabuleiro[2] = p3;
         extremos_tabuleiro[3] = p4;
@@ -216,22 +218,15 @@ class Controle{
         bolas.push_back(bola);
     }
 
-    void executaJogada(Canhao& canhao, std::chrono::steady_clock::time_point inicio, bool *primeira_vez){
-        auto currentTime = std::chrono::steady_clock::now();
-        std::chrono::duration<float> elapsed = currentTime - inicio;
-        float deltaTime = elapsed.count();
-
-        printf("Quantidade de bolas: %d\n", bolas.size());
-        if(primeira_vez){
-            bolas[0].lancarBola(canhao);
-            *primeira_vez = false;    
-        }    
-
-        for(auto& bola: bolas){
-            bola.moverBola(deltaTime);
-        }
-
-        inicio = currentTime; // Update the last time
+    void executaJogada(Canhao& canhao, clock_t deltaTime, bool *primeira_vez){
+    printf("Quantidade de bolas: %d\n", bolas.size());
+    if(*primeira_vez){
+        bolas[0].lancarBola(canhao);
+        *primeira_vez = false;
     }
 
+    for(auto& bola: bolas){
+        bola.moverBola(deltaTime);
+    }
+    }
 };

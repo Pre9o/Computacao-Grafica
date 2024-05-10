@@ -341,6 +341,7 @@ void inicializa()
    glPolygonMode(GL_FRONT, GL_FILL);
 }
 
+
 void display (void)
 {
    glClear(GL_COLOR_BUFFER_BIT );
