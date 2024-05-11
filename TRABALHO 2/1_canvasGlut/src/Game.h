@@ -116,10 +116,17 @@ class Canhao{
     float angulo_circulo_mouse;
 
     Canhao(){
+        Tabuleiro tabuleiro;
+
         mouse_pos = Vector2(0, 0);
         origem = Vector2(0, 0);
         vetor_direcao = Vector2(0, 0);
         angulo_circulo_mouse = 0;
+    }
+
+    void setTabuleiro(Tabuleiro tabuleiro){
+        origem = Vector2((tabuleiro.extremos_tabuleiro[0].x + tabuleiro.extremos_tabuleiro[1].x) / 2, tabuleiro.extremos_tabuleiro[3].y + 10);
+        printf("Origem: %f %f\n", origem.x, origem.y);
     }
 
     void setMousePos(Vector2 pos){
@@ -137,8 +144,7 @@ class Canhao{
         }
     }
 
-    void desenhaCanhao(std::vector<Vector2> extremos_tabuleiro){
-        origem = Vector2((extremos_tabuleiro[0].x + extremos_tabuleiro[1].x) / 2, extremos_tabuleiro[3].y + 10);
+    void desenhaCanhao(){
         angulo_circulo_mouse = atan2(mouse_pos.y - origem.y, mouse_pos.x - origem.x);
 
         Vector2 vetor_direcao = mouse_pos - origem;
@@ -156,7 +162,6 @@ class Canhao{
         CV::color(0, 1, 0);
         CV::line(inicio_linha_oposta, inicio_linha_oposta + vetor_direcao * 50);
 
-        printf("Origem: %f %f\n", origem.x, origem.y);
         CV::color(1, 1, 1);
         CV::circle(origem, 10, 20);
 
@@ -175,16 +180,20 @@ class Bola{
 
     Bola(){
         posicao = Vector2(0, 0);
-        velocidade = 5;
+        velocidade = 0;
         direcao = Vector2(0, 0);
-        raio = 5;
+        raio = 0;
         cor = 2;
     }
 
-    void lancarBola(Canhao& canhao){
-        posicao = canhao.origem;
-        direcao = canhao.vetor_direcao;
-        direcao.normalize();
+    void setBola(Canhao& canhao){
+        this->posicao = canhao.origem;
+        this->velocidade = 5;
+        this->direcao = canhao.vetor_direcao;
+        this->direcao.normalize();
+        this->raio = 5;
+        printf("Posicao: %f %f\n", posicao.x, posicao.y);
+        printf("Canhao: %f %f\n", canhao.origem.x, canhao.origem.y);
     }
 
     void desenhaBola(){
@@ -193,7 +202,7 @@ class Bola{
     }
 
     void moverBola(float deltaTime){
-        posicao = posicao + direcao * velocidade * deltaTime;
+        this->posicao = posicao + direcao * velocidade * deltaTime;
     }
     
 };
@@ -205,6 +214,7 @@ class Controle{
     int pontos;
     std::vector<Bola> bolas;
     Tabuleiro tabuleiro;
+    Canhao canhao;
 
     bool jogando;
 
@@ -214,10 +224,12 @@ class Controle{
         jogando = false;
     }
 
-    void setBolas(int num_bolas){
+    void adicionarBolas(int num_bolas){
         for(int i = 0; i < num_bolas; i++){
             Bola bola;
+            bola.setBola(canhao);
             bolas.push_back(bola);
+            printf("Posicao aaaaa: %f %f\n", bola.posicao.x, bola.posicao.y);
         }
     }
 
@@ -225,14 +237,11 @@ class Controle{
         this->tabuleiro = tabuleiro;
     }
 
-    void executaJogada(Canhao& canhao, clock_t deltaTime, bool *primeira_vez){
-        if(*primeira_vez){
-            for(auto& bola: bolas){
-                bola.lancarBola(canhao);
-            }
-            *primeira_vez = false;
-        }
+    void setCanhao(Canhao canhao){
+        this->canhao = canhao;
+    }
 
+    void executaJogada(Canhao& canhao, clock_t deltaTime){
         for(auto& bola: bolas){
             bola.moverBola(deltaTime);
             testaColisaoTabuleiro(tabuleiro, bola);
@@ -246,8 +255,8 @@ class Controle{
         if(bola.posicao.x - bola.raio < tabuleiro.extremos_tabuleiro[0].x || bola.posicao.x + bola.raio > tabuleiro.extremos_tabuleiro[2].x){
             bola.direcao.x *= -1;
         }
-        if(bola.posicao.y + bola.raio > tabuleiro.extremos_tabuleiro[0].y - 280 || bola.posicao.y - bola.raio < tabuleiro.extremos_tabuleiro[2].y - 280 ){
-        bola.direcao.y *= -1;
-    }
+        if(bola.posicao.y + bola.raio > tabuleiro.extremos_tabuleiro[0].y || bola.posicao.y - bola.raio < tabuleiro.extremos_tabuleiro[2].y){
+            bola.direcao.y *= -1;
+        }
     }
 };

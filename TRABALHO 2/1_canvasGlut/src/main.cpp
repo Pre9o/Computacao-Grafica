@@ -68,9 +68,6 @@ Canhao canhao;
 
 Controle controle;
 
-Bola bola;
-
-
 
 // Função para renderizar a tela
 void render(){
@@ -91,17 +88,21 @@ clock_t start = clock();
       tabuleiro.setTabuleiro();
       tabuleiro.desenhaTabuleiro();
 
+      canhao.setTabuleiro(tabuleiro);
+      controle.setTabuleiro(tabuleiro);
+      controle.setCanhao(canhao);
+
       for(auto& linha : tabuleiro.matriz_tabuleiro){
          for(Bloco& bloco : linha){
             bloco.desenhaBloco();
          }
       }
-
-      canhao.desenhaCanhao(tabuleiro.extremos_tabuleiro);
+      canhao.desenhaCanhao();
 
       for(auto& bola: controle.bolas){
          bola.desenhaBola();
       }
+
       break;
    default:
       break;
@@ -114,7 +115,7 @@ clock_t start = clock();
       double tempo_inicio = (double)(now - intervalo_tempo_inicio) / CLOCKS_PER_SEC;
 
       if(time > 1.0/60.0 && tempo_inicio > 2.0){
-         controle.executaJogada(canhao, time, &primeira_vez);
+         controle.executaJogada(canhao, time);
          inicio_a = time;
       }
    }
@@ -216,10 +217,13 @@ int main(){
 
    tabuleiro.definirBlocos();
 
-   controle.setBolas(1);
+   canhao.setTabuleiro(tabuleiro); 
+
+   controle.setCanhao(canhao);
 
    controle.setTabuleiro(tabuleiro);
-
+   
+   controle.adicionarBolas(1);
 
    srand(time(NULL));
 
