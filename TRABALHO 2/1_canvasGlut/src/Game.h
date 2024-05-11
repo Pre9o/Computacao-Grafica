@@ -156,6 +156,7 @@ class Canhao{
         CV::color(0, 1, 0);
         CV::line(inicio_linha_oposta, inicio_linha_oposta + vetor_direcao * 50);
 
+        printf("Origem: %f %f\n", origem.x, origem.y);
         CV::color(1, 1, 1);
         CV::circle(origem, 10, 20);
 
@@ -184,7 +185,6 @@ class Bola{
         posicao = canhao.origem;
         direcao = canhao.vetor_direcao;
         direcao.normalize();
-        velocidade = 5;
     }
 
     void desenhaBola(){
@@ -193,13 +193,9 @@ class Bola{
     }
 
     void moverBola(float deltaTime){
-        posicao = posicao + direcao * velocidade * deltaTime * 0.1;
-        printf("Posicao: %f %f\n", posicao.x, posicao.y);
-        printf("Direcao: %f %f\n", direcao.x, direcao.y);
-        printf("Velocidade: %d\n", velocidade);
-        printf("DeltaTime: %f\n", deltaTime);
+        posicao = posicao + direcao * velocidade * deltaTime;
     }
-
+    
 };
 
 
@@ -208,28 +204,50 @@ class Controle{
     int nivel;
     int pontos;
     std::vector<Bola> bolas;
+    Tabuleiro tabuleiro;
 
     bool jogando;
 
     Controle(){
         nivel = 1;
         pontos = 0;
-        jogando = true;
+        jogando = false;
     }
 
-    void setBolas(){
-        Bola bola;
-        bolas.push_back(bola);
+    void setBolas(int num_bolas){
+        for(int i = 0; i < num_bolas; i++){
+            Bola bola;
+            bolas.push_back(bola);
+        }
+    }
+
+    void setTabuleiro(Tabuleiro tabuleiro){
+        this->tabuleiro = tabuleiro;
     }
 
     void executaJogada(Canhao& canhao, clock_t deltaTime, bool *primeira_vez){
-    if(*primeira_vez){
-        bolas[0].lancarBola(canhao);
-        *primeira_vez = false;
+        if(*primeira_vez){
+            for(auto& bola: bolas){
+                bola.lancarBola(canhao);
+            }
+            *primeira_vez = false;
+        }
+
+        for(auto& bola: bolas){
+            bola.moverBola(deltaTime);
+            testaColisaoTabuleiro(tabuleiro, bola);
+            //printf("Posicao: %f %f\n", bola.posicao.x, bola.posicao.y);
+            //printf("Extremos: %f %f %f %f\n", tabuleiro.extremos_tabuleiro[0].x, tabuleiro.extremos_tabuleiro[0].y, tabuleiro.extremos_tabuleiro[2].x, tabuleiro.extremos_tabuleiro[2].y);
+            //printf("Direcao: %f %f\n", bola.direcao.x, bola.direcao.y);
+        }
     }
 
-    for(auto& bola: bolas){
-        bola.moverBola(deltaTime);
+    void testaColisaoTabuleiro(Tabuleiro& tabuleiro, Bola& bola){
+        if(bola.posicao.x - bola.raio < tabuleiro.extremos_tabuleiro[0].x || bola.posicao.x + bola.raio > tabuleiro.extremos_tabuleiro[2].x){
+            bola.direcao.x *= -1;
+        }
+        if(bola.posicao.y + bola.raio > tabuleiro.extremos_tabuleiro[0].y - 280 || bola.posicao.y - bola.raio < tabuleiro.extremos_tabuleiro[2].y - 280 ){
+        bola.direcao.y *= -1;
     }
     }
 };

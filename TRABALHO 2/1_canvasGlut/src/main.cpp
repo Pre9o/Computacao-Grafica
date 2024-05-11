@@ -39,7 +39,10 @@ Feito por Rafael Carneiro Pregardier.
 
 // Início do tempo para calcular a duração da execução do programa
 std::chrono::steady_clock::time_point inicio;
+
 clock_t inicio_a = clock();
+
+clock_t intervalo_tempo_inicio = clock();
 
 #define MAX_IMAGES 3
 
@@ -50,9 +53,7 @@ int opcaoMenu = 0;
 int mouseX, mouseY;
 int clicando = 0;
 
-bool jogando = false;
 bool primeira_vez = true;
-
 
 int menuOpcao = 0;
 
@@ -106,14 +107,17 @@ clock_t start = clock();
       break;
    }
 
-   clock_t now = clock();
-   double time = (double)(now - inicio_a) / CLOCKS_PER_SEC;
+   if(controle.jogando){
+      clock_t now = clock();
+      double time = (double)(now - inicio_a) / CLOCKS_PER_SEC;
 
-   if(time > 1.0/60.0){
-      controle.executaJogada(canhao, time, &jogando);
-      inicio_a = time;
+      double tempo_inicio = (double)(now - intervalo_tempo_inicio) / CLOCKS_PER_SEC;
+
+      if(time > 1.0/60.0 && tempo_inicio > 2.0){
+         controle.executaJogada(canhao, time, &primeira_vez);
+         inicio_a = time;
+      }
    }
-   
 
     clock_t end = clock();
     float duration = (float)(end - start) / CLOCKS_PER_SEC;
@@ -154,12 +158,7 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
    }
 
    if (button == 0) {
-      // Se o botão esquerdo do mouse foi pressionado, verifica se uma imagem foi clicada
-
-      jogando = true;
-        
-
-
+      // Se o botão esquerdo do mouse foi pressionado, verifica se uma imagem foi clicada       
       for (Bmp* image : imageManager.images) {
             if (image->contains(x, y && imageManager.draggingImage == nullptr)) {
                imageManager.selectedImage = image;
@@ -190,6 +189,9 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
                }
             }
          }
+         if(opcaoMenu == 1){
+            controle.jogando = true;
+         }
       }
    }
 }
@@ -203,7 +205,7 @@ int main(){
    inicio = std::chrono::steady_clock::now();
 
    // Constrói os botões na barra lateral
-   sidebar.ConstruirBotoesMenuInicial(&opcaoMenu);
+   sidebar.ConstruirBotoesMenuInicial(&opcaoMenu, &intervalo_tempo_inicio);
 
    tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 300, screenHeight/2 + 400));
    tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 260, screenHeight/2 + 401));
@@ -214,7 +216,9 @@ int main(){
 
    tabuleiro.definirBlocos();
 
-   controle.setBolas();
+   controle.setBolas(1);
+
+   controle.setTabuleiro(tabuleiro);
 
 
    srand(time(NULL));
