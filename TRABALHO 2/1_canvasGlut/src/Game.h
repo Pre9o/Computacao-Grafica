@@ -31,11 +31,11 @@ class Bloco{
         extremos_bloco = extremos;
     }
 
-    void setBloco(){
+    void setBloco(int i){
         cor = rand() % 20;
         tipo = rand() % 100 < 80 ? 0 : rand() % 100 < 95 ? 1 : rand() % 100 < 99 ? 2 : 3;
         chanceSerGerado = rand() % 100 < 50 ? 1 : 0;
-        selecionado = (chanceSerGerado == 1) ? true : false;
+        selecionado = (i == 7) ? true : false;
         pontos = 10;
     }
 
@@ -84,7 +84,7 @@ class Tabuleiro {
     void definirBlocos(){
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 7; j++){
-                matriz_tabuleiro[i][j].setBloco();
+                matriz_tabuleiro[i][j].setBloco(i);
             }
         }
     }
@@ -113,20 +113,25 @@ class Canhao{
     Vector2 inicio_linha;
     Vector2 inicio_linha_oposta;
 
+    Tabuleiro tabuleiro;
+
     float angulo_circulo_mouse;
 
     Canhao(){
-        Tabuleiro tabuleiro;
-
         mouse_pos = Vector2(0, 0);
         origem = Vector2(0, 0);
         vetor_direcao = Vector2(0, 0);
         angulo_circulo_mouse = 0;
     }
 
-    void setTabuleiro(Tabuleiro tabuleiro){
+    void setCanhao(Tabuleiro& tabuleiro){
         origem = Vector2((tabuleiro.extremos_tabuleiro[0].x + tabuleiro.extremos_tabuleiro[1].x) / 2, tabuleiro.extremos_tabuleiro[3].y + 10);
-        printf("Origem: %f %f\n", origem.x, origem.y);
+
+        angulo_circulo_mouse = atan2(mouse_pos.y - origem.y, mouse_pos.x - origem.x);
+
+        vetor_direcao = mouse_pos - origem;
+        vetor_direcao.normalize();
+
     }
 
     void setMousePos(Vector2 pos){
@@ -145,11 +150,6 @@ class Canhao{
     }
 
     void desenhaCanhao(){
-        angulo_circulo_mouse = atan2(mouse_pos.y - origem.y, mouse_pos.x - origem.x);
-
-        Vector2 vetor_direcao = mouse_pos - origem;
-        vetor_direcao.normalize();
-
         // Calcular a posição inicial da linha na borda do círculo
         Vector2 inicio_linha = origem + Vector2(cos(angulo_circulo_mouse - M_PI/2), sin(angulo_circulo_mouse - M_PI/2)) * 10;
 
@@ -188,12 +188,10 @@ class Bola{
 
     void setBola(Canhao& canhao){
         this->posicao = canhao.origem;
-        this->velocidade = 5;
+        this->velocidade = 500;
         this->direcao = canhao.vetor_direcao;
         this->direcao.normalize();
         this->raio = 5;
-        printf("Posicao: %f %f\n", posicao.x, posicao.y);
-        printf("Canhao: %f %f\n", canhao.origem.x, canhao.origem.y);
     }
 
     void desenhaBola(){
@@ -201,8 +199,12 @@ class Bola{
         CV::circle(posicao, raio, 50);
     }
 
-    void moverBola(float deltaTime){
-        this->posicao = posicao + direcao * velocidade * deltaTime;
+    void moverBola(double deltaTime){
+        this->posicao = this->posicao + this->direcao * this->velocidade * deltaTime;
+        //printf("POSICAO BOLA: %f %f\n", posicao.x, posicao.y);
+        //printf("DIRECAO BOLA: %f %f\n", direcao.x, direcao.y);
+        //printf("VELOCIDADE BOLA: %d\n", velocidade);
+        //printf("DELTA TIME: %f\n", deltaTime);
     }
     
 };
@@ -227,9 +229,8 @@ class Controle{
     void adicionarBolas(int num_bolas){
         for(int i = 0; i < num_bolas; i++){
             Bola bola;
-            bola.setBola(canhao);
             bolas.push_back(bola);
-            printf("Posicao aaaaa: %f %f\n", bola.posicao.x, bola.posicao.y);
+            printf("POSICAO BOLA: %f %f\n", bola.posicao.x, bola.posicao.y);
         }
     }
 
@@ -241,22 +242,41 @@ class Controle{
         this->canhao = canhao;
     }
 
-    void executaJogada(Canhao& canhao, clock_t deltaTime){
+    void executaJogada(double deltaTime){
+        Bola bolaAntesColisao;
         for(auto& bola: bolas){
+            bolaAntesColisao = bola;
             bola.moverBola(deltaTime);
-            testaColisaoTabuleiro(tabuleiro, bola);
-            //printf("Posicao: %f %f\n", bola.posicao.x, bola.posicao.y);
-            //printf("Extremos: %f %f %f %f\n", tabuleiro.extremos_tabuleiro[0].x, tabuleiro.extremos_tabuleiro[0].y, tabuleiro.extremos_tabuleiro[2].x, tabuleiro.extremos_tabuleiro[2].y);
-            //printf("Direcao: %f %f\n", bola.direcao.x, bola.direcao.y);
+            if(testaColisaoTabuleiro(tabuleiro, bola) || testaColisaoBlocos(tabuleiro, bola)){
+                bola.posicao = bolaAntesColisao.posicao;
+            }
         }
     }
 
-    void testaColisaoTabuleiro(Tabuleiro& tabuleiro, Bola& bola){
+    bool testaColisaoTabuleiro(Tabuleiro& tabuleiro, Bola& bola){
         if(bola.posicao.x - bola.raio < tabuleiro.extremos_tabuleiro[0].x || bola.posicao.x + bola.raio > tabuleiro.extremos_tabuleiro[2].x){
             bola.direcao.x *= -1;
+            return true;
         }
         if(bola.posicao.y + bola.raio > tabuleiro.extremos_tabuleiro[0].y || bola.posicao.y - bola.raio < tabuleiro.extremos_tabuleiro[2].y){
             bola.direcao.y *= -1;
+            return true;
         }
+        return false;
+    }
+    
+    bool testaColisaoBlocos(Tabuleiro& tabuleiro, Bola& bola){
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 7; j++){
+                if(tabuleiro.matriz_tabuleiro[i][j].selecionado == true){
+                    if(bola.posicao.x + bola.raio > tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[0].x && bola.posicao.x - bola.raio < tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[1].x && bola.posicao.y + bola.raio > tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[0].y && bola.posicao.y - bola.raio < tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[2].y){
+                        tabuleiro.matriz_tabuleiro[i][j].selecionado = false;
+                        bola.direcao.y *= -1;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 };

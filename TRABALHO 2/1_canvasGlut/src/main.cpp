@@ -40,14 +40,14 @@ Feito por Rafael Carneiro Pregardier.
 // Início do tempo para calcular a duração da execução do programa
 std::chrono::steady_clock::time_point inicio;
 
-clock_t inicio_a = clock();
+clock_t lastTime = clock();
 
 clock_t intervalo_tempo_inicio = clock();
 
 #define MAX_IMAGES 3
 
 // Dimensões da tela
-int screenWidth = 1620, screenHeight = 700;
+int screenWidth = 1620, screenHeight = 900;
 
 int opcaoMenu = 0;
 int mouseX, mouseY;
@@ -86,9 +86,10 @@ clock_t start = clock();
    case 1:
       tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 + 401), Vector2(screenWidth/2 + 261, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
       tabuleiro.setTabuleiro();
+
       tabuleiro.desenhaTabuleiro();
 
-      canhao.setTabuleiro(tabuleiro);
+      canhao.setCanhao(tabuleiro);
       controle.setTabuleiro(tabuleiro);
       controle.setCanhao(canhao);
 
@@ -103,29 +104,31 @@ clock_t start = clock();
          bola.desenhaBola();
       }
 
+      if(controle.jogando){
+         clock_t now = clock();
+         double deltaTime = (double)(now - lastTime) / 1000.0f;
+
+         double tempo_inicio = (double)(now - intervalo_tempo_inicio) / CLOCKS_PER_SEC;
+
+         if(deltaTime > 1.0/60.0f && tempo_inicio > 2.0){
+            //printf("DELTA PORRA TIME: %f\n", deltaTime);
+            controle.executaJogada(deltaTime);
+            lastTime = now;
+         }
+      }
       break;
+
    default:
       break;
    }
 
-   if(controle.jogando){
-      clock_t now = clock();
-      double time = (double)(now - inicio_a) / CLOCKS_PER_SEC;
-
-      double tempo_inicio = (double)(now - intervalo_tempo_inicio) / CLOCKS_PER_SEC;
-
-      if(time > 1.0/60.0 && tempo_inicio > 2.0){
-         controle.executaJogada(canhao, time);
-         inicio_a = time;
-      }
-   }
 
     clock_t end = clock();
     float duration = (float)(end - start) / CLOCKS_PER_SEC;
-    float frameTime = 1.0f / 60.0f; // Para 60 FPS
+    float framedeltaTime = 1.0f / 60.0f; // Para 60 FPS
 
-    if (duration < frameTime) {
-        Sleep((frameTime - duration) * 1000);
+    if (duration < framedeltaTime) {
+        Sleep((framedeltaTime - duration) * 1000);
     }
 
 }
@@ -192,6 +195,9 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
          }
          if(opcaoMenu == 1){
             controle.jogando = true;
+            for(auto& bola: controle.bolas){
+               bola.setBola(canhao);
+            }
          }
       }
    }
@@ -200,7 +206,7 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
 // Função principal
 int main(){
    // Inicializa a tela com as dimensões especificadas e o título da janela
-   CV::init(screenHeight, screenWidth, "Rafael Carneiro Pregardier");
+   CV::init(screenWidth, screenHeight, "Rafael Carneiro Pregardier");
 
    // Marca o início do tempo
    inicio = std::chrono::steady_clock::now();
@@ -213,16 +219,20 @@ int main(){
    tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 261, screenHeight/2 - 400));
    tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
 
-   printf("Extremos: X:%f Y:%f X:%f Y:%f\n", tabuleiro.extremos_tabuleiro[0].x, tabuleiro.extremos_tabuleiro[0].y, tabuleiro.extremos_tabuleiro[2].x, tabuleiro.extremos_tabuleiro[2].y);
+   tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 + 401), Vector2(screenWidth/2 + 261, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
+   tabuleiro.setTabuleiro();
+
+   //printf("Extremos: X:%f Y:%f X:%f Y:%f\n", tabuleiro.extremos_tabuleiro[0].x, tabuleiro.extremos_tabuleiro[0].y, tabuleiro.extremos_tabuleiro[2].x, tabuleiro.extremos_tabuleiro[2].y);
 
    tabuleiro.definirBlocos();
 
-   canhao.setTabuleiro(tabuleiro); 
+   canhao.setCanhao(tabuleiro); 
+   printf("Canhao: X:%f Y:%f\n", canhao.origem.x, canhao.origem.y);
+
+   controle.setTabuleiro(tabuleiro);
 
    controle.setCanhao(canhao);
 
-   controle.setTabuleiro(tabuleiro);
-   
    controle.adicionarBolas(1);
 
    srand(time(NULL));
