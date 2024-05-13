@@ -35,7 +35,7 @@ class Bloco{
         cor = rand() % 20;
         tipo = rand() % 100 < 80 ? 0 : rand() % 100 < 95 ? 1 : rand() % 100 < 99 ? 2 : 3;
         chanceSerGerado = rand() % 100 < 50 ? 1 : 0;
-        selecionado = (i == 7) ? true : false;
+        selecionado = (i == 7) ? (rand() % 100 < 50 ? true : false) : false;
         pontos = 10;
     }
 
@@ -269,10 +269,68 @@ class Controle{
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 7; j++){
                 if(tabuleiro.matriz_tabuleiro[i][j].selecionado == true){
-                    if(bola.posicao.x + bola.raio > tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[0].x && bola.posicao.x - bola.raio < tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[1].x && bola.posicao.y + bola.raio > tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[0].y && bola.posicao.y - bola.raio < tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[2].y){
-                        tabuleiro.matriz_tabuleiro[i][j].selecionado = false;
-                        bola.direcao.y *= -1;
-                        return true;
+                    // Calcula a distância da bola e o quadrado do bloco
+                    for(int k = 0; k < 4; k++){
+                        float testX = bola.posicao.x;
+                        float testY = bola.posicao.y;
+
+                        if(bola.posicao.x < tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].x){
+                            testX = tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].x;
+                        }
+                        else if(bola.posicao.x > tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].x + tabuleiro.matriz_tabuleiro[i][j].tamanho.x){
+                            testX = tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].x + tabuleiro.matriz_tabuleiro[i][j].tamanho.x;
+                        }
+                        if(bola.posicao.y < tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].y){
+                            testY = tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].y;
+                        }
+                        else if(bola.posicao.y > tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].y + tabuleiro.matriz_tabuleiro[i][j].tamanho.y){
+                            testY = tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].y + tabuleiro.matriz_tabuleiro[i][j].tamanho.y;
+                        }
+
+                        float distX = bola.posicao.x - testX;
+                        float distY = bola.posicao.y - testY;
+
+                        float distance = sqrt((distX * distX) + (distY * distY));
+
+                        if(distance <= bola.raio){
+                            // calcular em qual lado a bola colidiu
+                            float dx = bola.posicao.x - testX;
+                            float dy = bola.posicao.y - testY;
+
+                            if(dx > 0 && dy > 0){
+                                if(dx > dy){
+                                    bola.direcao.x *= -1;
+                                }
+                                else{
+                                    bola.direcao.y *= -1;
+                                }
+                            }
+                            else if(dx > 0 && dy < 0){
+                                if(dx > -dy){
+                                    bola.direcao.x *= -1;
+                                }
+                                else{
+                                    bola.direcao.y *= -1;
+                                }
+                            }
+                            else if(dx < 0 && dy > 0){
+                                if(-dx > dy){
+                                    bola.direcao.x *= -1;
+                                }
+                                else{
+                                    bola.direcao.y *= -1;
+                                }
+                            }
+                            else if(dx < 0 && dy < 0){
+                                if(-dx > -dy){
+                                    bola.direcao.x *= -1;
+                                }
+                                else{
+                                    bola.direcao.y *= -1;
+                                }
+                            }
+                            return true;
+                        }
                     }
                 }
             }
