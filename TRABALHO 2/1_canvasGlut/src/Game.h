@@ -14,7 +14,6 @@ class Bloco{
     std::vector<Vector2> extremos_bloco;
     int cor;
     int tipo; //0 = Quadrado, 1 = Triangulo, 2 = Retangulo, 3 = PowerUp
-    int chanceSerGerado;
     bool ativo;
     int pontos;
 
@@ -22,8 +21,7 @@ class Bloco{
         tamanho = Vector2(80, 80); //80x80
         cor = 0;
         tipo = 0;
-        chanceSerGerado = 0;
-        ativo = false;
+        this->ativo = false;
         pontos = 0;
     }
 
@@ -31,12 +29,39 @@ class Bloco{
         extremos_bloco = extremos;
     }
 
-    void setBloco(int i){
+    void setBloco(int i, int pontos, std::vector<Bloco>& blocos_ativos, int blocos_maximo_do_nivel){
+        printf("BLOCO: %d\n", i);
         cor = rand() % 20;
-        tipo = rand() % 100 < 80 ? 0 : rand() % 100 < 95 ? 1 : rand() % 100 < 99 ? 2 : 3;
-        chanceSerGerado = rand() % 100 < 50 ? 1 : 0;
-        ativo = (i == 7) ? true : false;
-        pontos = 10;
+        tipo = 0;
+        this->ativo = this->definirBlocoAtivo(i, blocos_ativos, blocos_maximo_do_nivel);
+        this->pontos = pontos;
+    }
+
+    bool definirBlocoAtivo(int i, std::vector<Bloco>& blocos_ativos, int blocos_maximo_do_nivel){
+        if(i == 7 && blocos_ativos.size() < blocos_maximo_do_nivel){
+            if(rand() % 100 < 10){
+                printf("BLOCO ATIVO\n");
+                blocos_ativos.push_back(*this);
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    Vector2 getPosicao(){
+        return extremos_bloco[0];
+    }
+
+    Vector2 getTamanho(){
+        return tamanho;
+    }
+
+    void diminuirPontos(){
+        this->pontos = this->pontos -= 1;
+        if(this->pontos == 0){
+            this->ativo = false;
+        }
     }
 
     void desenhaBloco(){
@@ -62,27 +87,27 @@ class Bloco{
 class Tabuleiro {
     public:
     std::vector<Vector2> extremos_tabuleiro;
+    std::vector<Bloco> blocos_ativos;
+
     Bloco matriz_tabuleiro[10][7];
     Bloco matriz_tabuleiro_aux[10][7];
 
     void setTabuleiro() {
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 7; j++){
-                if(i == 7){
-                    Vector2 p1 = Vector2(extremos_tabuleiro[0].x + (j * 80), extremos_tabuleiro[3].y + (i * 80));
-                    Vector2 p2 = Vector2(extremos_tabuleiro[0].x + (j * 80) + 80, extremos_tabuleiro[3].y + (i * 80));
-                    Vector2 p3 = Vector2(extremos_tabuleiro[0].x + (j * 80) + 80, extremos_tabuleiro[3].y + (i * 80) + 80);
-                    Vector2 p4 = Vector2(extremos_tabuleiro[0].x + (j * 80), extremos_tabuleiro[3].y + (i * 80) + 80);
-                    matriz_tabuleiro[i][j].setExtremosBloco({p1, p2, p3, p4});
-                }
+                Vector2 p1 = Vector2(extremos_tabuleiro[0].x + (j * 80), extremos_tabuleiro[3].y + (i * 80));
+                Vector2 p2 = Vector2(extremos_tabuleiro[0].x + (j * 80) + 80, extremos_tabuleiro[3].y + (i * 80));
+                Vector2 p3 = Vector2(extremos_tabuleiro[0].x + (j * 80) + 80, extremos_tabuleiro[3].y + (i * 80) + 80);
+                Vector2 p4 = Vector2(extremos_tabuleiro[0].x + (j * 80), extremos_tabuleiro[3].y + (i * 80) + 80);
+                matriz_tabuleiro[i][j].setExtremosBloco({p1, p2, p3, p4});
             }
         }
     }
 
-    void definirBlocos(){
+    void definirBlocos(int pontos, int blocos_maximo_do_nivel){
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 7; j++){
-                matriz_tabuleiro[i][j].setBloco(i);
+                matriz_tabuleiro[i][j].setBloco(i, pontos, blocos_ativos, blocos_maximo_do_nivel);
             }
         }
     }
@@ -193,16 +218,12 @@ class Bola{
     }
 
     void desenhaBola(){
-        CV::color(cor);
-        CV::circle(posicao, raio, 50);
+        CV::color(1, 1, 1);
+        CV::circleFill(posicao, raio, 50);
     }
 
     void moverBola(double deltaTime){
         this->posicao = this->posicao + this->direcao * this->velocidade * deltaTime;
-        //printf("POSICAO BOLA: %f %f\n", posicao.x, posicao.y);
-        //printf("DIRECAO BOLA: %f %f\n", direcao.x, direcao.y);
-        //printf("VELOCIDADE BOLA: %d\n", velocidade);
-        //printf("DELTA TIME: %f\n", deltaTime);
     }
     
 };
@@ -211,7 +232,8 @@ class Bola{
 class Controle{
     public:
     int nivel;
-    int pontos;
+    int pontosIniciaisDoBloco;
+    int blocosMaximoDoNivel;
     std::vector<Bola> bolas;
     Tabuleiro tabuleiro;
     Canhao canhao;
@@ -220,7 +242,7 @@ class Controle{
 
     Controle(){
         nivel = 1;
-        pontos = 0;
+        pontosIniciaisDoBloco = 0;
         jogando = false;
     }
 
@@ -267,78 +289,75 @@ class Controle{
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 7; j++){
                 if(tabuleiro.matriz_tabuleiro[i][j].ativo == true){
-                    // Calcula a distância da bola e o quadrado do bloco
-                    for(int k = 0; k < 4; k++){
-                        float testX = bola.posicao.x;
-                        float testY = bola.posicao.y;
+                    Vector2 posicao_bloco = tabuleiro.matriz_tabuleiro[i][j].getPosicao();
+                    Vector2 tamanho_bloco = tabuleiro.matriz_tabuleiro[i][j].getTamanho();
 
-                        if(bola.posicao.x < tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].x){
-                            testX = tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].x;
-                        }
-                        else if(bola.posicao.x > tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].x + tabuleiro.matriz_tabuleiro[i][j].tamanho.x){
-                            testX = tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].x + tabuleiro.matriz_tabuleiro[i][j].tamanho.x;
-                        }
-                        if(bola.posicao.y < tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].y){
-                            testY = tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].y;
-                        }
-                        else if(bola.posicao.y > tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].y + tabuleiro.matriz_tabuleiro[i][j].tamanho.y){
-                            testY = tabuleiro.matriz_tabuleiro[i][j].extremos_bloco[k].y + tabuleiro.matriz_tabuleiro[i][j].tamanho.y;
-                        }
+                    float distancia_x = 0;
+                    float distancia_y = 0;
 
-                        float distX = bola.posicao.x - testX;
-                        float distY = bola.posicao.y - testY;
+                    if(bola.posicao.x < posicao_bloco.x){
+                        distancia_x = posicao_bloco.x + tamanho_bloco.x/2 - bola.posicao.x - bola.raio;
+                    }
+                    else if(bola.posicao.x >= posicao_bloco.x){
+                        distancia_x = bola.posicao.x + bola.raio - (posicao_bloco.x + tamanho_bloco.x/2);
+                    }
+                    
+                    if(bola.posicao.y < posicao_bloco.y){
+                        distancia_y = posicao_bloco.y + tamanho_bloco.y/2 - bola.posicao.y - bola.raio;
+                    }
+                    else if(bola.posicao.y >= posicao_bloco.y){
+                        distancia_y = bola.posicao.y + bola.raio - (posicao_bloco.y + tamanho_bloco.y/2);
+                    }
+                    
+                    float dx = distancia_x - tamanho_bloco.x/2;
+                    float dy = distancia_y - tamanho_bloco.y/2;
 
-                        float distance = sqrt((distX * distX) + (distY * distY));
 
-                        if(distance <= bola.raio){
-                            // calcular em qual lado a bola colidiu
-                            float dx = bola.posicao.x - testX;
-                            float dy = bola.posicao.y - testY;
+                    if(dx <= bola.raio && dy <= bola.raio){
+                        printf("Posicao Bola: %f %f\n", bola.posicao.x, bola.posicao.y);
 
-                            printf("dx: %f dy: %f\n", dx, dy);
+                        printf("POSICAO BLOCO: %f %f\n", posicao_bloco.x, posicao_bloco.y);
+                        printf("TAMANHO BLOCO: %f %f\n", tamanho_bloco.x, tamanho_bloco.y);
 
-                            if(dx > 0 || dy > 0){
-                                printf("dx > 0 && dy > 0\n");
-                                if(dx > dy){
-                                    bola.direcao.x *= -1;
-                                }
-                                else{
-                                    bola.direcao.y *= -1;
-                                }
+                        printf("DISTANCIA X: %f\n", distancia_x);
+                        printf("DISTANCIA Y: %f\n", distancia_y);
+
+                        printf("DX: %f\n", dx);
+                        printf("DY: %f\n", dy);
+
+                        if(distancia_y > distancia_x){
+                            if(dy > 0){
+                                bola.direcao.y *= -1;
                             }
-                            else if(dx > 0 || dy < 0){
-                                printf("dx > 0 && dy < 0\n");
-                                if(dx > -dy){
-                                    bola.direcao.x *= -1;
-                                }
-                                else{
-                                    bola.direcao.y *= -1;
-                                }
+                            else{
+                                bola.direcao.y *= -1;
                             }
-                            else if(dx < 0 || dy > 0){
-                                printf("dx < 0 && dy > 0\n");
-                                if(-dx > dy){
-                                    bola.direcao.x *= -1;
-                                }
-                                else{
-                                    bola.direcao.y *= -1;
-                                }
-                            }
-                            else if(dx < 0 || dy < 0){
-                                printf("dx < 0 && dy < 0\n");
-                                if(-dx > -dy){
-                                    bola.direcao.x *= -1;
-                                }
-                                else{
-                                    bola.direcao.y *= -1;
-                                }
-                            }
-                            return true;
                         }
+                        else{
+                            if(dx > 0){
+                                bola.direcao.x *= -1;
+                            }
+                            else{
+                                bola.direcao.x *= -1;
+                            }
+                        }
+                        tabuleiro.matriz_tabuleiro[i][j].diminuirPontos();
+                        printf("PONTOS BLOCO: %d\n", this->tabuleiro.matriz_tabuleiro[i][j].pontos);
+                        return true;
                     }
                 }
-            }
+            }   
         }
         return false;
+    }
+
+    void gerarNivel(){
+        if(nivel % 10 != 0){
+            printf("NIVEL: %d\n", nivel);
+            this->pontosIniciaisDoBloco = nivel;
+            this->blocosMaximoDoNivel = nivel % 10;
+            this->tabuleiro.definirBlocos(nivel, blocosMaximoDoNivel);
+        }
+        
     }
 };

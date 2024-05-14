@@ -214,6 +214,7 @@ void CV::circle( float x, float y, float radius, int div )
    glEnd();
 }
 
+
 void CV::circle(Vector2 p, float radius, int div)
 {
    circle(p.x, p.y, radius, div);
@@ -232,6 +233,11 @@ void CV::circleFill( float x, float y, float radius, int div )
          ang+=inc;
       }
    glEnd();
+}
+
+void CV::circleFill(Vector2 p, float radius, int div)
+{
+   circleFill(p.x, p.y, radius, div);
 }
 
 //coordenada de offset para desenho de objetos.

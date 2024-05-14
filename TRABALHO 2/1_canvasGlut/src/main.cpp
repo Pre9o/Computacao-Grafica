@@ -90,10 +90,10 @@ clock_t start = clock();
       tabuleiro.desenhaTabuleiro();
 
       canhao.setCanhao(tabuleiro);
-      controle.setTabuleiro(tabuleiro);
+      //controle.setTabuleiro(tabuleiro);
       controle.setCanhao(canhao);
 
-      for(auto& linha : tabuleiro.matriz_tabuleiro){
+      for(auto& linha : controle.tabuleiro.matriz_tabuleiro){
          for(Bloco& bloco : linha){
             if(bloco.ativo == true){
                bloco.desenhaBloco();
@@ -226,12 +226,12 @@ int main(){
 
    //printf("Extremos: X:%f Y:%f X:%f Y:%f\n", tabuleiro.extremos_tabuleiro[0].x, tabuleiro.extremos_tabuleiro[0].y, tabuleiro.extremos_tabuleiro[2].x, tabuleiro.extremos_tabuleiro[2].y);
 
-   tabuleiro.definirBlocos();
-
    canhao.setCanhao(tabuleiro); 
    printf("Canhao: X:%f Y:%f\n", canhao.origem.x, canhao.origem.y);
 
    controle.setTabuleiro(tabuleiro);
+
+   controle.gerarNivel();
 
    controle.setCanhao(canhao);
 
