@@ -15,7 +15,7 @@ class Bloco{
     int cor;
     int tipo; //0 = Quadrado, 1 = Triangulo, 2 = Retangulo, 3 = PowerUp
     int chanceSerGerado;
-    bool selecionado;
+    bool ativo;
     int pontos;
 
     Bloco(){
@@ -23,7 +23,7 @@ class Bloco{
         cor = 0;
         tipo = 0;
         chanceSerGerado = 0;
-        selecionado = false;
+        ativo = false;
         pontos = 0;
     }
 
@@ -35,22 +35,20 @@ class Bloco{
         cor = rand() % 20;
         tipo = rand() % 100 < 80 ? 0 : rand() % 100 < 95 ? 1 : rand() % 100 < 99 ? 2 : 3;
         chanceSerGerado = rand() % 100 < 50 ? 1 : 0;
-        selecionado = (i == 7) ? (rand() % 100 < 50 ? true : false) : false;
+        ativo = (i == 7) ? true : false;
         pontos = 10;
     }
 
     void desenhaBloco(){
         for(int i = 0; i < extremos_bloco.size(); i++){
-            if(selecionado){
-                CV::color(cor);
-                CV::rectFill(extremos_bloco[0], extremos_bloco[1], extremos_bloco[2], extremos_bloco[3]);
-                CV::color(1, 1, 1);
-                CV::color(1, 1, 1);
-                CV::text(extremos_bloco[0].x - (CV::getTextWidth(pontos, GLUT_BITMAP_HELVETICA_18)/2) + (tamanho.y/2),
-                        extremos_bloco[0].y + (tamanho.x/10) + (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
-                        pontos,
-                        GLUT_BITMAP_HELVETICA_18);
-            }
+            CV::color(cor);
+            CV::rectFill(extremos_bloco[0], extremos_bloco[1], extremos_bloco[2], extremos_bloco[3]);
+            CV::color(1, 1, 1);
+            CV::color(1, 1, 1);
+            CV::text(extremos_bloco[0].x - (CV::getTextWidth(pontos, GLUT_BITMAP_HELVETICA_18)/2) + (tamanho.y/2),
+                    extremos_bloco[0].y + (tamanho.x/10) + (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
+                    pontos,
+                    GLUT_BITMAP_HELVETICA_18);
         }
     }
 
@@ -268,7 +266,7 @@ class Controle{
     bool testaColisaoBlocos(Tabuleiro& tabuleiro, Bola& bola){
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 7; j++){
-                if(tabuleiro.matriz_tabuleiro[i][j].selecionado == true){
+                if(tabuleiro.matriz_tabuleiro[i][j].ativo == true){
                     // Calcula a distância da bola e o quadrado do bloco
                     for(int k = 0; k < 4; k++){
                         float testX = bola.posicao.x;
@@ -297,7 +295,10 @@ class Controle{
                             float dx = bola.posicao.x - testX;
                             float dy = bola.posicao.y - testY;
 
-                            if(dx > 0 && dy > 0){
+                            printf("dx: %f dy: %f\n", dx, dy);
+
+                            if(dx > 0 || dy > 0){
+                                printf("dx > 0 && dy > 0\n");
                                 if(dx > dy){
                                     bola.direcao.x *= -1;
                                 }
@@ -305,7 +306,8 @@ class Controle{
                                     bola.direcao.y *= -1;
                                 }
                             }
-                            else if(dx > 0 && dy < 0){
+                            else if(dx > 0 || dy < 0){
+                                printf("dx > 0 && dy < 0\n");
                                 if(dx > -dy){
                                     bola.direcao.x *= -1;
                                 }
@@ -313,7 +315,8 @@ class Controle{
                                     bola.direcao.y *= -1;
                                 }
                             }
-                            else if(dx < 0 && dy > 0){
+                            else if(dx < 0 || dy > 0){
+                                printf("dx < 0 && dy > 0\n");
                                 if(-dx > dy){
                                     bola.direcao.x *= -1;
                                 }
@@ -321,7 +324,8 @@ class Controle{
                                     bola.direcao.y *= -1;
                                 }
                             }
-                            else if(dx < 0 && dy < 0){
+                            else if(dx < 0 || dy < 0){
+                                printf("dx < 0 && dy < 0\n");
                                 if(-dx > -dy){
                                     bola.direcao.x *= -1;
                                 }

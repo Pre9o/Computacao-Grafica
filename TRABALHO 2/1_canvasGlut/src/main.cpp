@@ -95,7 +95,9 @@ clock_t start = clock();
 
       for(auto& linha : tabuleiro.matriz_tabuleiro){
          for(Bloco& bloco : linha){
-            bloco.desenhaBloco();
+            if(bloco.ativo == true){
+               bloco.desenhaBloco();
+            }
          }
       }
       canhao.desenhaCanhao();
