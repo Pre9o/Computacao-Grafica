@@ -39,9 +39,7 @@ Feito por Rafael Carneiro Pregardier.
 
 // Início do tempo para calcular a duração da execução do programa
 std::chrono::steady_clock::time_point inicio;
-
-clock_t lastTime = clock();
-
+clock_t lastTime;
 clock_t intervalo_tempo_inicio = clock();
 
 #define MAX_IMAGES 3
@@ -57,6 +55,8 @@ bool primeira_vez = true;
 
 int menuOpcao = 0;
 
+double tempo_inicio = 0;
+
 // Sidebar que contém os botões para manipular as imagens
 Sidebar sidebar;
 // Gerenciador de imagens que contém as imagens carregadas e a imagem selecionada
@@ -67,6 +67,9 @@ Tabuleiro tabuleiro;
 Canhao canhao;
 
 Controle controle;
+
+bool carregado = false;
+bool firstMove = true;
 
 
 // Função para renderizar a tela
@@ -84,14 +87,13 @@ clock_t start = clock();
       }
       break;
    case 1:
-      tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 + 401), Vector2(screenWidth/2 + 261, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
-      tabuleiro.setTabuleiro();
+      controle.controlaJogo();
+      controle.tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 + 401), Vector2(screenWidth/2 + 261, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
+      controle.tabuleiro.setTabuleiro();
 
-      tabuleiro.desenhaTabuleiro();
+      controle.tabuleiro.desenhaTabuleiro();
 
-      canhao.setCanhao(tabuleiro);
-      //controle.setTabuleiro(tabuleiro);
-      controle.setCanhao(canhao);
+      controle.canhao.setCanhao(tabuleiro);
 
       for(auto& linha : controle.tabuleiro.matriz_tabuleiro){
          for(Bloco& bloco : linha){
@@ -100,24 +102,27 @@ clock_t start = clock();
             }
          }
       }
-      canhao.desenhaCanhao();
+      controle.canhao.desenhaCanhao();
 
       for(auto& bola: controle.bolas){
          bola.desenhaBola();
       }
 
       if(controle.jogando){
+         if (firstMove) {
+            lastTime = clock();
+            firstMove = false;
+         }
          clock_t now = clock();
          double deltaTime = (double)(now - lastTime) / 1000.0f;
 
-         double tempo_inicio = (double)(now - intervalo_tempo_inicio) / CLOCKS_PER_SEC;
-
-         if(deltaTime > 1.0/60.0f && tempo_inicio > 2.0){
-            //printf("DELTA PORRA TIME: %f\n", deltaTime);
+         if(deltaTime > 1.0/60.0f){
             controle.executaJogada(deltaTime);
             lastTime = now;
          }
       }
+
+      carregado = true;
       break;
 
    default:
@@ -156,7 +161,7 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
    mouseX = x;
    mouseY = y;
 
-   canhao.setMousePos(Vector2(x, y));
+   controle.canhao.setMousePos(Vector2(x, y));
 
    // Se o botão esquerdo do mouse está sendo pressionado, arrasta a imagem selecionada
    if(clicando){
@@ -195,10 +200,11 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
                }
             }
          }
-         if(opcaoMenu == 1){
+         if(opcaoMenu == 1 && carregado == true){
             controle.jogando = true;
             for(auto& bola: controle.bolas){
-               bola.setBola(canhao);
+               printf("Canhao vetor direcao: X:%f Y:%f\n", controle.canhao.vetor_direcao.x, controle.canhao.vetor_direcao.y);
+               bola.setBola(controle.canhao);
             }
          }
       }

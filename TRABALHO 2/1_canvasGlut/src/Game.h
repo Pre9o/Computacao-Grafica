@@ -39,7 +39,7 @@ class Bloco{
 
     bool definirBlocoAtivo(int i, std::vector<Bloco>& blocos_ativos, int blocos_maximo_do_nivel){
         if(i == 7 && blocos_ativos.size() < blocos_maximo_do_nivel){
-            if(rand() % 100 < 10){
+            if(rand() % 100 < 50){
                 printf("BLOCO ATIVO\n");
                 blocos_ativos.push_back(*this);
                 return true;
@@ -104,6 +104,18 @@ class Tabuleiro {
         }
     }
 
+    int verificaBlocosAtivos(){
+        int blocos_ativos = 0;
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 7; j++){
+                if(matriz_tabuleiro[i][j].ativo == true){
+                    blocos_ativos++;
+                }
+            }
+        }
+        return blocos_ativos;
+    }
+
     void definirBlocos(int pontos, int blocos_maximo_do_nivel){
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 7; j++){
@@ -148,13 +160,12 @@ class Canhao{
     }
 
     void setCanhao(Tabuleiro& tabuleiro){
-        origem = Vector2((tabuleiro.extremos_tabuleiro[0].x + tabuleiro.extremos_tabuleiro[1].x) / 2, tabuleiro.extremos_tabuleiro[3].y + 10);
+        this->origem = Vector2((tabuleiro.extremos_tabuleiro[0].x + tabuleiro.extremos_tabuleiro[1].x) / 2, tabuleiro.extremos_tabuleiro[3].y + 10);
 
-        angulo_circulo_mouse = atan2(mouse_pos.y - origem.y, mouse_pos.x - origem.x);
+        this->angulo_circulo_mouse = atan2(mouse_pos.y - origem.y, mouse_pos.x - origem.x);
 
-        vetor_direcao = mouse_pos - origem;
-        vetor_direcao.normalize();
-
+        this->vetor_direcao = mouse_pos - origem;
+        this->vetor_direcao.normalize();
     }
 
     void setMousePos(Vector2 pos){
@@ -167,8 +178,9 @@ class Canhao{
 
         // Verificando se o ângulo está entre 0º e 180º
         if (angulo >= 0 && angulo <= 180) {
-            mouse_pos = pos;
-            vetor_direcao = vetor_direcao_temp;
+            this->mouse_pos = pos;
+            this->vetor_direcao = vetor_direcao_temp;
+            this->vetor_direcao.normalize();
         }
     }
 
@@ -250,7 +262,6 @@ class Controle{
         for(int i = 0; i < num_bolas; i++){
             Bola bola;
             bolas.push_back(bola);
-            printf("POSICAO BOLA: %f %f\n", bola.posicao.x, bola.posicao.y);
         }
     }
 
@@ -278,10 +289,15 @@ class Controle{
             bola.direcao.x *= -1;
             return true;
         }
-        if(bola.posicao.y + bola.raio > tabuleiro.extremos_tabuleiro[0].y || bola.posicao.y - bola.raio < tabuleiro.extremos_tabuleiro[2].y){
+        if(bola.posicao.y + bola.raio > tabuleiro.extremos_tabuleiro[0].y){
             bola.direcao.y *= -1;
             return true;
         }
+        if(bola.posicao.y - bola.raio < tabuleiro.extremos_tabuleiro[2].y){
+            jogando = false;
+            bolas.pop_back();
+        }
+
         return false;
     }
     
@@ -351,6 +367,13 @@ class Controle{
         return false;
     }
 
+    void controlaJogo(){
+        if(this->tabuleiro.verificaBlocosAtivos() == 0){
+            this->nivel++;
+            this->gerarNivel();
+        }
+    }
+
     void gerarNivel(){
         if(nivel % 10 != 0){
             printf("NIVEL: %d\n", nivel);
@@ -358,6 +381,6 @@ class Controle{
             this->blocosMaximoDoNivel = nivel % 10;
             this->tabuleiro.definirBlocos(nivel, blocosMaximoDoNivel);
         }
-        
     }
+    
 };
