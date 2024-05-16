@@ -30,7 +30,6 @@ class Bloco{
     }
 
     void setBloco(int i, int pontos, std::vector<Bloco>& blocos_ativos, int blocos_maximo_do_nivel){
-        printf("BLOCO: %d\n", i);
         cor = rand() % 20;
         tipo = 0;
         this->ativo = this->definirBlocoAtivo(i, blocos_ativos, blocos_maximo_do_nivel);
@@ -131,6 +130,18 @@ class Tabuleiro {
 	    }
     }
 
+    void reorganizaTabuleiro(int pontos, int blocos_maximo_do_nivel){
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 7; j++){
+                matriz_tabuleiro[i][j] = matriz_tabuleiro[i+1][j];
+            }
+        }
+        // Limpa a última linha após o deslocamento
+        for(int j = 0; j < 7; j++){
+            matriz_tabuleiro[9][j].setBloco(9, pontos, blocos_ativos, blocos_maximo_do_nivel);
+        }
+    }
+
     void setExtremosTabuleiro(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4) {
         extremos_tabuleiro[0] = p1;
         extremos_tabuleiro[1] = p2;
@@ -212,6 +223,12 @@ class Bola{
         Vector2 direcao;
         float raio;
         int cor;
+        double atrasoInicial;// adiciona um contador de tempo para cada bola
+        
+        bool operator==(const Bola& outra) const {
+        // compara as bolas com base em suas posições e raios
+        return posicao.x == outra.posicao.x && posicao.y == outra.posicao.y && direcao.x == outra.direcao.x && direcao.y == outra.direcao.y;
+    }
 
     Bola(){
         posicao = Vector2(0, 0);
@@ -219,6 +236,7 @@ class Bola{
         direcao = Vector2(0, 0);
         raio = 0;
         cor = 2;
+        atrasoInicial = 0.0; 
     }
 
     void setBola(Canhao& canhao){
@@ -273,16 +291,6 @@ class Controle{
         this->canhao = canhao;
     }
 
-    void executaJogada(double deltaTime){
-        Bola bolaAntesColisao;
-        for(auto& bola: bolas){
-            bolaAntesColisao = bola;
-            bola.moverBola(deltaTime);
-            if(testaColisaoTabuleiro(tabuleiro, bola) || testaColisaoBlocos(tabuleiro, bola)){
-                bola.posicao = bolaAntesColisao.posicao;
-            }
-        }
-    }
 
     bool testaColisaoTabuleiro(Tabuleiro& tabuleiro, Bola& bola){
         if(bola.posicao.x - bola.raio < tabuleiro.extremos_tabuleiro[0].x || bola.posicao.x + bola.raio > tabuleiro.extremos_tabuleiro[2].x){
@@ -294,8 +302,10 @@ class Controle{
             return true;
         }
         if(bola.posicao.y - bola.raio < tabuleiro.extremos_tabuleiro[2].y){
-            jogando = false;
-            bolas.pop_back();
+            auto it = std::find(bolas.begin(), bolas.end(), bola); // encontra a bola no vetor
+            if(it != bolas.end()){
+                bolas.erase(it);
+            }
         }
 
         return false;
@@ -358,7 +368,6 @@ class Controle{
                             }
                         }
                         tabuleiro.matriz_tabuleiro[i][j].diminuirPontos();
-                        printf("PONTOS BLOCO: %d\n", this->tabuleiro.matriz_tabuleiro[i][j].pontos);
                         return true;
                     }
                 }
@@ -366,11 +375,40 @@ class Controle{
         }
         return false;
     }
+    
 
-    void controlaJogo(){
-        if(this->tabuleiro.verificaBlocosAtivos() == 0){
-            this->nivel++;
-            this->gerarNivel();
+    void executaJogada(double deltaTime){
+        Bola bolaAntesColisao;
+        for(auto& bola: bolas){
+            if(bola.atrasoInicial > 0){
+                bola.atrasoInicial -= deltaTime; // decrementa o atraso inicial
+            } else {
+                bolaAntesColisao = bola;
+                bola.moverBola(deltaTime);
+                if(testaColisaoTabuleiro(tabuleiro, bola) || testaColisaoBlocos(tabuleiro, bola)){
+                    bola.posicao = bolaAntesColisao.posicao;
+                }
+            }
+        }        
+    }
+
+    void controlaJogo(double deltaTime){
+        this->executaJogada(deltaTime);
+
+
+        if(this->bolas.size() == 0){
+            this->jogando = false;
+        }
+
+        if(this->jogando == false){
+            if(this->tabuleiro.verificaBlocosAtivos() == 0){
+                this->nivel++;
+                this->gerarNivel();
+            }
+            else{
+                this->tabuleiro.reorganizaTabuleiro(this->pontosIniciaisDoBloco, this->blocosMaximoDoNivel);
+                this->adicionarBolas(this->nivel);
+            }
         }
     }
 
@@ -380,6 +418,14 @@ class Controle{
             this->pontosIniciaisDoBloco = nivel;
             this->blocosMaximoDoNivel = nivel % 10;
             this->tabuleiro.definirBlocos(nivel, blocosMaximoDoNivel);
+            this->adicionarBolas(nivel);
+        }
+        else{
+            printf("NIVEL: %d\n", nivel);
+            this->pontosIniciaisDoBloco = nivel * 2;
+            this->blocosMaximoDoNivel = nivel % 10 + 2;
+            this->tabuleiro.definirBlocos(nivel % 10 + 1, blocosMaximoDoNivel);
+            this->adicionarBolas(nivel);
         }
     }
     

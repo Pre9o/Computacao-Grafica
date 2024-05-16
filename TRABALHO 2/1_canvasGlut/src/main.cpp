@@ -71,6 +71,8 @@ Controle controle;
 bool carregado = false;
 bool firstMove = true;
 
+float atraso = 0;
+
 
 // Função para renderizar a tela
 void render(){
@@ -87,7 +89,6 @@ clock_t start = clock();
       }
       break;
    case 1:
-      controle.controlaJogo();
       controle.tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 + 401), Vector2(screenWidth/2 + 261, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
       controle.tabuleiro.setTabuleiro();
 
@@ -117,7 +118,7 @@ clock_t start = clock();
          double deltaTime = (double)(now - lastTime) / 1000.0f;
 
          if(deltaTime > 1.0/60.0f){
-            controle.executaJogada(deltaTime);
+            controle.controlaJogo(deltaTime);
             lastTime = now;
          }
       }
@@ -200,12 +201,15 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
                }
             }
          }
-         if(opcaoMenu == 1 && carregado == true){
+         if(opcaoMenu == 1 && carregado == true && controle.jogando == false){
             controle.jogando = true;
+            canhao = controle.canhao;
             for(auto& bola: controle.bolas){
-               printf("Canhao vetor direcao: X:%f Y:%f\n", controle.canhao.vetor_direcao.x, controle.canhao.vetor_direcao.y);
-               bola.setBola(controle.canhao);
+               bola.setBola(canhao);
+               bola.atrasoInicial = atraso;
+               atraso += 0.1;
             }
+            atraso = 0;
          }
       }
    }
@@ -240,8 +244,6 @@ int main(){
    controle.gerarNivel();
 
    controle.setCanhao(canhao);
-
-   controle.adicionarBolas(1);
 
    srand(time(NULL));
 
