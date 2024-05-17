@@ -29,16 +29,18 @@ class Bloco{
         extremos_bloco = extremos;
     }
 
-    void setBloco(int i, int pontos, std::vector<Bloco>& blocos_ativos, int blocos_maximo_do_nivel){
+    void setBloco(int i, int pontos, std::vector<Bloco>& blocos_ativos, int blocosIniciaisMaximosDoNivel, double chanceDeSerAtivo){
+        printf("Blocos inicias maximos do nivel: %d\n", blocosIniciaisMaximosDoNivel);
         cor = rand() % 20;
         tipo = 0;
-        this->ativo = this->definirBlocoAtivo(i, blocos_ativos, blocos_maximo_do_nivel);
+        this->ativo = this->definirBlocoAtivo(i, blocos_ativos, blocosIniciaisMaximosDoNivel, chanceDeSerAtivo);
         this->pontos = pontos;
     }
 
-    bool definirBlocoAtivo(int i, std::vector<Bloco>& blocos_ativos, int blocos_maximo_do_nivel){
-        if(i == 7 && blocos_ativos.size() < blocos_maximo_do_nivel){
-            if(rand() % 100 < 50){
+    bool definirBlocoAtivo(int i, std::vector<Bloco>& blocos_ativos, int blocosIniciaisMaximosDoNivel, double chanceDeSerAtivo){
+        if(i == 7 && blocos_ativos.size() < blocosIniciaisMaximosDoNivel){
+            printf("Chance de ser ativo: %f\n", chanceDeSerAtivo);
+            if(rand() % 100 < chanceDeSerAtivo){
                 printf("BLOCO ATIVO\n");
                 blocos_ativos.push_back(*this);
                 return true;
@@ -115,11 +117,17 @@ class Tabuleiro {
         return blocos_ativos;
     }
 
-    void definirBlocos(int pontos, int blocos_maximo_do_nivel){
+    void definirBlocos(int pontos, int blocosIniciaisMaximosDoNivel, double chanceDeSerAtivo){
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 7; j++){
-                matriz_tabuleiro[i][j].setBloco(i, pontos, blocos_ativos, blocos_maximo_do_nivel);
+                if(matriz_tabuleiro[i][j].ativo == false){
+                    matriz_tabuleiro[i][j].setBloco(i, pontos, blocos_ativos, blocosIniciaisMaximosDoNivel, chanceDeSerAtivo);
+                }
+                if(matriz_tabuleiro[i][j].ativo == false){
+                    chanceDeSerAtivo += 14.28;
+                }
             }
+            chanceDeSerAtivo = 14.28;
         }
     }
 
@@ -130,7 +138,7 @@ class Tabuleiro {
 	    }
     }
 
-    void reorganizaTabuleiro(int pontos, int blocos_maximo_do_nivel){
+    void reorganizaTabuleiro(int pontos, int blocosIniciaisMaximosDoNivel){
         for(int i = 0; i < 9; i++){
             for(int j = 0; j < 7; j++){
                 matriz_tabuleiro[i][j] = matriz_tabuleiro[i+1][j];
@@ -138,8 +146,11 @@ class Tabuleiro {
         }
         // Limpa a última linha após o deslocamento
         for(int j = 0; j < 7; j++){
-            matriz_tabuleiro[9][j].setBloco(9, pontos, blocos_ativos, blocos_maximo_do_nivel);
+            matriz_tabuleiro[9][j].setBloco(9, pontos, blocos_ativos, blocosIniciaisMaximosDoNivel, 0);
         }
+
+        definirBlocos(pontos, blocosIniciaisMaximosDoNivel, 14.28);
+
     }
 
     void setExtremosTabuleiro(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4) {
@@ -239,12 +250,13 @@ class Bola{
         atrasoInicial = 0.0; 
     }
 
-    void setBola(Canhao& canhao){
+    void setBola(Canhao& canhao, double atrasoInicial){
         this->posicao = canhao.origem;
         this->velocidade = 500;
         this->direcao = canhao.vetor_direcao;
         this->direcao.normalize();
         this->raio = 5;
+        this->atrasoInicial = atrasoInicial;
     }
 
     void desenhaBola(){
@@ -263,7 +275,7 @@ class Controle{
     public:
     int nivel;
     int pontosIniciaisDoBloco;
-    int blocosMaximoDoNivel;
+    int blocosIniciaisMaximosDoNivel;
     std::vector<Bola> bolas;
     Tabuleiro tabuleiro;
     Canhao canhao;
@@ -392,12 +404,13 @@ class Controle{
         }        
     }
 
-    void controlaJogo(double deltaTime){
+    void controlaJogo(double deltaTime, bool* firstMove){
         this->executaJogada(deltaTime);
 
 
         if(this->bolas.size() == 0){
             this->jogando = false;
+            *firstMove = true;
         }
 
         if(this->jogando == false){
@@ -406,25 +419,26 @@ class Controle{
                 this->gerarNivel();
             }
             else{
-                this->tabuleiro.reorganizaTabuleiro(this->pontosIniciaisDoBloco, this->blocosMaximoDoNivel);
+                this->blocosIniciaisMaximosDoNivel++;
+                this->tabuleiro.reorganizaTabuleiro(this->pontosIniciaisDoBloco, this->blocosIniciaisMaximosDoNivel);
+
                 this->adicionarBolas(this->nivel);
             }
         }
     }
 
     void gerarNivel(){
+        this->blocosIniciaisMaximosDoNivel = 1;
         if(nivel % 10 != 0){
             printf("NIVEL: %d\n", nivel);
             this->pontosIniciaisDoBloco = nivel;
-            this->blocosMaximoDoNivel = nivel % 10;
-            this->tabuleiro.definirBlocos(nivel, blocosMaximoDoNivel);
+            this->tabuleiro.definirBlocos(nivel, blocosIniciaisMaximosDoNivel, 14.28);
             this->adicionarBolas(nivel);
         }
         else{
             printf("NIVEL: %d\n", nivel);
             this->pontosIniciaisDoBloco = nivel * 2;
-            this->blocosMaximoDoNivel = nivel % 10 + 2;
-            this->tabuleiro.definirBlocos(nivel % 10 + 1, blocosMaximoDoNivel);
+            this->tabuleiro.definirBlocos(nivel % 10 + 1, blocosIniciaisMaximosDoNivel, 14.28);
             this->adicionarBolas(nivel);
         }
     }
