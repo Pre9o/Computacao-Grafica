@@ -25,12 +25,15 @@ class Bloco{
         pontos = 0;
     }
 
+    bool operator==(const Bloco& outro) const {
+        return extremos_bloco[0].x == outro.extremos_bloco[0].x && extremos_bloco[0].y == outro.extremos_bloco[0].y;
+    }
+
     void setExtremosBloco(std::vector<Vector2> extremos) {
         extremos_bloco = extremos;
     }
 
     void setBloco(int i, int pontos, std::vector<Bloco>& blocos_ativos, int blocosIniciaisMaximosDoNivel, double chanceDeSerAtivo){
-        printf("Blocos inicias maximos do nivel: %d\n", blocosIniciaisMaximosDoNivel);
         cor = rand() % 20;
         tipo = 0;
         this->ativo = this->definirBlocoAtivo(i, blocos_ativos, blocosIniciaisMaximosDoNivel, chanceDeSerAtivo);
@@ -39,7 +42,6 @@ class Bloco{
 
     bool definirBlocoAtivo(int i, std::vector<Bloco>& blocos_ativos, int blocosIniciaisMaximosDoNivel, double chanceDeSerAtivo){
         if(i == 7 && blocos_ativos.size() < blocosIniciaisMaximosDoNivel){
-            printf("Chance de ser ativo: %f\n", chanceDeSerAtivo);
             if(rand() % 100 < chanceDeSerAtivo){
                 printf("BLOCO ATIVO\n");
                 blocos_ativos.push_back(*this);
@@ -58,10 +60,12 @@ class Bloco{
         return tamanho;
     }
 
-    void diminuirPontos(){
+    void diminuirPontos(std::vector<Bloco>& blocos_ativos){
         this->pontos = this->pontos -= 1;
         if(this->pontos == 0){
             this->ativo = false;
+            auto it = std::find(blocos_ativos.begin(), blocos_ativos.end(), *this);
+                blocos_ativos.erase(it);
         }
     }
 
@@ -78,11 +82,6 @@ class Bloco{
         }
     }
 
-    private:
-    float chance_quadrado = 0.8;
-    float chance_triangulo = 0.15;
-    float chance_retangulo = 0.04;
-    float chance_powerUp = 0.01;
 };
 
 class Tabuleiro {
@@ -119,15 +118,17 @@ class Tabuleiro {
 
     void definirBlocos(int pontos, int blocosIniciaisMaximosDoNivel, double chanceDeSerAtivo){
         for(int i = 0; i < 10; i++){
+            chanceDeSerAtivo = 7;
             for(int j = 0; j < 7; j++){
+                printf("Chance de ser ativo: %f\n", chanceDeSerAtivo);
+                printf("Blocos inciais maximos do nivel: %d\n", blocosIniciaisMaximosDoNivel);
                 if(matriz_tabuleiro[i][j].ativo == false){
                     matriz_tabuleiro[i][j].setBloco(i, pontos, blocos_ativos, blocosIniciaisMaximosDoNivel, chanceDeSerAtivo);
                 }
                 if(matriz_tabuleiro[i][j].ativo == false){
-                    chanceDeSerAtivo += 14.28;
+                    chanceDeSerAtivo += 10;
                 }
             }
-            chanceDeSerAtivo = 14.28;
         }
     }
 
@@ -149,7 +150,7 @@ class Tabuleiro {
             matriz_tabuleiro[9][j].setBloco(9, pontos, blocos_ativos, blocosIniciaisMaximosDoNivel, 0);
         }
 
-        definirBlocos(pontos, blocosIniciaisMaximosDoNivel, 14.28);
+        definirBlocos(pontos, blocosIniciaisMaximosDoNivel, 7);
 
     }
 
@@ -210,18 +211,30 @@ class Canhao{
         // Calcular a posição inicial da linha na borda do círculo
         Vector2 inicio_linha = origem + Vector2(cos(angulo_circulo_mouse - M_PI/2), sin(angulo_circulo_mouse - M_PI/2)) * 10;
 
-        CV::color(1, 0, 0);
+        CV::color(0.5, 0.5, 0.5);
         CV::line(inicio_linha, inicio_linha + vetor_direcao * 50);
 
         // Calcular a posição inicial da segunda linha na borda oposta do círculo
         Vector2 inicio_linha_oposta = origem + Vector2(cos(angulo_circulo_mouse + M_PI/2), sin(angulo_circulo_mouse + M_PI/2)) * 10;
 
-        CV::color(0, 1, 0);
+        CV::color(0.5, 0.5, 0.5);
         CV::line(inicio_linha_oposta, inicio_linha_oposta + vetor_direcao * 50);
 
-        CV::color(1, 1, 1);
-        CV::circle(origem, 10, 20);
+        CV::color(0.5, 0.5, 0.5);
+        CV::circleFill(origem, 10, 20);
 
+        CV::color(0.5, 0.5, 0.5);
+        CV::rectFill(inicio_linha, inicio_linha_oposta, inicio_linha_oposta + vetor_direcao * 50, inicio_linha + vetor_direcao * 50);
+
+        CV::color(0, 0, 0);
+        CV::circleFill((inicio_linha.operator+(inicio_linha_oposta)).operator/(2) + vetor_direcao * 50, 10, 20);
+    }
+
+    void desenhaBocaCanhao(){
+        Vector2 inicio_linha = origem + Vector2(cos(angulo_circulo_mouse - M_PI/2), sin(angulo_circulo_mouse - M_PI/2)) * 10;
+        Vector2 inicio_linha_oposta = origem + Vector2(cos(angulo_circulo_mouse + M_PI/2), sin(angulo_circulo_mouse + M_PI/2)) * 10;
+
+        CV::color(0.5, 0.5, 0.5);
         CV::circle((inicio_linha.operator+(inicio_linha_oposta)).operator/(2) + vetor_direcao * 50, 10, 20);
     }
 };
@@ -379,7 +392,7 @@ class Controle{
                                 bola.direcao.x *= -1;
                             }
                         }
-                        tabuleiro.matriz_tabuleiro[i][j].diminuirPontos();
+                        tabuleiro.matriz_tabuleiro[i][j].diminuirPontos(this->tabuleiro.blocos_ativos);
                         return true;
                     }
                 }
@@ -432,13 +445,13 @@ class Controle{
         if(nivel % 10 != 0){
             printf("NIVEL: %d\n", nivel);
             this->pontosIniciaisDoBloco = nivel;
-            this->tabuleiro.definirBlocos(nivel, blocosIniciaisMaximosDoNivel, 14.28);
+            this->tabuleiro.definirBlocos(nivel, blocosIniciaisMaximosDoNivel, 7);
             this->adicionarBolas(nivel);
         }
         else{
             printf("NIVEL: %d\n", nivel);
             this->pontosIniciaisDoBloco = nivel * 2;
-            this->tabuleiro.definirBlocos(nivel % 10 + 1, blocosIniciaisMaximosDoNivel, 14.28);
+            this->tabuleiro.definirBlocos(nivel % 10 + 1, blocosIniciaisMaximosDoNivel, 7);
             this->adicionarBolas(nivel);
         }
     }

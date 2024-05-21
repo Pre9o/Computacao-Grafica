@@ -73,10 +73,15 @@ bool firstMove = true;
 
 double atraso = 0;
 
+clock_t start = clock();
+
 
 // Função para renderizar a tela
 void render(){
-clock_t start = clock();
+   clock_t end = clock();
+   float duration = (float)(end - start) / CLOCKS_PER_SEC;
+   float framedeltaTime = 1.0f / 60.0f; // Para 60 FPS
+
 
    CV::clear(0, 0, 0);
 
@@ -94,7 +99,7 @@ clock_t start = clock();
 
       controle.tabuleiro.desenhaTabuleiro();
 
-      controle.canhao.setCanhao(tabuleiro);
+      controle.canhao.setCanhao(controle.tabuleiro);
 
       for(auto& linha : controle.tabuleiro.matriz_tabuleiro){
          for(Bloco& bloco : linha){
@@ -103,11 +108,14 @@ clock_t start = clock();
             }
          }
       }
-      controle.canhao.desenhaCanhao();
+
+      controle.canhao.desenhaBocaCanhao();
 
       for(auto& bola: controle.bolas){
          bola.desenhaBola();
       }
+
+      controle.canhao.desenhaCanhao();
 
       if(controle.jogando){
          if (firstMove) {
@@ -118,7 +126,7 @@ clock_t start = clock();
          double deltaTime = (double)(now - lastTime) / 1000.0f;
 
          if(deltaTime > 1.0/60.0f){
-            controle.controlaJogo(deltaTime, &firstMove);
+            controle.controlaJogo(0.01, &firstMove);
             lastTime = now;
          }
       }
@@ -128,17 +136,12 @@ clock_t start = clock();
 
    default:
       break;
-   }
 
-
-    clock_t end = clock();
-    float duration = (float)(end - start) / CLOCKS_PER_SEC;
-    float framedeltaTime = 1.0f / 60.0f; // Para 60 FPS
-
-    if (duration < framedeltaTime) {
+   if (duration < framedeltaTime) {
         Sleep((framedeltaTime - duration) * 1000);
+        start = clock();
     }
-
+   }
 }
 
 // Função para lidar com a entrada do teclado
