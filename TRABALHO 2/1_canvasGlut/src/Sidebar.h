@@ -23,15 +23,15 @@ public:
     void ConstruirBotoesMenuInicial(int *opcaoMenu, clock_t *intervalo_tempo_inicio){
         // Se a barra lateral ainda não tem botões, cria os botões
         if(botoes.size() == 0){
-            botoes.push_back(new Botao(-100, 100, 200, 50, "Play", 1, 1, 1, [opcaoMenu, intervalo_tempo_inicio](){
+            botoes.push_back(new Botao(-100, 0, 200, 50, "Play", 1, 1, 1, [opcaoMenu, intervalo_tempo_inicio](){
                 printf("Botão Play clicado\n");
                 *opcaoMenu = 1;
                 *intervalo_tempo_inicio = clock();
             }));
-            botoes.push_back(new Botao(-100, 0, 200, 50, "Settings", 1, 1, 1, [](){
+            botoes.push_back(new Botao(-100, -100, 200, 50, "Settings", 1, 1, 1, [](){
                 printf("Botão Settings clicado\n");
             }));
-            botoes.push_back(new Botao(-100, -100, 200, 50, "Quit", 1, 1, 1, [](){
+            botoes.push_back(new Botao(-100, -200, 200, 50, "Quit", 1, 1, 1, [](){
                 printf("Botão Quit clicado\n");
                 exit(0);
             }));

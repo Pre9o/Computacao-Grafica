@@ -76,13 +76,13 @@ public:
             }));
             // Cria botões para carregar imagens
             botoes.push_back(new Botao(900, -400, 150, 50, "Load Image 3", 0.75, 1, 1, [&imageManager](){
-                LoadImages(imageManager.images, ".\\images\\img1.bmp");
+                LoadImages(imageManager.images, ".\\images\\img2.bmp");
             }));
             botoes.push_back(new Botao(900, -325, 150, 50, "Load Image 2", 1, 0.75, 1, [&imageManager](){
                 LoadImages(imageManager.images, ".\\images\\gato.bmp");
             }));
             botoes.push_back(new Botao(900, -250, 150, 50, "Load Image 1", 1, 1, 0.75, [&imageManager](){
-                LoadImages(imageManager.images, "1_canvasGlut/images/snail.bmp");
+                LoadImages(imageManager.images, "\\images\\Teste.bmp");
             }));
             // Cria botões para visualizar o histograma da imagem selecionada
             botoes.push_back(new Botao(1075, -250, 150, 50, "Histograma Red", 1, 0, 0, [&imageManager](){

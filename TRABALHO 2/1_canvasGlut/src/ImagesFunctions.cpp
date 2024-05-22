@@ -71,20 +71,28 @@ void DrawImage(Bmp* image){
 }
 
 // Função para inicializar os parâmetros da imagem
-void InicializarParametros(Bmp* image, int offset){
+void InicializarParametros(Bmp* image, int offset, Vector2 meio_tela){
    // Define a posição inicial e final da imagem
-   image->x_start = offset;
-   image->y_start = 0;
+   image->x_start = meio_tela.x - image->getWidth()/2;
+   image->y_start = meio_tela.y - image->getHeight()/2;
+   image->x_end = offset + image->getWidth();
+   image->y_end = image->getHeight();
+}
+
+void AtualizarParametros(Bmp* image, int offset, Vector2 meio_tela){
+   // Define a posição inicial e final da imagem
+   image->x_start = meio_tela.x - image->getWidth()/2;
+   image->y_start = meio_tela.y - image->getHeight()/2 + offset + 200;
    image->x_end = offset + image->getWidth();
    image->y_end = image->getHeight();
 }
 
 // Função para carregar as imagens
-void LoadImages(std::vector<Bmp*> &images, const char* path){
+void LoadImages(std::vector<Bmp*> &images, const char* path, Vector2 meio_tela){
    // Carrega a imagem
    Bmp* image_loaded = new Bmp(path);
    // Inicializa os parâmetros da imagem
-   InicializarParametros(image_loaded, images.size() * 100);
+   InicializarParametros(image_loaded, images.size() * 100, meio_tela);
    // Converte a imagem de BGR para RGB
    image_loaded->convertBGRtoRGB();
    // Adiciona a imagem ao vetor de imagens

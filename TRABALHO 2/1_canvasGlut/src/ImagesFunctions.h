@@ -11,9 +11,11 @@ void DesenharMoldura(Bmp* image);
 
 void DrawImage(Bmp* image);
 
-void InicializarParametros(Bmp* image, int offset);
+void InicializarParametros(Bmp* image, int offset, Vector2 meio_tela);
 
-void LoadImages(std::vector<Bmp*> &images, const char* path);
+void AtualizarParametros(Bmp* image, int offset, Vector2 meio_tela);
+
+void LoadImages(std::vector<Bmp*> &images, const char* path, Vector2 meio_tela);
 
 void Draw4thImage(Bmp* image);
 

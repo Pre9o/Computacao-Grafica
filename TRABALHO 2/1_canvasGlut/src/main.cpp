@@ -83,7 +83,7 @@ void render(){
    float framedeltaTime = 1.0f / 60.0f; // Para 60 FPS
 
 
-   CV::clear(0, 0, 0);
+   CV::clear(0.08235, 0.17647, 0.28627);
 
    switch (opcaoMenu)
    {
@@ -91,6 +91,11 @@ void render(){
       for(Botao* botao : sidebar.botoes){
          botao->AtualizarPosicaoMeioTela(screenWidth / 2, screenHeight / 2);
          botao->Render();
+      }
+
+      for (Bmp* image : imageManager.images) {
+         AtualizarParametros(image, imageManager.images.size() * 100, Vector2(screenWidth / 2, screenHeight / 2));
+         DrawImage(image);
       }
       break;
    case 1:
@@ -167,36 +172,10 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
 
    controle.canhao.setMousePos(Vector2(x, y));
 
-   // Se o botão esquerdo do mouse está sendo pressionado, arrasta a imagem selecionada
-   if(clicando){
-      ArrastarImagem(imageManager.draggingImage, x, y);
-   }
-
    if (button == 0) {
-      // Se o botão esquerdo do mouse foi pressionado, verifica se uma imagem foi clicada       
-      for (Bmp* image : imageManager.images) {
-            if (image->contains(x, y && imageManager.draggingImage == nullptr)) {
-               imageManager.selectedImage = image;
-            }
-            else if(!image->contains(x, y) && imageManager.draggingImage == nullptr){
-            }
-      }
       if(state == 1) {
-      // Se o botão esquerdo do mouse foi solto, para de arrastar a imagem
-      imageManager.draggingImage = nullptr;
-      clicando = 0;
-
       }
       else if (state == 0) {
-         // Se o botão esquerdo do mouse foi pressionado, verifica se uma imagem ou botão foi clicado
-         for (Bmp* image : imageManager.images) {
-            if (image->contains(x, y)) {
-               imageManager.selectedImage = image;
-               imageManager.draggingImage = image;
-               clicando = 1;
-            }
-         }
-
          for (Botao* botao : sidebar.botoes) {
             if(botao->Colidiu(x, y)){
                if(opcaoMenu == 0){
@@ -204,6 +183,7 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
                }
             }
          }
+
          if(opcaoMenu == 1 && carregado == true && controle.jogando == false){
             controle.jogando = true;
             canhao = controle.canhao;
@@ -246,6 +226,10 @@ int main(){
    controle.gerarNivel();
 
    controle.setCanhao(canhao);
+
+   Vector2 posicao = Vector2(screenWidth/2, screenHeight/2);
+
+   LoadImages(imageManager.images, ".\\images\\Teste.bmp", posicao);
 
    srand(time(NULL));
 
