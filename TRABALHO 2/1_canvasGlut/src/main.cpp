@@ -108,6 +108,13 @@ void render(){
 
       for(auto& linha : controle.tabuleiro.matriz_tabuleiro){
          for(Bloco& bloco : linha){
+            if(bloco.explosao != NULL) {
+               bloco.explosao->desenha();
+               if(bloco.explosao->tempoRestante == 0){
+                  printf("aaaaa");
+                  bloco.explosao = NULL;
+               }
+            }
             if(bloco.ativo == true){
                bloco.desenhaBloco();
             }
@@ -231,7 +238,7 @@ int main(){
 
    LoadImages(imageManager.images, ".\\images\\Teste.bmp", posicao);
 
-   srand(time(NULL));
+   srand(time(0));
 
    // Inicia o loop principal do programa
    CV::run();

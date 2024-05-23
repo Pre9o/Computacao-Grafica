@@ -8,9 +8,79 @@
 
 #define M_PI 3.14159265358979323846
 
+#include <cstdlib> // para rand() e srand()
+#include <ctime> // para time()
+
+class Particula {
+public:
+    Particula(float x, float y, float angulo) {
+        this->x = x;
+        this->y = y;
+        this->velocidadeX = cos(angulo) * velocidadeInicial;
+        this->velocidadeY = sin(angulo) * velocidadeInicial;
+    }
+
+    void atualiza(float deltaTime) {
+        x += velocidadeX * deltaTime;
+        y += velocidadeY * deltaTime;
+        velocidadeX *= 1 - atrito * deltaTime;
+        velocidadeY *= 1 - atrito * deltaTime;
+    }
+
+    void desenha() {
+        CV::point(x, y);
+    }
+
+private:
+    float x, y;
+    float velocidadeX, velocidadeY;
+    static constexpr float velocidadeInicial = 25.0f;
+    static constexpr float atrito = 0.1f;
+};
+
+class Explosao {
+    public:
+        clock_t tempoRestante; // tempo restante para a explosão
+
+        Explosao(float x, float y, clock_t tempoInicial) {
+            this->x = x;
+            this->y = y;
+            this->tempoInicial = tempoInicial; // tempo inicial da explosão
+            this->tempoRestante = clock(); // tempo restante para a explosão
+
+            srand(time(0)); // inicializa a semente do gerador de números aleatórios
+            for(int i = 0; i < 100; i++) {
+                float angulo = (rand() % 360) * 3.14159 / 180.0; // gera um ângulo aleatório
+                particulas.push_back(Particula(x, y, angulo));
+            }
+        }
+
+        void desenha() {
+            if (double(tempoRestante - tempoInicial) / 1000.0f < 1.5) {
+                for(int i = 0; i < 100; i++) {
+                    for(auto& particula : particulas) {
+                        particula.atualiza(double(tempoRestante - tempoInicial) / 1000.0f);
+                        particula.desenha();
+                    }
+                }
+                tempoRestante = clock();
+            }
+            else{
+                tempoRestante = 0;
+            }
+        }
+
+    private:
+        float x, y;
+        clock_t tempoInicial; // tempo inicial da explosão
+        std::vector<Particula> particulas;
+};
+
 class Bloco{
     public:
     Vector2 tamanho;
+    Explosao* explosao = NULL;
+
     std::vector<Vector2> extremos_bloco;
     int cor;
     int tipo; //0 = Quadrado, 1 = Triangulo, 2 = Retangulo, 3 = PowerUp
@@ -43,7 +113,6 @@ class Bloco{
     bool definirBlocoAtivo(int i, std::vector<Bloco>& blocos_ativos, int blocosIniciaisMaximosDoNivel, double chanceDeSerAtivo){
         if(i == 7 && blocos_ativos.size() < blocosIniciaisMaximosDoNivel){
             if(rand() % 100 < chanceDeSerAtivo){
-                printf("BLOCO ATIVO\n");
                 blocos_ativos.push_back(*this);
                 return true;
             }
@@ -63,6 +132,7 @@ class Bloco{
     void diminuirPontos(std::vector<Bloco>& blocos_ativos){
         this->pontos = this->pontos -= 1;
         if(this->pontos == 0){
+            this->explosao = new Explosao(this->extremos_bloco[0].x + this->tamanho.x / 2, this->extremos_bloco[0].y + this->tamanho.y / 2, clock());
             this->ativo = false;
             auto it = std::find(blocos_ativos.begin(), blocos_ativos.end(), *this);
                 blocos_ativos.erase(it);
@@ -120,8 +190,6 @@ class Tabuleiro {
         for(int i = 0; i < 10; i++){
             chanceDeSerAtivo = 7;
             for(int j = 0; j < 7; j++){
-                printf("Chance de ser ativo: %f\n", chanceDeSerAtivo);
-                printf("Blocos inciais maximos do nivel: %d\n", blocosIniciaisMaximosDoNivel);
                 if(matriz_tabuleiro[i][j].ativo == false){
                     matriz_tabuleiro[i][j].setBloco(i, pontos, blocos_ativos, blocosIniciaisMaximosDoNivel, chanceDeSerAtivo);
                 }
@@ -246,7 +314,6 @@ class Bola{
         int velocidade;
         Vector2 direcao;
         float raio;
-        int cor;
         double atrasoInicial;// adiciona um contador de tempo para cada bola
         
         bool operator==(const Bola& outra) const {
@@ -259,7 +326,6 @@ class Bola{
         velocidade = 0;
         direcao = Vector2(0, 0);
         raio = 0;
-        cor = 2;
         atrasoInicial = 0.0; 
     }
 
@@ -273,7 +339,7 @@ class Bola{
     }
 
     void desenhaBola(){
-        CV::color(1, 1, 1);
+        CV::color(0.98823, 0.5098, 0.20392);
         CV::circleFill(posicao, raio, 50);
     }
 
@@ -365,17 +431,6 @@ class Controle{
 
 
                     if(dx <= bola.raio && dy <= bola.raio){
-                        printf("Posicao Bola: %f %f\n", bola.posicao.x, bola.posicao.y);
-
-                        printf("POSICAO BLOCO: %f %f\n", posicao_bloco.x, posicao_bloco.y);
-                        printf("TAMANHO BLOCO: %f %f\n", tamanho_bloco.x, tamanho_bloco.y);
-
-                        printf("DISTANCIA X: %f\n", distancia_x);
-                        printf("DISTANCIA Y: %f\n", distancia_y);
-
-                        printf("DX: %f\n", dx);
-                        printf("DY: %f\n", dy);
-
                         if(distancia_y > distancia_x){
                             if(dy > 0){
                                 bola.direcao.y *= -1;
@@ -443,13 +498,11 @@ class Controle{
     void gerarNivel(){
         this->blocosIniciaisMaximosDoNivel = 1;
         if(nivel % 10 != 0){
-            printf("NIVEL: %d\n", nivel);
             this->pontosIniciaisDoBloco = nivel;
             this->tabuleiro.definirBlocos(nivel, blocosIniciaisMaximosDoNivel, 7);
             this->adicionarBolas(nivel);
         }
         else{
-            printf("NIVEL: %d\n", nivel);
             this->pontosIniciaisDoBloco = nivel * 2;
             this->tabuleiro.definirBlocos(nivel % 10 + 1, blocosIniciaisMaximosDoNivel, 7);
             this->adicionarBolas(nivel);
