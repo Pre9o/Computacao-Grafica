@@ -5,6 +5,8 @@
 #include <vector>
 #include <time.h>
 #include <chrono>
+#include "windows.h"
+#include "mmsystem.h"
 
 #define M_PI 3.14159265358979323846
 
@@ -13,11 +15,12 @@
 
 class Particula {
 public:
-    Particula(float x, float y, float angulo) {
+    Particula(float x, float y, float angulo, int cor) {
         this->x = x;
         this->y = y;
         this->velocidadeX = cos(angulo) * velocidadeInicial;
         this->velocidadeY = sin(angulo) * velocidadeInicial;
+        this->cor = cor;
     }
 
     void atualiza(float deltaTime) {
@@ -28,13 +31,15 @@ public:
     }
 
     void desenha() {
+        CV::color(cor);
         CV::point(x, y);
     }
 
 private:
     float x, y;
     float velocidadeX, velocidadeY;
-    static constexpr float velocidadeInicial = 25.0f;
+    int cor;
+    static constexpr float velocidadeInicial = 10.0f;
     static constexpr float atrito = 0.1f;
 };
 
@@ -42,16 +47,17 @@ class Explosao {
     public:
         clock_t tempoRestante; // tempo restante para a explosão
 
-        Explosao(float x, float y, clock_t tempoInicial) {
+        Explosao(float x, float y, clock_t tempoInicial, int cor) {
             this->x = x;
             this->y = y;
             this->tempoInicial = tempoInicial; // tempo inicial da explosão
             this->tempoRestante = clock(); // tempo restante para a explosão
+            this->cor = cor;
 
             srand(time(0)); // inicializa a semente do gerador de números aleatórios
             for(int i = 0; i < 100; i++) {
                 float angulo = (rand() % 360) * 3.14159 / 180.0; // gera um ângulo aleatório
-                particulas.push_back(Particula(x, y, angulo));
+                particulas.push_back(Particula(x, y, angulo, cor));
             }
         }
 
@@ -72,6 +78,7 @@ class Explosao {
 
     private:
         float x, y;
+        int cor;
         clock_t tempoInicial; // tempo inicial da explosão
         std::vector<Particula> particulas;
 };
@@ -129,13 +136,14 @@ class Bloco{
         return tamanho;
     }
 
-    void diminuirPontos(std::vector<Bloco>& blocos_ativos){
+    void diminuirPontos(std::vector<Bloco>& blocos_ativos, int& pontuacao){
         this->pontos = this->pontos -= 1;
         if(this->pontos == 0){
-            this->explosao = new Explosao(this->extremos_bloco[0].x + this->tamanho.x / 2, this->extremos_bloco[0].y + this->tamanho.y / 2, clock());
+            this->explosao = new Explosao(this->extremos_bloco[0].x + this->tamanho.x / 2, this->extremos_bloco[0].y + this->tamanho.y / 2, clock(), this->cor);
             this->ativo = false;
             auto it = std::find(blocos_ativos.begin(), blocos_ativos.end(), *this);
                 blocos_ativos.erase(it);
+            pontuacao += 10;
         }
     }
 
@@ -294,16 +302,17 @@ class Canhao{
         CV::color(0.5, 0.5, 0.5);
         CV::rectFill(inicio_linha, inicio_linha_oposta, inicio_linha_oposta + vetor_direcao * 50, inicio_linha + vetor_direcao * 50);
 
-        CV::color(0, 0, 0);
-        CV::circleFill((inicio_linha.operator+(inicio_linha_oposta)).operator/(2) + vetor_direcao * 50, 10, 20);
+        
+        CV::color(0.5, 0.5, 0.5);
+        CV::circle((inicio_linha.operator+(inicio_linha_oposta)).operator/(2) + vetor_direcao * 50, 10, 20);
     }
 
     void desenhaBocaCanhao(){
         Vector2 inicio_linha = origem + Vector2(cos(angulo_circulo_mouse - M_PI/2), sin(angulo_circulo_mouse - M_PI/2)) * 10;
         Vector2 inicio_linha_oposta = origem + Vector2(cos(angulo_circulo_mouse + M_PI/2), sin(angulo_circulo_mouse + M_PI/2)) * 10;
 
-        CV::color(0.5, 0.5, 0.5);
-        CV::circle((inicio_linha.operator+(inicio_linha_oposta)).operator/(2) + vetor_direcao * 50, 10, 20);
+        CV::color(1, 1, 1);
+        CV::circleFill((inicio_linha.operator+(inicio_linha_oposta)).operator/(2) + vetor_direcao * 50, 10, 20);
     }
 };
 
@@ -315,7 +324,7 @@ class Bola{
         Vector2 direcao;
         float raio;
         double atrasoInicial;// adiciona um contador de tempo para cada bola
-        
+
         bool operator==(const Bola& outra) const {
         // compara as bolas com base em suas posições e raios
         return posicao.x == outra.posicao.x && posicao.y == outra.posicao.y && direcao.x == outra.direcao.x && direcao.y == outra.direcao.y;
@@ -326,7 +335,7 @@ class Bola{
         velocidade = 0;
         direcao = Vector2(0, 0);
         raio = 0;
-        atrasoInicial = 0.0; 
+        atrasoInicial = 0.0;
     }
 
     void setBola(Canhao& canhao, double atrasoInicial){
@@ -346,7 +355,7 @@ class Bola{
     void moverBola(double deltaTime){
         this->posicao = this->posicao + this->direcao * this->velocidade * deltaTime;
     }
-    
+
 };
 
 
@@ -355,6 +364,7 @@ class Controle{
     int nivel;
     int pontosIniciaisDoBloco;
     int blocosIniciaisMaximosDoNivel;
+    int pontuacao;
     std::vector<Bola> bolas;
     Tabuleiro tabuleiro;
     Canhao canhao;
@@ -365,6 +375,7 @@ class Controle{
         nivel = 1;
         pontosIniciaisDoBloco = 0;
         jogando = false;
+        pontuacao = 0;
     }
 
     void adicionarBolas(int num_bolas){
@@ -385,10 +396,12 @@ class Controle{
 
     bool testaColisaoTabuleiro(Tabuleiro& tabuleiro, Bola& bola){
         if(bola.posicao.x - bola.raio < tabuleiro.extremos_tabuleiro[0].x || bola.posicao.x + bola.raio > tabuleiro.extremos_tabuleiro[2].x){
+            PlaySound(TEXT("./1_canvasGlut/audios/TUC.wav"), NULL, SND_ASYNC);
             bola.direcao.x *= -1;
             return true;
         }
         if(bola.posicao.y + bola.raio > tabuleiro.extremos_tabuleiro[0].y){
+            PlaySound(TEXT("./1_canvasGlut/audios/TUC.wav"), NULL, SND_ASYNC);
             bola.direcao.y *= -1;
             return true;
         }
@@ -401,7 +414,7 @@ class Controle{
 
         return false;
     }
-    
+
     bool testaColisaoBlocos(Tabuleiro& tabuleiro, Bola& bola){
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 7; j++){
@@ -418,14 +431,14 @@ class Controle{
                     else if(bola.posicao.x >= posicao_bloco.x){
                         distancia_x = bola.posicao.x + bola.raio - (posicao_bloco.x + tamanho_bloco.x/2);
                     }
-                    
+
                     if(bola.posicao.y < posicao_bloco.y){
                         distancia_y = posicao_bloco.y + tamanho_bloco.y/2 - bola.posicao.y - bola.raio;
                     }
                     else if(bola.posicao.y >= posicao_bloco.y){
                         distancia_y = bola.posicao.y + bola.raio - (posicao_bloco.y + tamanho_bloco.y/2);
                     }
-                    
+
                     float dx = distancia_x - tamanho_bloco.x/2;
                     float dy = distancia_y - tamanho_bloco.y/2;
 
@@ -433,29 +446,33 @@ class Controle{
                     if(dx <= bola.raio && dy <= bola.raio){
                         if(distancia_y > distancia_x){
                             if(dy > 0){
+                                PlaySound(TEXT("./1_canvasGlut/audios/TUC.wav"), NULL, SND_ASYNC);
                                 bola.direcao.y *= -1;
                             }
                             else{
+                                PlaySound(TEXT("./1_canvasGlut/audios/TUC.wav"), NULL, SND_ASYNC);
                                 bola.direcao.y *= -1;
                             }
                         }
                         else{
                             if(dx > 0){
+                                PlaySound(TEXT("./1_canvasGlut/audios/TUC.wav"), NULL, SND_ASYNC);
                                 bola.direcao.x *= -1;
                             }
                             else{
+                                PlaySound(TEXT("./1_canvasGlut/audios/TUC.wav"), NULL, SND_ASYNC);
                                 bola.direcao.x *= -1;
                             }
                         }
-                        tabuleiro.matriz_tabuleiro[i][j].diminuirPontos(this->tabuleiro.blocos_ativos);
+                        tabuleiro.matriz_tabuleiro[i][j].diminuirPontos(this->tabuleiro.blocos_ativos, this->pontuacao);
                         return true;
                     }
                 }
-            }   
+            }
         }
         return false;
     }
-    
+
 
     void executaJogada(double deltaTime){
         Bola bolaAntesColisao;
@@ -469,7 +486,7 @@ class Controle{
                     bola.posicao = bolaAntesColisao.posicao;
                 }
             }
-        }        
+        }
     }
 
     void controlaJogo(double deltaTime, bool* firstMove){
@@ -496,7 +513,7 @@ class Controle{
     }
 
     void gerarNivel(){
-        this->blocosIniciaisMaximosDoNivel = 1;
+        this->blocosIniciaisMaximosDoNivel = 1 + 1 * (this->nivel / 10);
         if(nivel % 10 != 0){
             this->pontosIniciaisDoBloco = nivel;
             this->tabuleiro.definirBlocos(nivel, blocosIniciaisMaximosDoNivel, 7);
@@ -504,9 +521,18 @@ class Controle{
         }
         else{
             this->pontosIniciaisDoBloco = nivel * 2;
-            this->tabuleiro.definirBlocos(nivel % 10 + 1, blocosIniciaisMaximosDoNivel, 7);
+            this->tabuleiro.definirBlocos(nivel / 10 + 1, blocosIniciaisMaximosDoNivel, 7);
             this->adicionarBolas(nivel);
         }
     }
-    
+
+    void exibirNivelEPontuacao(){
+        CV::color(1, 1, 1);
+        CV::text(10, 10, "Nivel: " + std::to_string(nivel), GLUT_BITMAP_HELVETICA_18);
+        CV::text(10, 30, "Pontuacao: " + std::to_string(pontuacao), GLUT_BITMAP_HELVETICA_18);
+    }
+    CV::text(extremos_bloco[0].x - (CV::getTextWidth(pontos, GLUT_BITMAP_HELVETICA_18)/2) + (tamanho.y/2),
+                    extremos_bloco[0].y + (tamanho.x/10) + (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
+                    pontos,
+                    GLUT_BITMAP_HELVETICA_18);
 };

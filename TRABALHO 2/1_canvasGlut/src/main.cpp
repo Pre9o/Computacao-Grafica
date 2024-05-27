@@ -37,6 +37,9 @@ Feito por Rafael Carneiro Pregardier.
 #include <chrono>
 #include <thread>
 
+#include "windows.h"
+#include "mmsystem.h"
+
 // Início do tempo para calcular a duração da execução do programa
 std::chrono::steady_clock::time_point inicio;
 clock_t lastTime;
@@ -120,14 +123,16 @@ void render(){
             }
          }
       }
-
-      controle.canhao.desenhaBocaCanhao();
-
       for(auto& bola: controle.bolas){
          bola.desenhaBola();
       }
 
       controle.canhao.desenhaCanhao();
+
+
+      controle.canhao.desenhaBocaCanhao();
+
+
 
       if(controle.jogando){
          if (firstMove) {
@@ -161,7 +166,15 @@ void keyboard(int key){
    switch(key){
       case 27:
          // Se a tecla ESC for pressionada, sai do programa
-         exit(0);
+         if(opcaoMenu == 0){
+            exit(0);
+         }
+         else if(opcaoMenu == 1){
+            opcaoMenu = 2;
+         }
+         else if(opcaoMenu == 2){
+            opcaoMenu = 1;
+         }
       break;
    }
 }
@@ -225,7 +238,7 @@ int main(){
 
    //printf("Extremos: X:%f Y:%f X:%f Y:%f\n", tabuleiro.extremos_tabuleiro[0].x, tabuleiro.extremos_tabuleiro[0].y, tabuleiro.extremos_tabuleiro[2].x, tabuleiro.extremos_tabuleiro[2].y);
 
-   canhao.setCanhao(tabuleiro); 
+   canhao.setCanhao(tabuleiro);
    printf("Canhao: X:%f Y:%f\n", canhao.origem.x, canhao.origem.y);
 
    controle.setTabuleiro(tabuleiro);
@@ -240,6 +253,7 @@ int main(){
 
    srand(time(0));
 
+   PlaySound(TEXT("./1_canvasGlut/audios/Embalo.wav"), NULL, SND_ASYNC);
    // Inicia o loop principal do programa
    CV::run();
 

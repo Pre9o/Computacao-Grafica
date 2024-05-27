@@ -234,9 +234,9 @@
 1632060794 c:\users\naoca\documents\github\computacao-grafica\trabalho 2\include\gl\freeglut_ext.h
 	<stdarg.h>
 
-1712836309 c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\vector2.h
+1715562668 c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\vector2.h
 
-1715343270 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\gl_canvas2d.cpp
+1715712115 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\gl_canvas2d.cpp
 	"gl_canvas2d.h"
 	<GL/glut.h>
 
@@ -254,14 +254,14 @@
 	<string.h>
 	<vector>
 
-1712625508 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\imagesfunctions.cpp
+1716820576 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\imagesfunctions.cpp
 	<vector>
 	<algorithm>
 	"gl_canvas2d.h"
 	"Image.h"
 	<numeric>
 
-1715343032 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\main.cpp
+1716823385 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\main.cpp
 	<GL/glut.h>
 	<GL/freeglut_ext.h>
 	<math.h>
@@ -278,8 +278,10 @@
 	"Game.h"
 	<chrono>
 	<thread>
+	"windows.h"
+	"mmsystem.h"
 
-1712618979 c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\imagesfunctions.h
+1716820580 c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\imagesfunctions.h
 	<vector>
 	<algorithm>
 	<string>
@@ -289,7 +291,7 @@
 	"gl_canvas2d.h"
 	<functional>
 
-1715260078 c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\sidebar.h
+1716819468 c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\sidebar.h
 	<stdio.h>
 	<stdlib.h>
 	<vector>
@@ -297,12 +299,13 @@
 	"Image.h"
 	"ImagesFunctions.h"
 	"ImageManager.h"
+	<time.h>
 
 1712625174 c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\imagemanager.h
 	<vector>
 	"Image.h"
 
-1715343709 c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\game.h
+1716823567 c:\users\naoca\documents\github\computacao-grafica\trabalho 2\1_canvasglut\src\game.h
 	"gl_canvas2d.h"
 	"Vector2.h"
 	<stdio.h>
@@ -310,4 +313,8 @@
 	<vector>
 	<time.h>
 	<chrono>
+	"windows.h"
+	"mmsystem.h"
+	<cstdlib>
+	<ctime>
 

@@ -10,10 +10,10 @@ all: main
 	./main
 
 main: $(modules)
-	g++ ./src/main.cpp -o main.exe $(objs) $(libpaths) $(err) $(opt) -I../include
+	g++ ./src/main.cpp -o main.exe $(objs) $(libpaths) $(err) $(opt) -lwinmm -I../include
 
 $(modules): %: src/%.cpp
-	g++ -g -c src/$@.cpp -o $@.o $(libpaths) $(opt) $(err) -I../include
+	g++ -g -c src/$@.cpp -o $@.o $(libpaths) $(opt) $(err) -lwinmm -I../include
 
 .PHONY: clean
 clean:

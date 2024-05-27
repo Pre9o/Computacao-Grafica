@@ -42,8 +42,16 @@
 			<Add library="../lib/libopengl32.a" />
 			<Add library="../lib/libglu32.a" />
 		</Linker>
+		<Unit filename="../include/GLFW/glfw3.h" />
+		<Unit filename="../include/GLFW/glfw3native.h" />
+		<Unit filename="../include/GL/freeglut.h" />
+		<Unit filename="../include/GL/freeglut_ext.h" />
+		<Unit filename="../include/GL/freeglut_std.h" />
+		<Unit filename="../include/GL/glut.h" />
 		<Unit filename="src/Bola.h" />
 		<Unit filename="src/Botao.h" />
+		<Unit filename="src/Game.cpp" />
+		<Unit filename="src/Game.h" />
 		<Unit filename="src/Image.cpp" />
 		<Unit filename="src/Image.h" />
 		<Unit filename="src/ImageManager.h" />
