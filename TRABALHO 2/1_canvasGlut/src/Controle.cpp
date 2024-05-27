@@ -1,5 +1,8 @@
 #include "Controle.h"
 
+/**
+ * @brief Construtor padrão para a classe Controle.
+ */
 Controle::Controle(){
     nivel = 1;
     pontosIniciaisDoBloco = 0;
@@ -13,16 +16,31 @@ Controle::Controle(){
 
 }
 
+/**
+ * Define o username do jogador.
+ * 
+ * @param username_ O username do jogador.
+*/
 void Controle::setUsername(std::string username_){
-    printf("Username: %s\n", username_.c_str());
     this->username = username_;
 }
 
+/**
+ * Desenha a tela de modificação de username.
+*/
 void Controle::telaDeModificacaoDeUsername(std::string username_){
     CV::color(1, 1, 1);
     CV::text(screenWidth/2 - CV::getTextWidth(username_.c_str(), GLUT_BITMAP_HELVETICA_18)/2, screenHeight/2, "Digite seu username: ", username_.c_str(), GLUT_BITMAP_HELVETICA_18);
 }
 
+/**
+ * Define os extremos da tabela de pontos.
+ * 
+ * @param p1 O primeiro ponto.
+ * @param p2 O segundo ponto.
+ * @param p3 O terceiro ponto.
+ * @param p4 O quarto ponto.
+ */
 void Controle::setExtremosTabelaDePontos(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4){
     extremosTabelaDePontos[0] = p1;
     extremosTabelaDePontos[1] = p2;
@@ -30,6 +48,9 @@ void Controle::setExtremosTabelaDePontos(Vector2 p1, Vector2 p2, Vector2 p3, Vec
     extremosTabelaDePontos[3] = p4;
 }
 
+/**
+ * Desenha a tabela de pontos na tela.
+ */
 void Controle::desenharTabelaDePontos(){
     for(size_t i = 0; i < extremosTabelaDePontos.size(); i++){
         CV::color(1, 1, 1);
@@ -37,6 +58,11 @@ void Controle::desenharTabelaDePontos(){
     }
 }
 
+/**
+ * Adiciona bolas ao vetor de bolas.
+ * 
+ * @param num_bolas O número de bolas a serem adicionadas.
+ */
 void Controle::adicionarBolas(int num_bolas){
     for(int i = 0; i < num_bolas; i++){
         Bola bola;
@@ -44,14 +70,31 @@ void Controle::adicionarBolas(int num_bolas){
     }
 }
 
+/**
+ * Define o tabuleiro.
+ * 
+ * @param tabuleiro 
+ */
 void Controle::setTabuleiro(Tabuleiro tabuleiro){
     this->tabuleiro = tabuleiro;
 }
 
+/**
+ * Define o canhão.
+ * 
+ * @param canhao 
+ */
 void Controle::setCanhao(Canhao canhao){
     this->canhao = canhao;
 }
 
+/**
+ * Verifica se houve colisão entre a bola e o tabuleiro.
+ * 
+ * @param tabuleiro O tabuleiro do jogo.
+ * @param bola A bola do jogo.
+ * @return true se houve colisão, false caso contrário.
+ */
 bool Controle::testaColisaoTabuleiro(Tabuleiro& tabuleiro, Bola& bola){
     if(bola.posicao.x - bola.raio < tabuleiro.extremos_tabuleiro[0].x || bola.posicao.x + bola.raio > tabuleiro.extremos_tabuleiro[2].x){
         PlaySound(TEXT("./1_canvasGlut/audios/TUC.wav"), NULL, SND_ASYNC);
@@ -73,6 +116,13 @@ bool Controle::testaColisaoTabuleiro(Tabuleiro& tabuleiro, Bola& bola){
     return false;
 }
 
+/**
+ * Verifica se houve colisão entre a bola e os blocos do tabuleiro.
+ * 
+ * @param tabuleiro O tabuleiro do jogo.
+ * @param bola A bola do jogo.
+ * @return true se houve colisão, false caso contrário.
+ */
 bool Controle::testaColisaoBlocos(Tabuleiro& tabuleiro, Bola& bola){
     for(int i = 0; i < 10; i++){
         for(int j = 0; j < 7; j++){
@@ -131,6 +181,11 @@ bool Controle::testaColisaoBlocos(Tabuleiro& tabuleiro, Bola& bola){
     return false;
 }
 
+/**
+ * Executa a jogada.
+ * 
+ * @param deltaTime O tempo que passou desde o último frame.
+ */
 void Controle::executaJogada(double deltaTime){
     Bola bolaAntesColisao;
     for(auto& bola: bolas){
@@ -146,6 +201,12 @@ void Controle::executaJogada(double deltaTime){
     }
 }
 
+/**
+ * Controla o jogo.
+ * 
+ * @param deltaTime O tempo que passou desde o último frame.
+ * @param firstMove Indica se é o primeiro movimento do jogador.
+ */
 void Controle::controlaJogo(double deltaTime, bool* firstMove){
     this->executaJogada(deltaTime);
 
@@ -168,6 +229,9 @@ void Controle::controlaJogo(double deltaTime, bool* firstMove){
     }
 }
 
+/**
+ * Desenha o jogo na tela.
+ */
 void Controle::gerarNivel(){
     this->blocosIniciaisMaximosDoNivel = 1 + 1 * (this->nivel / 10);
     if(nivel % 10 != 0){
@@ -182,6 +246,9 @@ void Controle::gerarNivel(){
     }
 }
 
+/**
+ * Exibe o nível e a pontuação na tela.
+ */
 void Controle::exibirNivelEPontuacao(){
     CV::color(1, 1, 1);
     CV::text(this->extremosTabelaDePontos[0].x - (CV::getTextWidth("Nivel: ", GLUT_BITMAP_HELVETICA_18)/2) + (this->extremosTabelaDePontos[1].y/10),

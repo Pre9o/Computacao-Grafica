@@ -8,6 +8,13 @@
 #include "Explosoes.h"
 #include <algorithm>
 
+/**
+ * @class Bloco
+ * @brief Representa um bloco no jogo.
+ * 
+ * A classe Bloco guarda informações sobre um bloco, como seu tamanho, posição, cor, e pontos.
+ * Também dispõe de m[etodos para ingeragir e manipular os blocos.
+ */
 class Bloco {
     public:
         Vector2 tamanho;

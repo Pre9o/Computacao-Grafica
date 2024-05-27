@@ -1,5 +1,9 @@
 #include "Canhao.h"
 
+/**
+ * Construtor da classe Canhao.
+ * 
+ */
 Canhao::Canhao(){
     mouse_pos = Vector2(0, 0);
     origem = Vector2(0, 0);
@@ -7,6 +11,11 @@ Canhao::Canhao(){
     angulo_circulo_mouse = 0;
 }
 
+/**
+ * Define o canhão.
+ * 
+ * @param tabuleiro O tabuleiro do jogo.
+ */
 void Canhao::setCanhao(Tabuleiro& tabuleiro){
     this->origem = Vector2((tabuleiro.extremos_tabuleiro[0].x + tabuleiro.extremos_tabuleiro[1].x) / 2, tabuleiro.extremos_tabuleiro[3].y + 10);
 
@@ -16,6 +25,11 @@ void Canhao::setCanhao(Tabuleiro& tabuleiro){
     this->vetor_direcao.normalize();
 }
 
+/**
+ * Define a posição do mouse.
+ * 
+ * @param pos A posição do mouse.
+ */
 void Canhao::setMousePos(Vector2 pos){
     Vector2 vetor_direcao_temp = pos - origem;
     float angulo = atan2(vetor_direcao_temp.y, vetor_direcao_temp.x);
@@ -32,6 +46,12 @@ void Canhao::setMousePos(Vector2 pos){
     }
 }
 
+/**
+ * Desenha o canhão na tela.
+ * 
+ * Calcula a posição inicial das linhas na borda do círculo e desenha as linhas, círculos e retângulos correspondentes.
+ * 
+ */
 void Canhao::desenhaCanhao(){
     // Calcular a posição inicial da linha na borda do círculo
     Vector2 inicio_linha = origem + Vector2(cos(angulo_circulo_mouse - M_PI/2), sin(angulo_circulo_mouse - M_PI/2)) * 10;
@@ -56,6 +76,12 @@ void Canhao::desenhaCanhao(){
     CV::circle((inicio_linha.operator+(inicio_linha_oposta)).operator/(2) + vetor_direcao * 50, 10, 20);
 }
 
+/**
+ * Desenha a boca do canhão na tela.
+ * 
+ * Calcula a posição inicial das linhas na borda do círculo e desenha as linhas, círculos e retângulos correspondentes.
+ * 
+ */
 void Canhao::desenhaBocaCanhao(){
     Vector2 inicio_linha = origem + Vector2(cos(angulo_circulo_mouse - M_PI/2), sin(angulo_circulo_mouse - M_PI/2)) * 10;
     Vector2 inicio_linha_oposta = origem + Vector2(cos(angulo_circulo_mouse + M_PI/2), sin(angulo_circulo_mouse + M_PI/2)) * 10;

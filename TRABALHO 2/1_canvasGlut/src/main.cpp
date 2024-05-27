@@ -6,6 +6,9 @@ Classes:
 - Botao: Representa um botão na interface do usuário.
 - Sidebar: Representa a barra lateral que contém os botões.
 - ImageManager: Gerencia as imagens carregadas e a imagem selecionada.
+- Tabuleiro: Representa o tabuleiro do jogo.
+- Canhao: Representa o canhão do jogo.
+- Controle: Controla o jogo.
 
 Métodos:
 - render(): Renderiza a tela.
@@ -41,11 +44,9 @@ Feito por Rafael Carneiro Pregardier.
 #include "windows.h"
 #include "mmsystem.h"
 
-// Início do tempo para calcular a duração da execução do programa
-clock_t lastTime;
-clock_t intervalo_tempo_inicio = clock();
-
 #define MAX_IMAGES 3
+
+clock_t lastTime;
 
 int screenWidth = 1620, screenHeight = 900;
 
@@ -105,11 +106,11 @@ void render(){
 
    default:
       break;
+   }
 
    if (duration < frameDeltaTime) {
-        Sleep((frameDeltaTime - duration) * 1000);
-        start = clock();
-    }
+      Sleep((frameDeltaTime - duration) * 1000);
+      start = clock();
    }
 }
 
@@ -128,7 +129,6 @@ void keyboard(int key){
          controle.setUsername(username);
       }
    }
-   
 
    switch(key){
       case 27:
@@ -194,8 +194,8 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
 int main(){
    CV::init(screenWidth, screenHeight, "Rafael Carneiro Pregardier");
 
-   sidebar.ConstruirBotoesMenuInicial(&opcaoMenu, &intervalo_tempo_inicio, &setarUsername);
-   sidebar.ConstruirBotoesMenuPausa(&opcaoMenu, &intervalo_tempo_inicio);
+   sidebar.ConstruirBotoesMenuInicial(&opcaoMenu, &setarUsername);
+   sidebar.ConstruirBotoesMenuPausa(&opcaoMenu);
 
    canhao.setCanhao(tabuleiro);
 

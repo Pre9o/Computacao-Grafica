@@ -1,3 +1,12 @@
+/**
+ * @brief Renderiza o menu inicial.
+ * 
+ * @param sidebar A barra lateral do jogo.
+ * @param imageManagerMenuInicial O gerenciador de imagens do menu inicial.
+ * @param screenWidth A largura da tela.
+ * @param screenHeight A altura da tela.
+ *  
+ */
 void renderizarMenuInicial(Sidebar sidebar, ImageManager imageManagerMenuInicial, int screenWidth, int screenHeight){
     for(Botao* botao : sidebar.botoesMenuInicial){
             botao->AtualizarPosicaoMeioTela(screenWidth / 2, screenHeight / 2);
@@ -10,6 +19,14 @@ void renderizarMenuInicial(Sidebar sidebar, ImageManager imageManagerMenuInicial
     }
 }
 
+/**
+ * Função responsável por renderizar o jogo.
+ * 
+ * @param controle Referência para o objeto Controle que contém as informações do jogo.
+ * @param firstMove Referência para uma variável booleana que indica se é o primeiro movimento do jogo.
+ * @param lastTime Referência para uma variável do tipo clock_t que armazena o tempo do último movimento.
+ * @param carregado Referência para uma variável booleana que indica se o jogo foi carregado.
+ */
 void renderizarJogo(Controle& controle, bool& firstMove, clock_t& lastTime, bool& carregado){
     controle.tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 + 401), Vector2(screenWidth/2 + 261, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
         controle.tabuleiro.setTabuleiro();
@@ -60,6 +77,15 @@ void renderizarJogo(Controle& controle, bool& firstMove, clock_t& lastTime, bool
         carregado = true;
 }
 
+/**
+ * Função responsável por renderizar o menu de pausa.
+ * 
+ * @param sidebar A barra lateral do jogo.
+ * @param imageManagerMenuPausa O gerenciador de imagens do menu de pausa.
+ * @param imageManagerMenuInicial O gerenciador de imagens do menu inicial.
+ * @param screenWidth A largura da tela.
+ * @param screenHeight A altura da tela.
+*/
 void renderizarMenuPausa(Sidebar sidebar, ImageManager imageManagerMenuPausa, ImageManager imageManagerMenuInicial, int screenWidth, int screenHeight){
     for(Botao* botao : sidebar.botoesMenuPausa){
         botao->AtualizarPosicaoMeioTela(screenWidth / 2, screenHeight / 2);

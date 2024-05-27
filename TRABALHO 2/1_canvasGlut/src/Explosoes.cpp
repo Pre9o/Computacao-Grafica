@@ -8,19 +8,34 @@ Particula::Particula(float x, float y, float angulo, int cor) {
             this->cor = cor;
     }
 
+/**
+ * Atualiza a posição da partícula com base no tempo decorrido.
+ * 
+ * @param deltaTime O tempo decorrido desde a última atualização.
+ */
 void Particula::atualiza(float deltaTime) {
             x += velocidadeX * deltaTime;
             y += velocidadeY * deltaTime;
             velocidadeX *= 1 - atrito * deltaTime;
             velocidadeY *= 1 - atrito * deltaTime;
-    }
+}
 
+/**
+ * Desenha a partícula na tela.
+*/
 void Particula::desenha() {
             CV::color(cor);
             CV::point(x, y);
-    }
+}
 
-
+/**
+ * @brief Construtor da classe Explosao.
+ * 
+ * @param x A posição x da explosão.
+ * @param y A posição y da explosão.
+ * @param tempoInicial O tempo inicial da explosão.
+ * @param cor A cor da explosão.
+ */
 Explosao::Explosao(float x, float y, clock_t tempoInicial, int cor) {
     this->x = x;
     this->y = y;
@@ -35,6 +50,10 @@ Explosao::Explosao(float x, float y, clock_t tempoInicial, int cor) {
     }
 }
 
+/**
+ * Atualiza a explosão.
+ * 
+ */
 void Explosao::desenha() {
     if (double(tempoRestante - tempoInicial) / 1000.0f < 1.5) {
         for(int i = 0; i < 100; i++) {

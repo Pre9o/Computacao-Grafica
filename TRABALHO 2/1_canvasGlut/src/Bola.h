@@ -7,6 +7,13 @@
 #include "Canhao.h"
 #include "gl_canvas2d.h"
 
+/**
+ * @class Bola
+ * @brief Representa uma bola no jogo.
+ * 
+ * A classe bola é responsável por representar uma bola no jogo. Ela contém atributos como a posição, velocidade, direção e raio da bola.
+ * Também contém métodos para desenhar e mover a bola na tela.
+ */
 class Bola {
     public:
         Vector2 posicao;

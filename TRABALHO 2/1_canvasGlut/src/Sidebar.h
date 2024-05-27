@@ -16,23 +16,21 @@ Métodos:
 
 class Sidebar {
 public:
-    // Vetor para armazenar os botões na barra lateral
+    // Vetor para armazenar os botões do menu principal
     std::vector<Botao*> botoesMenuInicial;
     std::vector<Botao*> botoesMenuPausa;
 
-    // Método para construir os botões na barra lateral
-    void ConstruirBotoesMenuInicial(int *opcaoMenu, clock_t *intervalo_tempo_inicio, bool *setarUsername){
+    // Método para construir os botões do menu principal
+    void ConstruirBotoesMenuInicial(int *opcaoMenu, bool *setarUsername){
         // Se a barra lateral ainda não tem botões, cria os botões
         if(botoesMenuInicial.size() == 0){
-            botoesMenuInicial.push_back(new Botao(-100, 0, 200, 50, "New Game", 1, 1, 1, [opcaoMenu, intervalo_tempo_inicio](){
+            botoesMenuInicial.push_back(new Botao(-100, 0, 200, 50, "New Game", 1, 1, 1, [opcaoMenu](){
                 printf("Botão Play clicado\n");
                 *opcaoMenu = 1;
-                *intervalo_tempo_inicio = clock();
             }));
-            botoesMenuInicial.push_back(new Botao(-100, -100, 200, 50, "Continue", 1, 1, 1, [opcaoMenu, intervalo_tempo_inicio](){
+            botoesMenuInicial.push_back(new Botao(-100, -100, 200, 50, "Continue", 1, 1, 1, [opcaoMenu](){
                 printf("Botão Settings clicado\n");
                 *opcaoMenu = 1;
-                *intervalo_tempo_inicio = clock();
             }));
             botoesMenuInicial.push_back(new Botao(-100, -200, 200, 50, "Choose Username", 1, 1, 1, [opcaoMenu, setarUsername](){
                 printf("Botão Username clicado\n");
@@ -46,13 +44,12 @@ public:
         }
     }
 
-    void ConstruirBotoesMenuPausa(int *opcaoMenu, clock_t *intervalo_tempo_inicio){
+    void ConstruirBotoesMenuPausa(int *opcaoMenu){
         // Se a barra lateral ainda não tem botões, cria os botões
         if(botoesMenuPausa.size() == 0){
-            botoesMenuPausa.push_back(new Botao(-100, 0, 200, 50, "Resume", 1, 1, 1, [opcaoMenu, intervalo_tempo_inicio](){
+            botoesMenuPausa.push_back(new Botao(-100, 0, 200, 50, "Resume", 1, 1, 1, [opcaoMenu](){
                 printf("Botão Resume clicado\n");
                 *opcaoMenu = 1;
-                *intervalo_tempo_inicio = clock();
             }));
             botoesMenuPausa.push_back(new Botao(-100, -100, 200, 50, "Settings", 1, 1, 1, [](){
                 printf("Botão Settings clicado\n");
