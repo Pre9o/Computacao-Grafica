@@ -365,6 +365,7 @@ class Controle{
     int pontosIniciaisDoBloco;
     int blocosIniciaisMaximosDoNivel;
     int pontuacao;
+    
     std::vector<Bola> bolas;
     Tabuleiro tabuleiro;
     Canhao canhao;
@@ -528,11 +529,13 @@ class Controle{
 
     void exibirNivelEPontuacao(){
         CV::color(1, 1, 1);
-        CV::text(10, 10, "Nivel: " + std::to_string(nivel), GLUT_BITMAP_HELVETICA_18);
-        CV::text(10, 30, "Pontuacao: " + std::to_string(pontuacao), GLUT_BITMAP_HELVETICA_18);
+        //CV::text(10, 10, "Nivel: " + std::to_string(nivel), GLUT_BITMAP_HELVETICA_18);
+        //CV::text(10, 30, "Pontuacao: " + std::to_string(pontuacao), GLUT_BITMAP_HELVETICA_18);
     }
-    CV::text(extremos_bloco[0].x - (CV::getTextWidth(pontos, GLUT_BITMAP_HELVETICA_18)/2) + (tamanho.y/2),
+    /*CV::text(extremos_bloco[0].x - (CV::getTextWidth(pontos, GLUT_BITMAP_HELVETICA_18)/2) + (tamanho.y/2),
                     extremos_bloco[0].y + (tamanho.x/10) + (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
                     pontos,
-                    GLUT_BITMAP_HELVETICA_18);
+                    GLUT_BITMAP_HELVETICA_18);*/
+
+    
 };

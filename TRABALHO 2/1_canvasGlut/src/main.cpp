@@ -63,7 +63,9 @@ double tempo_inicio = 0;
 // Sidebar que contém os botões para manipular as imagens
 Sidebar sidebar;
 // Gerenciador de imagens que contém as imagens carregadas e a imagem selecionada
-ImageManager imageManager;
+ImageManager imageManagerMenuInicial;
+ImageManager imageManagerJogo;
+ImageManager imageManagerMenuPausa;
 
 Tabuleiro tabuleiro;
 
@@ -91,13 +93,13 @@ void render(){
    switch (opcaoMenu)
    {
    case 0:
-      for(Botao* botao : sidebar.botoes){
+      for(Botao* botao : sidebar.botoesMenuInicial){
          botao->AtualizarPosicaoMeioTela(screenWidth / 2, screenHeight / 2);
          botao->Render();
       }
 
-      for (Bmp* image : imageManager.images) {
-         AtualizarParametros(image, imageManager.images.size() * 100, Vector2(screenWidth / 2, screenHeight / 2));
+      for (Bmp* image : imageManagerMenuInicial.images) {
+         AtualizarParametros(image, imageManagerMenuInicial.images.size() * 100, Vector2(screenWidth / 2, screenHeight / 2));
          DrawImage(image);
       }
       break;
@@ -114,7 +116,6 @@ void render(){
             if(bloco.explosao != NULL) {
                bloco.explosao->desenha();
                if(bloco.explosao->tempoRestante == 0){
-                  printf("aaaaa");
                   bloco.explosao = NULL;
                }
             }
@@ -149,6 +150,17 @@ void render(){
       }
 
       carregado = true;
+      break;
+   case 2:
+      for(Botao* botao : sidebar.botoesMenuPausa){
+         botao->AtualizarPosicaoMeioTela(screenWidth / 2, screenHeight / 2);
+         botao->Render();
+      }
+
+      for (Bmp* image : imageManagerMenuInicial.images) {
+         AtualizarParametros(image, imageManagerMenuInicial.images.size() * 100, Vector2(screenWidth / 2, screenHeight / 2));
+         DrawImage(image);
+      }
       break;
 
    default:
@@ -196,9 +208,17 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
       if(state == 1) {
       }
       else if (state == 0) {
-         for (Botao* botao : sidebar.botoes) {
+         for (Botao* botao : sidebar.botoesMenuInicial) {
             if(botao->Colidiu(x, y)){
                if(opcaoMenu == 0){
+                  botao->onClick();
+               }
+            }
+         }
+
+         for (Botao* botao : sidebar.botoesMenuPausa) {
+            if(botao->Colidiu(x, y)){
+               if(opcaoMenu == 2){
                   botao->onClick();
                }
             }
@@ -228,6 +248,8 @@ int main(){
    // Constrói os botões na barra lateral
    sidebar.ConstruirBotoesMenuInicial(&opcaoMenu, &intervalo_tempo_inicio);
 
+   sidebar.ConstruirBotoesMenuPausa(&opcaoMenu, &intervalo_tempo_inicio);
+
    tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 - 300, screenHeight/2 + 400));
    tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 260, screenHeight/2 + 401));
    tabuleiro.extremos_tabuleiro.push_back(Vector2(screenWidth/2 + 261, screenHeight/2 - 400));
@@ -236,10 +258,7 @@ int main(){
    tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 + 401), Vector2(screenWidth/2 + 261, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
    tabuleiro.setTabuleiro();
 
-   //printf("Extremos: X:%f Y:%f X:%f Y:%f\n", tabuleiro.extremos_tabuleiro[0].x, tabuleiro.extremos_tabuleiro[0].y, tabuleiro.extremos_tabuleiro[2].x, tabuleiro.extremos_tabuleiro[2].y);
-
    canhao.setCanhao(tabuleiro);
-   printf("Canhao: X:%f Y:%f\n", canhao.origem.x, canhao.origem.y);
 
    controle.setTabuleiro(tabuleiro);
 
@@ -249,7 +268,7 @@ int main(){
 
    Vector2 posicao = Vector2(screenWidth/2, screenHeight/2);
 
-   LoadImages(imageManager.images, ".\\images\\Teste.bmp", posicao);
+   LoadImages(imageManagerMenuInicial.images, ".\\images\\Teste.bmp", posicao);
 
    srand(time(0));
 
