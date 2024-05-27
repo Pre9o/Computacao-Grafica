@@ -213,9 +213,11 @@ void CV::text(float x, float y, const char *t, const char *string, void *bitmap)
     }
 
     for(int c=0; c < (int)strlen(string); c++)
-    {
-        glRasterPos2i(x + tam + c*10, y);
-        glutBitmapCharacter(bitmap, string[c]);
+    { 
+        int charWidth = glutBitmapWidth(bitmap, string[c]);
+        glRasterPos2i(x, y);
+        x+=charWidth;
+         glutBitmapCharacter(bitmap, string[c]);
     }
 }
 

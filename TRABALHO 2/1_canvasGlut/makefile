@@ -1,4 +1,4 @@
-modules = gl_canvas2d Image ImagesFunctions Game
+modules = gl_canvas2d Image ImagesFunctions Controle Bloco Bola Canhao Tabuleiro Explosoes
 files = $(addprefix ./.src/, $(modules))
 objs = $(addsuffix .o, $(modules))
 libs = libfreeglut32.a libopengl32.a libglu32.a
