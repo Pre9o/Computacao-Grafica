@@ -14,26 +14,26 @@
 #include <ctime> // para time()
 
 class Particula {
-public:
-    Particula(float x, float y, float angulo, int cor) {
-        this->x = x;
-        this->y = y;
-        this->velocidadeX = cos(angulo) * velocidadeInicial;
-        this->velocidadeY = sin(angulo) * velocidadeInicial;
-        this->cor = cor;
-    }
+    public:
+        Particula(float x, float y, float angulo, int cor) {
+            this->x = x;
+            this->y = y;
+            this->velocidadeX = cos(angulo) * velocidadeInicial;
+            this->velocidadeY = sin(angulo) * velocidadeInicial;
+            this->cor = cor;
+        }
 
-    void atualiza(float deltaTime) {
-        x += velocidadeX * deltaTime;
-        y += velocidadeY * deltaTime;
-        velocidadeX *= 1 - atrito * deltaTime;
-        velocidadeY *= 1 - atrito * deltaTime;
-    }
+        void atualiza(float deltaTime) {
+            x += velocidadeX * deltaTime;
+            y += velocidadeY * deltaTime;
+            velocidadeX *= 1 - atrito * deltaTime;
+            velocidadeY *= 1 - atrito * deltaTime;
+        }
 
-    void desenha() {
-        CV::color(cor);
-        CV::point(x, y);
-    }
+        void desenha() {
+            CV::color(cor);
+            CV::point(x, y);
+        }
 
 private:
     float x, y;
@@ -365,10 +365,13 @@ class Controle{
     int pontosIniciaisDoBloco;
     int blocosIniciaisMaximosDoNivel;
     int pontuacao;
-    
+
+    std::vector<Vector2> extremosTabelaDePontos;
     std::vector<Bola> bolas;
     Tabuleiro tabuleiro;
     Canhao canhao;
+
+    std::string username;
 
     bool jogando;
 
@@ -377,6 +380,30 @@ class Controle{
         pontosIniciaisDoBloco = 0;
         jogando = false;
         pontuacao = 0;
+    }
+    
+    void setUsername(std::string username_){
+        printf("Username: %s\n", username_.c_str());
+        this->username = username_;
+    }
+
+    void telaDeModificacaoDeUsername(std::string username_){
+        CV::color(1, 1, 1);
+        CV::text(screenWidth/2 - CV::getTextWidth(username_.c_str(), GLUT_BITMAP_HELVETICA_18)/2, screenHeight/2, "Digite seu username: ", username_.c_str(), GLUT_BITMAP_HELVETICA_18);
+    }
+
+    void setExtremosTabelaDePontos(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4){
+        extremosTabelaDePontos[0] = p1;
+        extremosTabelaDePontos[1] = p2;
+        extremosTabelaDePontos[2] = p3;
+        extremosTabelaDePontos[3] = p4;
+    }
+
+    void desenharTabelaDePontos(){
+        for(int i = 0; i < extremosTabelaDePontos.size(); i++){
+            CV::color(1, 1, 1);
+            CV::line(extremosTabelaDePontos[i], extremosTabelaDePontos[(i + 1) % 4]);
+        }
     }
 
     void adicionarBolas(int num_bolas){
@@ -529,13 +556,16 @@ class Controle{
 
     void exibirNivelEPontuacao(){
         CV::color(1, 1, 1);
-        //CV::text(10, 10, "Nivel: " + std::to_string(nivel), GLUT_BITMAP_HELVETICA_18);
-        //CV::text(10, 30, "Pontuacao: " + std::to_string(pontuacao), GLUT_BITMAP_HELVETICA_18);
+        CV::text(this->extremosTabelaDePontos[0].x - (CV::getTextWidth("Nivel: ", GLUT_BITMAP_HELVETICA_18)/2) + (this->extremosTabelaDePontos[1].y/10),
+                 this->extremosTabelaDePontos[0].y - (this->extremosTabelaDePontos[2].x/10) - (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
+                 "Nivel: ", nivel, GLUT_BITMAP_HELVETICA_18);
+        CV::text(this->extremosTabelaDePontos[0].x - (CV::getTextWidth("Pontuacao: ", GLUT_BITMAP_HELVETICA_18)/2) + (this->extremosTabelaDePontos[1].y/10),
+                 this->extremosTabelaDePontos[0].y - (this->extremosTabelaDePontos[2].x/7) - (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
+                 "Pontuacao: ", pontuacao, GLUT_BITMAP_HELVETICA_18);
+        CV::color(0.98823, 0.5098, 0.20392);
+        CV::text(this->extremosTabelaDePontos[0].x - (CV::getTextWidth(username.c_str(), GLUT_BITMAP_HELVETICA_18)/2) + (this->extremosTabelaDePontos[1].y/10),
+                 this->extremosTabelaDePontos[0].y - (this->extremosTabelaDePontos[2].x/5) - (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
+                 username.c_str(), GLUT_BITMAP_HELVETICA_18);
     }
-    /*CV::text(extremos_bloco[0].x - (CV::getTextWidth(pontos, GLUT_BITMAP_HELVETICA_18)/2) + (tamanho.y/2),
-                    extremos_bloco[0].y + (tamanho.x/10) + (CV::getBitmapHeight(GLUT_BITMAP_HELVETICA_18)/2),
-                    pontos,
-                    GLUT_BITMAP_HELVETICA_18);*/
-
     
 };

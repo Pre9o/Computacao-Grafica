@@ -21,18 +21,25 @@ public:
     std::vector<Botao*> botoesMenuPausa;
 
     // Método para construir os botões na barra lateral
-    void ConstruirBotoesMenuInicial(int *opcaoMenu, clock_t *intervalo_tempo_inicio){
+    void ConstruirBotoesMenuInicial(int *opcaoMenu, clock_t *intervalo_tempo_inicio, bool *setarUsername){
         // Se a barra lateral ainda não tem botões, cria os botões
         if(botoesMenuInicial.size() == 0){
-            botoesMenuInicial.push_back(new Botao(-100, 0, 200, 50, "Play", 1, 1, 1, [opcaoMenu, intervalo_tempo_inicio](){
+            botoesMenuInicial.push_back(new Botao(-100, 0, 200, 50, "New Game", 1, 1, 1, [opcaoMenu, intervalo_tempo_inicio](){
                 printf("Botão Play clicado\n");
                 *opcaoMenu = 1;
                 *intervalo_tempo_inicio = clock();
             }));
-            botoesMenuInicial.push_back(new Botao(-100, -100, 200, 50, "Settings", 1, 1, 1, [](){
+            botoesMenuInicial.push_back(new Botao(-100, -100, 200, 50, "Continue", 1, 1, 1, [opcaoMenu, intervalo_tempo_inicio](){
                 printf("Botão Settings clicado\n");
+                *opcaoMenu = 1;
+                *intervalo_tempo_inicio = clock();
             }));
-            botoesMenuInicial.push_back(new Botao(-100, -200, 200, 50, "Quit", 1, 1, 1, [](){
+            botoesMenuInicial.push_back(new Botao(-100, -200, 200, 50, "Choose Username", 1, 1, 1, [opcaoMenu, setarUsername](){
+                printf("Botão Username clicado\n");
+                *opcaoMenu = 3;
+                *setarUsername = true;
+            }));
+            botoesMenuInicial.push_back(new Botao(-100, -300, 200, 50, "Quit", 1, 1, 1, [](){
                 printf("Botão Quit clicado\n");
                 exit(0);
             }));

@@ -180,6 +180,45 @@ void CV::text(float x, float y, int valor, void *bitmap)
     text(x, y, s, bitmap);
 }
 
+void CV::text(float x, float y, const char *t, int valor, void *bitmap)
+{
+   int tam = (int)strlen(t);
+   for(int c=0; c < tam; c++)
+   {
+      int charWidth = glutBitmapWidth(bitmap, t[c]);
+      glRasterPos2i(x, y);
+      x+=charWidth;
+      glutBitmapCharacter(bitmap, t[c]);
+   }
+
+   char s[100];
+   sprintf(s, "%d", valor);
+   for(int c=0; c < (int)strlen(s); c++)
+   {
+      glRasterPos2i(x + tam + c*10, y);
+      glutBitmapCharacter(bitmap, s[c]);
+   }
+
+}
+
+void CV::text(float x, float y, const char *t, const char *string, void *bitmap)
+{
+    int tam = (int)strlen(t);
+    for(int c=0; c < tam; c++)
+    {
+        int charWidth = glutBitmapWidth(bitmap, t[c]);
+        glRasterPos2i(x, y);
+        x+=charWidth;
+        glutBitmapCharacter(bitmap, t[c]);
+    }
+
+    for(int c=0; c < (int)strlen(string); c++)
+    {
+        glRasterPos2i(x + tam + c*10, y);
+        glutBitmapCharacter(bitmap, string[c]);
+    }
+}
+
 int CV::getTextWidth(const char *s, void *bitmap){
     return glutBitmapLength(bitmap, (const unsigned char*)s);
 }

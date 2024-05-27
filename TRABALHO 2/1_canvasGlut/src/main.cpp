@@ -60,6 +60,8 @@ int menuOpcao = 0;
 
 double tempo_inicio = 0;
 
+bool setarUsername = false;
+
 // Sidebar que contém os botões para manipular as imagens
 Sidebar sidebar;
 // Gerenciador de imagens que contém as imagens carregadas e a imagem selecionada
@@ -80,6 +82,7 @@ double atraso = 0;
 
 clock_t start = clock();
 
+std::string username = "";
 
 // Função para renderizar a tela
 void render(){
@@ -102,6 +105,8 @@ void render(){
          AtualizarParametros(image, imageManagerMenuInicial.images.size() * 100, Vector2(screenWidth / 2, screenHeight / 2));
          DrawImage(image);
       }
+
+
       break;
    case 1:
       controle.tabuleiro.setExtremosTabuleiro(Vector2(screenWidth/2 - 300, screenHeight/2 + 400), Vector2(screenWidth/2 + 260, screenHeight/2 + 401), Vector2(screenWidth/2 + 261, screenHeight/2 - 400), Vector2(screenWidth/2 - 300, screenHeight/2 - 400));
@@ -110,6 +115,8 @@ void render(){
       controle.tabuleiro.desenhaTabuleiro();
 
       controle.canhao.setCanhao(controle.tabuleiro);
+
+      controle.setExtremosTabelaDePontos(Vector2(screenWidth/2 - 600, screenHeight/2 + 400), Vector2(screenWidth/2 - 400, screenHeight/2 + 400), Vector2(screenWidth/2 - 400, screenHeight/2 - 400), Vector2(screenWidth/2 - 600, screenHeight/2 - 400));
 
       for(auto& linha : controle.tabuleiro.matriz_tabuleiro){
          for(Bloco& bloco : linha){
@@ -130,10 +137,11 @@ void render(){
 
       controle.canhao.desenhaCanhao();
 
-
       controle.canhao.desenhaBocaCanhao();
 
+      controle.desenharTabelaDePontos();
 
+      controle.exibirNivelEPontuacao();
 
       if(controle.jogando){
          if (firstMove) {
@@ -162,6 +170,12 @@ void render(){
          DrawImage(image);
       }
       break;
+   case 3:
+      if(setarUsername){
+         CV::color(1, 1, 1);
+         CV::text(screenWidth/2 - 100, screenHeight/2, username.c_str());
+      }
+      break;
 
    default:
       break;
@@ -175,6 +189,21 @@ void render(){
 
 // Função para lidar com a entrada do teclado
 void keyboard(int key){
+   if(setarUsername){
+      if(isalnum(key)){
+         username += key;
+      }
+      else if(key == 8 && username.size() > 0){
+         username = username.substr(0, username.size() - 1);
+      }
+      else if(key == 13){
+         setarUsername = false;
+         opcaoMenu = 0;
+         controle.setUsername(username);
+      }
+   }
+   
+
    switch(key){
       case 27:
          // Se a tecla ESC for pressionada, sai do programa
@@ -246,7 +275,7 @@ int main(){
    inicio = std::chrono::steady_clock::now();
 
    // Constrói os botões na barra lateral
-   sidebar.ConstruirBotoesMenuInicial(&opcaoMenu, &intervalo_tempo_inicio);
+   sidebar.ConstruirBotoesMenuInicial(&opcaoMenu, &intervalo_tempo_inicio, &setarUsername);
 
    sidebar.ConstruirBotoesMenuPausa(&opcaoMenu, &intervalo_tempo_inicio);
 
@@ -266,13 +295,18 @@ int main(){
 
    controle.setCanhao(canhao);
 
+   controle.extremosTabelaDePontos.push_back(Vector2(screenWidth/2 - 600, screenHeight/2 + 400));
+   controle.extremosTabelaDePontos.push_back(Vector2(screenWidth/2 - 400, screenHeight/2 + 400));
+   controle.extremosTabelaDePontos.push_back(Vector2(screenWidth/2 - 400, screenHeight/2 - 400));
+   controle.extremosTabelaDePontos.push_back(Vector2(screenWidth/2 - 600, screenHeight/2 - 400));
+
    Vector2 posicao = Vector2(screenWidth/2, screenHeight/2);
 
    LoadImages(imageManagerMenuInicial.images, ".\\images\\Teste.bmp", posicao);
 
    srand(time(0));
 
-   PlaySound(TEXT("./1_canvasGlut/audios/Embalo.wav"), NULL, SND_ASYNC);
+   PlaySound(TEXT(".\\audios\\Embalo.wav"), NULL, SND_ASYNC);
    // Inicia o loop principal do programa
    CV::run();
 

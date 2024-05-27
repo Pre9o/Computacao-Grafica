@@ -58,6 +58,8 @@ public:
     static void text(float x, float y, const char *t);
     static void text(float x, float y, const char *t, void *bitmap);
     static void text(float x, float y, int valor, void *bitmap);
+    static void text(float x, float y, const char *t, int valor, void *bitmap);
+    static void text(float x, float y, const char *t, const char *string, void *bitmap);
     static void text(Vector2 pos, const char *t);  //varias funcoes ainda nao tem implementacao. Faca como exercicio
     static void text(Vector2 pos, int valor);      //varias funcoes ainda nao tem implementacao. Faca como exercicio
     static void text(Vector2 pos, float valor);    //varias funcoes ainda nao tem implementacao. Faca como exercicio
