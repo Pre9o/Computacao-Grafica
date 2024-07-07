@@ -1,6 +1,8 @@
 #ifndef __VECTOR_2_H__
 #define __VECTOR_2_H__
 
+#include <math.h>
+#include <stdio.h>
 
 class Vector2
 {
@@ -59,6 +61,10 @@ public:
        return( aux );
    }
 
+   Vector2 operator * (const float& number) const {
+        return Vector2(x * number, y * number);
+    }
+
     Vector2 operator / (const float& v)
     {
          Vector2 aux( x / v, y / v);
@@ -67,5 +73,4 @@ public:
 
 
 };
-
 #endif

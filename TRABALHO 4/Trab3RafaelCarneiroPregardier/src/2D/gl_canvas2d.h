@@ -10,7 +10,6 @@
 #include <GL/freeglut_ext.h> //callback da wheel do mouse.
 
 #include "Vector2.h"
-#include "Vector3.h"
 
 #define PI_2 6.28318530717
 #define PI   3.14159265359
@@ -35,6 +34,7 @@ public:
 
     static void rectFill( float x1, float y1, float x2, float y2 ); //coordenadas do retangulo x1, y1, x2, y2
     static void rectFill( Vector2 p1, Vector2 p2 ); //coordenadas do retangulo (p1, p2)
+    static void rectFill( Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4 ); //coordenadas do retangulo (p1, p2, p3, p4)
 
     //desenha um poligono CONVEXO. Para um retangulo, deve-se passar 4 vertices
     static void polygon(float vx[], float vy[], int n_elems);
@@ -56,9 +56,16 @@ public:
 
     //desenha texto na coordenada (x,y)
     static void text(float x, float y, const char *t);
+    static void text(float x, float y, const char *t, void *bitmap);
+    static void text(float x, float y, int valor, void *bitmap);
+    static void text(float x, float y, const char *t, int valor, void *bitmap);
+    static void text(float x, float y, const char *t, const char *string, void *bitmap);
     static void text(Vector2 pos, const char *t);  //varias funcoes ainda nao tem implementacao. Faca como exercicio
     static void text(Vector2 pos, int valor);      //varias funcoes ainda nao tem implementacao. Faca como exercicio
     static void text(Vector2 pos, float valor);    //varias funcoes ainda nao tem implementacao. Faca como exercicio
+    static int getBitmapHeight(void *bitmap);
+    static int getTextWidth(const char *s, void *bitmap);
+    static int getTextWidth(int n, void *bitmap);
 
     //coordenada de offset para desenho de objetos.
     static void translate(float x, float y);

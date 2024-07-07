@@ -17,9 +17,9 @@
 #include <GL/glut.h>
 
 //conjunto de cores predefinidas. Pode-se adicionar mais cores.
-float Colors[14][3]=
+float Colors[20][3]=
 {
-    {0, 0, 0}, //Black
+    {0.2, 1, 0.7}, //Black
     {0.5, 0.5, 0.5}, //Gray
     {1, 0, 0}, //Red
     {0, 1, 0}, //Green
@@ -32,7 +32,13 @@ float Colors[14][3]=
     {0.5, 0.5, 0}, //Olive
     {0, 0.5, 0.5}, //
     {0.5, 0, 0.5}, //
-    {1, 1, 1}, //white
+    {0.5, 0.1, 1}, //white
+    {0.3, 0.3, 0.3},
+    {0.7, 0.7, 0.7},
+    {1, 0.2, 0.1},
+    {0.1, 1, 0.2},
+    {0.1, 0.2, 1},
+    {0.2, 1, 1}
 };
 
 void ConvertMouseCoord(int button, int state, int wheel, int direction, int x, int y);
@@ -104,6 +110,15 @@ void CV::rectFill( Vector2 p1, Vector2 p2 )
       glVertex2d(p2.x, p1.y);
    glEnd();
 }
+void CV::rectFill( Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4 )
+{
+   glBegin(GL_QUADS);
+      glVertex2d(p1.x, p1.y);
+      glVertex2d(p2.x, p2.y);
+      glVertex2d(p3.x, p3.y);
+      glVertex2d(p4.x, p4.y);
+   glEnd();
+}
 
 void CV::polygon(float vx[], float vy[], int elems)
 {
@@ -146,6 +161,80 @@ void CV::text(float x, float y, const char *t)
     }
 }
 
+void CV::text(float x, float y, const char *t, void *bitmap)
+{
+    int tam = (int)strlen(t);
+    for(int c=0; c < tam; c++)
+    {
+        int charWidth = glutBitmapWidth(bitmap, t[c]);
+        glRasterPos2i(x, y);
+        x+=charWidth;
+        glutBitmapCharacter(bitmap, t[c]);
+    }
+}
+
+void CV::text(float x, float y, int valor, void *bitmap)
+{
+    char s[100];
+    sprintf(s, "%d", valor);
+    text(x, y, s, bitmap);
+}
+
+void CV::text(float x, float y, const char *t, int valor, void *bitmap)
+{
+   int tam = (int)strlen(t);
+   for(int c=0; c < tam; c++)
+   {
+      int charWidth = glutBitmapWidth(bitmap, t[c]);
+      glRasterPos2i(x, y);
+      x+=charWidth;
+      glutBitmapCharacter(bitmap, t[c]);
+   }
+
+   char s[100];
+   sprintf(s, "%d", valor);
+   for(int c=0; c < (int)strlen(s); c++)
+   {
+      glRasterPos2i(x + tam + c*10, y);
+      glutBitmapCharacter(bitmap, s[c]);
+   }
+
+}
+
+void CV::text(float x, float y, const char *t, const char *string, void *bitmap)
+{
+    int tam = (int)strlen(t);
+    for(int c=0; c < tam; c++)
+    {
+        int charWidth = glutBitmapWidth(bitmap, t[c]);
+        glRasterPos2i(x, y);
+        x+=charWidth;
+        glutBitmapCharacter(bitmap, t[c]);
+    }
+
+    for(int c=0; c < (int)strlen(string); c++)
+    { 
+        int charWidth = glutBitmapWidth(bitmap, string[c]);
+        glRasterPos2i(x, y);
+        x+=charWidth;
+         glutBitmapCharacter(bitmap, string[c]);
+    }
+}
+
+int CV::getTextWidth(const char *s, void *bitmap){
+    return glutBitmapLength(bitmap, (const unsigned char*)s);
+}
+
+int CV::getTextWidth(int n, void *bitmap){
+    char s[100];
+    sprintf(s, "%d", n);
+    return glutBitmapLength(bitmap, (const unsigned char*)s);
+}
+
+int CV::getBitmapHeight(void *bitmap){
+    return glutBitmapHeight(bitmap);
+}
+
 void CV::clear(float r, float g, float b)
 {
    glClearColor( r, g, b, 1 );
@@ -166,6 +255,7 @@ void CV::circle( float x, float y, float radius, int div )
    glEnd();
 }
 
+
 void CV::circle(Vector2 p, float radius, int div)
 {
    circle(p.x, p.y, radius, div);
@@ -184,6 +274,11 @@ void CV::circleFill( float x, float y, float radius, int div )
          ang+=inc;
       }
    glEnd();
+}
+
+void CV::circleFill(Vector2 p, float radius, int div)
+{
+   circleFill(p.x, p.y, radius, div);
 }
 
 //coordenada de offset para desenho de objetos.
@@ -292,6 +387,7 @@ void inicializa()
    glClearColor(1,1,1,1);
    glPolygonMode(GL_FRONT, GL_FILL);
 }
+
 
 void display (void)
 {
