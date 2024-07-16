@@ -588,3 +588,94 @@
 	"windows.h"
 	"mmsystem.h"
 
+1720981249 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\gl_canvas2d.cpp
+	"gl_canvas2d.h"
+	<GL/glut.h>
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\gl_canvas2d.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<string.h>
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	"Vector2.h"
+	"Vector3.h"
+
+1632060799 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\include\gl\glut.h
+	"freeglut_std.h"
+
+1632060797 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\include\gl\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+
+1632060794 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\include\gl\freeglut_ext.h
+	<stdarg.h>
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\vector2.h
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\vector3.h
+
+1720981249 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\2d\gl_canvas2d.cpp
+	"gl_canvas2d.h"
+	<GL/glut.h>
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\2d\gl_canvas2d.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<string.h>
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	"Vector2.h"
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\2d\vector2.h
+	<math.h>
+	<stdio.h>
+
+1720981249 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\2d\main.cpp
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<algorithm>
+	"gl_canvas2d.h"
+	<chrono>
+	<thread>
+	"windows.h"
+	"mmsystem.h"
+
+1720981249 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\relogio.cpp
+	"Relogio.h"
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\relogio.h
+	"gl_canvas2d.h"
+
+1720981623 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\main.cpp
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	"gl_canvas2d.h"
+	"Relogio.h"
+	"Botao.h"
+	<math.h>
+	<vector>
+	<limits>
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\botao.h
+	"gl_canvas2d.h"
+

@@ -1,4 +1,4 @@
-modules = gl_canvas2d
+modules = gl_canvas2d Modelos Cilindro FuncoesGerais
 files = $(addprefix ./.src/, $(modules))
 objs = $(addsuffix .o, $(modules))
 libs = libfreeglut32.a libopengl32.a libglu32.a
