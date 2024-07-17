@@ -25,7 +25,7 @@
 #include <limits>
 
 #include "gl_canvas2d.h"
-#include "FuncoesGerais.cpp"
+#include "FuncoesGerais.h"
 
 #define Modelos_COUNT 9
 
@@ -33,18 +33,18 @@ int screenWidth = 1000, screenHeight = 1000;
 
 int mouseX, mouseY; 
 
-Vector3 cameraPosition = Vector3(0, 0, 0);
-Vector3 cameraRotation = Vector3(0, 0, 0);
+Vector3 posicaoCamera = Vector3(0, 0, 0);
+Vector3 rotacaoCamera = Vector3(0, 0, 0);
 
 bool isMousePressed = false;
 int lastMouseX, lastMouseY;
 
 float velocidadeRotacao = 0.005;
-float distance = 400;
+float distancia = 400;
 
 clock_t start = clock();
 
-Modelos *Modelos[];
+Pecas *pecas[9];
 FuncoesGerais3D funcoesGerais;
 
 
@@ -56,7 +56,7 @@ void render(){
    CV::clear(0, 0, 0);
    CV::translate(screenHeight/2, screenWidth/2);
 
-    funcoesGerais.executar3D(Modelos, cameraPosition, cameraRotation, distance, velocidadeRotacao);
+    funcoesGerais.executar3D(pecas, posicaoCamera, rotacaoCamera, distancia, velocidadeRotacao);
 
     if (duration < frameDeltaTime) {
       Sleep((frameDeltaTime - duration) * 1000);
@@ -74,23 +74,23 @@ void keyboard(int key){
 
         // setas para mover a câmera
         case 200: // seta para esquerda
-            cameraPosition.x -= 0.5;
+            posicaoCamera.x -= 0.5;
             break;
         case 201: // seta para cima
-            cameraPosition.y += 0.5;
+            posicaoCamera.y += 0.5;
             break;
         case 202: // seta para a direita
-            cameraPosition.x += 0.5;
+            posicaoCamera.x += 0.5;
             break;
         case 203: // seta para baixo
-            cameraPosition.y -= 0.5;
+            posicaoCamera.y -= 0.5;
             
             break;
         case 'w':
-            cameraPosition.z += 0.5;
+            posicaoCamera.z += 0.5;
             break;
         case 's':
-            cameraPosition.z -= 0.5;
+            posicaoCamera.z -= 0.5;
             break;
     }
 }
@@ -109,8 +109,8 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
         int deltaX = x - lastMouseX;
         int deltaY = y - lastMouseY;
 
-        cameraRotation.y += deltaX * 0.01f; 
-        cameraRotation.x += deltaY * 0.01f;
+        rotacaoCamera.y += deltaX * 0.01f; 
+        rotacaoCamera.x += deltaY * 0.01f;
 
         lastMouseX = x;
         lastMouseY = y;
@@ -128,14 +128,14 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 
 int main(void)
 {
-   Modelos[0] = new Cilindro(Vector3(0, 0, 0), Vector3(M_PI / 2, 0, 0), 25, 300, 20);
-   Modelos[1] = new Cilindro(Vector3(0, 0, -180), Vector3(M_PI / 2, M_PI / 2, 0), 10, 200, 4);
-   Modelos[2] = new Cilindro(Vector3(0, 0, -200 + 10), Vector3(M_PI / 2, 0, 0), 10, 200, 4);
-   Modelos[3] = new Cilindro(Vector3(0, 0, -100), Vector3(M_PI / 2, M_PI / 2, 0), 10, 200, 4);
-   Modelos[4] = new Cilindro(Vector3(0, 0, -280), Vector3(M_PI / 2, 0, 0), 15, 220, 4);
+   pecas[0] = new CilindroECubos(Vector3(0, 0, 0), Vector3(M_PI / 2, 0, 0), 20, 300, 20);
+   pecas[1] = new CilindroECubos(Vector3(0, 0, -180), Vector3(M_PI / 2, M_PI / 2, 0), 10, 200, 4);
+   pecas[2] = new CilindroECubos(Vector3(0, 0, -200 + 10), Vector3(M_PI / 2, 0, 0), 10, 200, 4);
+   pecas[3] = new CilindroECubos(Vector3(0, 0, -100), Vector3(M_PI / 2, M_PI / 2, 0), 10, 200, 4);
+   pecas[4] = new CilindroECubos(Vector3(0, 0, -280), Vector3(M_PI / 2, 0, 0), 15, 220, 4);
 
-   Modelos[5] = new Engrenagem(Vector3(0, 0, 200), Vector3(0, 0, 0), 80, 100, 120);
-   Modelos[6] = new Engrenagem(Vector3(2 * 120 - 20, 0, 200), Vector3(0, 0, 0), 80, 100, 120);
+   pecas[5] = new Engrenagem(Vector3(0, 0, 200), Vector3(0, 0, 0), 80, 100, 120);
+   pecas[6] = new Engrenagem(Vector3(2 * 120 - 20, 0, 200), Vector3(0, 0, 0), 80, 100, 120);
 
    CV::init(screenWidth, screenHeight, "Rafael Carneiro Pregardier");
    CV::run();

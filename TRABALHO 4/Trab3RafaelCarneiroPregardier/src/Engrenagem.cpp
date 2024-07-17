@@ -1,29 +1,27 @@
-class Engrenagem : public Modelos {
-    private:
-        void DrawEngrenagem() {
-            for(int i = 0; i < numeroDeDentes; i++){
-                CV::line(vertices2D[i].x, vertices2D[i].y, vertices2D[(i + 1) % numeroDeDentes].x, vertices2D[(i + 1) % numeroDeDentes].y);
-                CV::line(vertices2D[i + numeroDeDentes].x, vertices2D[i + numeroDeDentes].y, vertices2D[((i + 1) % numeroDeDentes) + numeroDeDentes].x, vertices2D[((i + 1) % numeroDeDentes) + numeroDeDentes].y);
-                CV::line(vertices2D[i].x, vertices2D[i].y, vertices2D[i + numeroDeDentes].x, vertices2D[i + numeroDeDentes].y);
-            }
+#include "Engrenagem.h"
 
-            vertices2D.clear();
-            vertices3D.clear();
-        }
+// Implementação do construtor
+Engrenagem::Engrenagem(Vector3 posicao, Vector3 rotacaoAplicada, int numeroDeDentes, float raioMenor, float raioMaior) : Pecas(posicao, rotacaoAplicada){
+      this->numeroDeDentes = numeroDeDentes;
+      this->raioMenor = raioMenor;
+      this->raioMaior = raioMaior;
+    // O corpo do construtor pode permanecer vazio se toda a inicialização já foi feita na lista de inicialização
+}
 
-    public:
-        int numeroDeDentes;
-        float raioMenor;
-        float raioMaior;
+void Engrenagem:: DrawEngrenagem() {
+      for(int i = 0; i < numeroDeDentes; i++){
+            CV::line(vertices2D[i].x, vertices2D[i].y, vertices2D[(i + 1) % numeroDeDentes].x, vertices2D[(i + 1) % numeroDeDentes].y);
+            CV::line(vertices2D[i + numeroDeDentes].x, vertices2D[i + numeroDeDentes].y, vertices2D[((i + 1) % numeroDeDentes) + numeroDeDentes].x, vertices2D[((i + 1) % numeroDeDentes) + numeroDeDentes].y);
+            CV::line(vertices2D[i].x, vertices2D[i].y, vertices2D[i + numeroDeDentes].x, vertices2D[i + numeroDeDentes].y);
+      }
 
-        Engrenagem(Vector3 coordenadasIniciais, Vector3 rotacaoAplicada, int numeroDeDentes, float raioMenor, float raioMaior) : Modelos(coordenadasIniciais, rotacaoAplicada) {
-            this->numeroDeDentes = numeroDeDentes;
-            this->raioMenor = raioMenor;
-            this->raioMaior = raioMaior;
-        }
+      vertices2D.clear();
+      vertices3D.clear();
+   }
 
-        void GerarVertices(){
-            float a = 0;
+// Implementação de GerarVertices
+void Engrenagem::GerarVertices() {
+    float a = 0;
             float raioAtual = raioMenor;
             int i = 0;
 
@@ -57,11 +55,10 @@ class Engrenagem : public Modelos {
             {
                 vertices3D[i + numeroDeDentes] = Vector3(vertices3D[i].x, vertices3D[i].y, tamanhoEngrenagem);
             }
-        }
-
-        void aplicarPipelineParaDesenho(Vector3 cameraPosition, Vector3 cameraRotation, float distancia){
-            GerarVertices();
-            Pipeline(vertices3D, cameraPosition, cameraRotation, distancia);
-            DrawEngrenagem();
-        }
-};
+}
+// Implementação de aplicarPipelineParaDesenho
+void Engrenagem::aplicarPipelineParaDesenho(Vector3 posicaoCamera, Vector3 rotacaoCamera, float distancia) {
+    GerarVertices();
+    Pipeline(vertices3D, posicaoCamera, rotacaoCamera, distancia); // Implemente conforme necessário
+    DrawEngrenagem();
+}
