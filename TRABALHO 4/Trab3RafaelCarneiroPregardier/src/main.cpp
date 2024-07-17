@@ -27,7 +27,7 @@
 #include "gl_canvas2d.h"
 #include "FuncoesGerais.cpp"
 
-#define Modelos_COUNT 8
+#define Modelos_COUNT 9
 
 int screenWidth = 1000, screenHeight = 1000;
 
@@ -44,7 +44,7 @@ float distance = 400;
 
 clock_t start = clock();
 
-Modelos *Modelos[Modelos_COUNT];
+Modelos *Modelos[];
 FuncoesGerais3D funcoesGerais;
 
 
@@ -95,11 +95,9 @@ void keyboard(int key){
     }
 }
 
-//funcao chamada toda vez que uma tecla for liberada
 void keyboardUp(int key){
 }
 
-//funcao para tratamento de mouse: cliques, movimentos e arrastos
 void mouse(int button, int state, int wheel, int direction, int x, int y)
 {
 
@@ -130,13 +128,14 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 
 int main(void)
 {
-   Modelos[0] = new Cilindro(Vector3(0, 0, 0), Vector3(M_PI / 2, 0, 0), 25, 200, 20);
+   Modelos[0] = new Cilindro(Vector3(0, 0, 0), Vector3(M_PI / 2, 0, 0), 25, 300, 20);
    Modelos[1] = new Cilindro(Vector3(0, 0, -180), Vector3(M_PI / 2, M_PI / 2, 0), 10, 200, 4);
    Modelos[2] = new Cilindro(Vector3(0, 0, -200 + 10), Vector3(M_PI / 2, 0, 0), 10, 200, 4);
    Modelos[3] = new Cilindro(Vector3(0, 0, -100), Vector3(M_PI / 2, M_PI / 2, 0), 10, 200, 4);
    Modelos[4] = new Cilindro(Vector3(0, 0, -280), Vector3(M_PI / 2, 0, 0), 15, 220, 4);
 
-   Modelos[5] = new Engrenagem(Vector3(0, 0, 200), Vector3(0, 0, 0), 30, 100, 120);
+   Modelos[5] = new Engrenagem(Vector3(0, 0, 200), Vector3(0, 0, 0), 80, 100, 120);
+   Modelos[6] = new Engrenagem(Vector3(2 * 120 - 20, 0, 200), Vector3(0, 0, 0), 80, 100, 120);
 
    CV::init(screenWidth, screenHeight, "Rafael Carneiro Pregardier");
    CV::run();

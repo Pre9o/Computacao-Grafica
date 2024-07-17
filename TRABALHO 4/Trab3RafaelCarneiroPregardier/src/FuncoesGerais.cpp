@@ -36,20 +36,25 @@ class FuncoesGerais3D{
             float angleOffset = M_PI * 3 / 2;
             float pistonToCylinderAngle = atan2(600 - this->newY, 0 - this->newX) + angleOffset;
             
-            modelos[6] = new Cilindro(Vector3(0, 600, -250), Vector3(0, 0, pistonToCylinderAngle + M_PI), 25, 400, 20);
-            modelos[7] = new Cilindro(Vector3(this->newX, this->newY, -250), Vector3(0, 0, pistonToCylinderAngle), 15, 400, 20);
+            modelos[7] = new Cilindro(Vector3(0, 600, -250), Vector3(0, 0, pistonToCylinderAngle + M_PI), 25, 400, 20);
+            modelos[8] = new Cilindro(Vector3(this->newX, this->newY, -250), Vector3(0, 0, pistonToCylinderAngle), 15, 400, 20);
         }
 
-        void executar3D(Modelos *modelos[], Vector3 cameraPosition, Vector3 cameraRotation, float distance, float velocidadeRotacao){
-            for(int i = 0; i < 6; i++){
-                    modelos[i]->aplicarRotacaoDoModelo(velocidadeRotacao);
+        void executar3D(Modelos *modelos[], Vector3 cameraPosition, Vector3 cameraRotation, float distancia, float velocidadeRotacao){
+            for(int i = 0; i < 7; i++){
+                    if(i == 6){
+                        modelos[i]->aplicarRotacaoDoModelo(-velocidadeRotacao);
+                    }
+                    else{
+                        modelos[i]->aplicarRotacaoDoModelo(velocidadeRotacao);
+                    }
             }
 
             this->gerarConexaoVirabrequim(modelos);
             this->gerarPistaoECilindro(modelos);
 
-            for(int i = 0; i < 8; i++){
-                modelos[i]->aplicarPipelineParaDesenho(cameraPosition, cameraRotation, distance);
+            for(int i = 0; i < 9; i++){
+                modelos[i]->aplicarPipelineParaDesenho(cameraPosition, cameraRotation, distancia);
             }
 
         }

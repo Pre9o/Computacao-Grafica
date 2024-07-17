@@ -58,9 +58,9 @@ class Cilindro : public Modelos {
             }
         }
 
-        void aplicarPipelineParaDesenho(Vector3 cameraPosition, Vector3 cameraRotation, float distance){
+        void aplicarPipelineParaDesenho(Vector3 cameraPosition, Vector3 cameraRotation, float distancia){
             GerarVertices();
-            Pipeline(vertices3D, cameraPosition, cameraRotation, distance);
+            Pipeline(vertices3D, cameraPosition, cameraRotation, distancia);
             DrawCilindro();
         }
 };
