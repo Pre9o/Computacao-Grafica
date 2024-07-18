@@ -679,3 +679,51 @@
 1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab3rafaelcarneiropregardier\src\botao.h
 	"gl_canvas2d.h"
 
+1721255995 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab4rafaelcarneiropregardier\src\gl_canvas2d.cpp
+	"gl_canvas2d.h"
+	<GL/glut.h>
+
+1721256005 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab4rafaelcarneiropregardier\src\gl_canvas2d.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<string.h>
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	"Vector2.h"
+	"Vector3.h"
+
+1721261067 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab4rafaelcarneiropregardier\src\vector2.h
+	<math.h>
+	<stdio.h>
+
+1720986086 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab4rafaelcarneiropregardier\src\vector3.h
+
+1721263876 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab4rafaelcarneiropregardier\src\main.cpp
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<chrono>
+	<vector>
+	<limits>
+	"gl_canvas2d.h"
+	"FuncoesGerais.h"
+
+1721263447 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab4rafaelcarneiropregardier\src\funcoesgerais.h
+	"CilindroECubos.h"
+	"Engrenagem.h"
+
+1721263307 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab4rafaelcarneiropregardier\src\cilindroecubos.h
+	"Pecas.h"
+
+1721246627 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab4rafaelcarneiropregardier\src\pecas.h
+	"gl_canvas2d.h"
+	<math.h>
+	<vector>
+
+1721263492 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 4\trab4rafaelcarneiropregardier\src\engrenagem.h
+	"Pecas.h"
+

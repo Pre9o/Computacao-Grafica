@@ -1,5 +1,7 @@
 #include "Engrenagem.h"
 
+#define M_PI 3.14159265
+
 /**
  * Construtor da classe Engrenagem
  *  
