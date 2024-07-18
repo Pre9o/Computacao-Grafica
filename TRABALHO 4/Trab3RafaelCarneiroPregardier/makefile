@@ -1,4 +1,4 @@
-modules = gl_canvas2d Pecas CilindroECubos FuncoesGerais Engrenagem
+modules = gl_canvas2d Pecas CilindroECubos FuncoesGerais Engrenagem 
 files = $(addprefix ./.src/, $(modules))
 objs = $(addsuffix .o, $(modules))
 libs = libfreeglut32.a libopengl32.a libglu32.a

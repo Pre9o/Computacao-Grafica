@@ -1,20 +1,24 @@
-/*********************************************************************
-// Canvas para desenho, criada sobre a API OpenGL. Nao eh necessario conhecimentos de OpenGL para usar.
-//  Autor: Cesar Tadeu Pozzer
-//         05/2024
-//
-//  Pode ser utilizada para fazer desenhos, animacoes, e jogos simples.
-//  Tem tratamento de mouse e teclado
-//  Estude o OpenGL antes de tentar compreender o arquivo gl_canvas.cpp
-//
-//  Versao 2.0
-//
-//  Instru��es:
-//	  Para alterar a animacao, digite numeros entre 1 e 3
-// *********************************************************************/
+/*
+Este programa é um motor 3D que renderiza um motor de um carro. O motor é composto por cilindros, cubos e engrenagens. O motor é renderizado em 3D e pode ser movido com o mouse e teclado.
+
+Classes:
+- CilindroECubos: Classe que representa os cilindros e cubos.
+- Engrenagem: Classe que representa uma engrenagem.
+- FuncoesGerais3D: Classe que gera as peças do motor.
+- Pecas: Classe base para as peças do motor.
+
+Métodos:
+- render(): Renderiza a tela.
+- keyboard(int key): Lida com a entrada do teclado.
+- keyboardUp(int key): Lida com a liberação da tecla.
+- mouse(int button, int state, int wheel, int direction, int x, int y): Lida com a entrada do mouse.
+- main(): Função principal do programa.
+
+Feito por Rafael Carneiro Pregardier.
+*/
 
 #include <GL/glut.h>
-#include <GL/freeglut_ext.h> //callback da wheel do mouse.
+#include <GL/freeglut_ext.h> 
 
 #include <math.h>
 #include <stdio.h>
@@ -27,14 +31,11 @@
 #include "gl_canvas2d.h"
 #include "FuncoesGerais.h"
 
-#define Modelos_COUNT 9
+#define VETOR_MAX 9
 
 int screenWidth = 1000, screenHeight = 1000;
 
 int mouseX, mouseY; 
-
-Vector3 posicaoCamera = Vector3(0, 0, 0);
-Vector3 rotacaoCamera = Vector3(0, 0, 0);
 
 bool isMousePressed = false;
 int lastMouseX, lastMouseY;
@@ -44,30 +45,44 @@ float distancia = 400;
 
 clock_t start = clock();
 
-Pecas *pecas[9];
+Pecas *pecas[VETOR_MAX];
 FuncoesGerais3D funcoesGerais;
 
+Vector3 posicaoCamera = Vector3(0, 0, 0);
+Vector3 rotacaoCamera = Vector3(0, 0, 0);
 
+/**
+ * Funcao que renderiza
+ * 
+ * @return void
+ * 
+ */
 void render(){
-   clock_t end = clock();
-   float duration = (float)(end - start) / CLOCKS_PER_SEC;
-   float frameDeltaTime = 1.0f / 60.0f;
+    clock_t end = clock();
+    float duration = (float)(end - start) / CLOCKS_PER_SEC;
+    float frameDeltaTime = 1.0f / 60.0f;
 
-   CV::clear(0, 0, 0);
-   CV::translate(screenHeight/2, screenWidth/2);
+    CV::clear(0, 0, 0);
+    CV::translate(screenHeight/2, screenWidth/2);
 
     funcoesGerais.executar3D(pecas, posicaoCamera, rotacaoCamera, distancia, velocidadeRotacao);
-
-    if (duration < frameDeltaTime) {
-      Sleep((frameDeltaTime - duration) * 1000);
-      start = clock();
+            
+    if (duration < frameDeltaTime){
+        Sleep((frameDeltaTime - duration) * 1000);
+        start = clock();
     }
 
-}
+    }
 
+/**
+ * Funcao que trata o teclado
+ * 
+ * @param key int
+ * 
+ * @return void
+ */
 void keyboard(int key){
-   switch(key)
-    {
+    switch(key){
         case 27:
             exit(0);
             break;
@@ -98,14 +113,24 @@ void keyboard(int key){
 void keyboardUp(int key){
 }
 
-void mouse(int button, int state, int wheel, int direction, int x, int y)
-{
+/**
+ * Funcao que trata o mouse
+ * 
+ * @param button int
+ * @param state int
+ * @param wheel int
+ * @param direction int
+ * @param x int
+ * @param y int
+ * 
+ * @return void
+ */
+void mouse(int button, int state, int wheel, int direction, int x, int y){
 
-   mouseX = x - screenWidth/2; 
-   mouseY = y - screenHeight/2;
+    mouseX = x - screenWidth/2; 
+    mouseY = y - screenHeight/2;
 
-
-   if(isMousePressed){
+    if(isMousePressed){
         int deltaX = x - lastMouseX;
         int deltaY = y - lastMouseY;
 
@@ -114,29 +139,27 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 
         lastMouseX = x;
         lastMouseY = y;
-   }
+    }
 
-   if(button == 0 && state == 0){
+    if(button == 0 && state == 0){
         isMousePressed = true;
         lastMouseX = x;
         lastMouseY = y;
-   }
-   else if (state == 1){
+    }
+    else if (state == 1){
         isMousePressed = false;
-   }
+    }
 }
 
-int main(void)
-{
-   pecas[0] = new CilindroECubos(Vector3(0, 0, 0), Vector3(M_PI / 2, 0, 0), 20, 300, 20);
-   pecas[1] = new CilindroECubos(Vector3(0, 0, -180), Vector3(M_PI / 2, M_PI / 2, 0), 10, 200, 4);
-   pecas[2] = new CilindroECubos(Vector3(0, 0, -200 + 10), Vector3(M_PI / 2, 0, 0), 10, 200, 4);
-   pecas[3] = new CilindroECubos(Vector3(0, 0, -100), Vector3(M_PI / 2, M_PI / 2, 0), 10, 200, 4);
-   pecas[4] = new CilindroECubos(Vector3(0, 0, -280), Vector3(M_PI / 2, 0, 0), 15, 220, 4);
+/**
+ * Funcao principal
+ * 
+ * 
+ * @return int
+ */
+int main(void){
+    funcoesGerais.definirPecas(pecas);
 
-   pecas[5] = new Engrenagem(Vector3(0, 0, 200), Vector3(0, 0, 0), 80, 100, 120);
-   pecas[6] = new Engrenagem(Vector3(2 * 120 - 20, 0, 200), Vector3(0, 0, 0), 80, 100, 120);
-
-   CV::init(screenWidth, screenHeight, "Rafael Carneiro Pregardier");
-   CV::run();
+    CV::init(screenWidth, screenHeight, "Rafael Carneiro Pregardier");
+    CV::run();
 }

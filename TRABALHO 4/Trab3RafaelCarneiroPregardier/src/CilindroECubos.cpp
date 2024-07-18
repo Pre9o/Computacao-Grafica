@@ -1,21 +1,42 @@
 #include "CilindroECubos.h"
-#include <cmath> // Para funções matemáticas como cos() e sin()
+#include <cmath> 
 
-// Implementação do método DesenharBase
+/**
+ * Desenha a base do cilindro
+ * 
+ * @param inicio int 
+ * @param fim int
+ * @param offset int
+ * 
+ * @return void
+ * 
+ */
 void CilindroECubos::DesenharBase(int inicio, int fim, int offset) {
     for (int i = inicio; i < fim; i++) {
+        CV::color(1, 1, 1);
         CV::line(vertices2D[i], vertices2D[(i + 1) % numeroDeLados + offset]);
     }
 }
 
-// Implementação do método DesenharArestasVerticais
+/**
+ * Desenha as arestas verticais do cilindro
+ * 
+ * @return void
+ * 
+ */
 void CilindroECubos::DesenharArestasVerticais() {
     for (int i = 0; i < numeroDeLados; i++) {
+        CV::color(1, 1, 1);
         CV::line(vertices2D[i], vertices2D[i + numeroDeLados]);
     }
 }
 
-// Implementação do método DrawCilindro
+/**
+ * Desenha o cilindro
+ * 
+ * @return void
+ * 
+ */
 void CilindroECubos::DrawCilindro() {
     DesenharBase(0, numeroDeLados, 0);
     DesenharBase(numeroDeLados, numeroDeLados * 2, numeroDeLados);
@@ -25,14 +46,28 @@ void CilindroECubos::DrawCilindro() {
     vertices3D.clear();
 }
 
-// Implementação do construtor
+/**
+ * Construtor da classe CilindroECubos
+ * 
+ * @param posicao Vector3
+ * @param rotacaoAplicada Vector3
+ * @param raio float
+ * @param altura float
+ * @param numeroDeLados int
+ * 
+ */
 CilindroECubos::CilindroECubos(Vector3 posicao, Vector3 rotacaoAplicada, float raio, float altura, int numeroDeLados) : Pecas(posicao, rotacaoAplicada) {
     this->raio = raio;
     this->altura = altura;
     this->numeroDeLados = numeroDeLados;
 }
 
-// Implementação do método GerarVertices
+/**
+ * Gera os vertices do cilindro
+ * 
+ * @return void
+ * 
+ */
 void CilindroECubos::GerarVertices() {
     float anguloRad = (2 * M_PI / numeroDeLados);
 
@@ -53,7 +88,16 @@ void CilindroECubos::GerarVertices() {
     }
 }
 
-// Implementação do método aplicarPipelineParaDesenho
+/**
+ * Aplica o pipeline para desenhar o cilindro
+ * 
+ * @param posicaoCamera Vector3
+ * @param rotacaoCamera Vector3
+ * @param distancia float
+ * 
+ * @return void
+ * 
+ */
 void CilindroECubos::aplicarPipelineParaDesenho(Vector3 posicaoCamera, Vector3 rotacaoCamera, float distancia) {
     GerarVertices();
     Pipeline(vertices3D, posicaoCamera, rotacaoCamera, distancia);

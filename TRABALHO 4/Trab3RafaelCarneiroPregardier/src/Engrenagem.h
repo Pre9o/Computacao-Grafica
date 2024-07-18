@@ -1,9 +1,14 @@
 #ifndef ENGRENAGEM_H
 #define ENGRENAGEM_H
 
-#include "Pecas.h" // Supondo que Pecas seja uma classe definida em outro lugar
-#include "Vector3.h" // Supondo que Vector3 seja uma classe/estrutura definida em outro lugar
+#include "Pecas.h" 
 
+/**
+ * @brief Classe responsável criar e desenhar uma engrenagem
+ * 
+ * A classe Engrenagem é responsável por criar e desenhar uma engrenagem. Ela herda da classe Pecas e contém métodos para desenhar a engrenagem e gerar os vértices da engrenagem.
+ * 
+ */
 class Engrenagem : public Pecas {
 public:
     int numeroDeDentes;
