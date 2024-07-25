@@ -31,10 +31,19 @@ int polygonMode = 1;
 
 float rx = 0, rz = 0; //parametros de rotacao do objeto.
 
+float angLight = 0;
+
 float abertura = 59.0;
 float znear  = 0.1;
 float zfar   = 5000;
 float aspect = 16.0/9.0;
+
+GLfloat mat_diffuse_1[] = {1, 1 ,1}; //definicao do material para esfera 1
+GLfloat mat_diffuse_2[] = {0, 1 ,0}; //definicao do material para esfera 2
+
+GLfloat light_0_position[] = { 1, 1, 1, 0};
+GLfloat light_0_difuse[]   = { 1, 1, 1 };  //luz branca
+GLfloat light_0_ambient[]  = { 0.4, 0.4, 0.4 }; //branco
 
 Vector3 cameraPos(1, 1, 1);
 Vector3 cameraDir(0, 0, 0.1);
@@ -201,6 +210,8 @@ void drawTetrahedron(float edgeSize) {
     };
 
     glBegin(GL_TRIANGLES);
+         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  mat_diffuse_1);
+
         // Base
         glVertex3fv(points[1]);
         glVertex3fv(points[2]);
@@ -229,6 +240,7 @@ void drawCylindersOnTerrain(){
          GLUquadric *quadric = gluNewQuadric();
 
          glPushMatrix();
+         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  mat_diffuse_1);
             glColor3f(0.545098, 0.270588, 0.07450980); // Cor do tronco
             glTranslatef(cilindros[i][j].x, cilindros[i][j].y, cilindros[i][j].z);
             glRotatef(270, 1, 0, 0); // Rotaciona para que o cilindro fique de pé
@@ -255,6 +267,7 @@ void drawHeightMap()
       for(j = 0; j < 100 - 1; j++)
       {
          glBegin(GL_TRIANGLE_STRIP);
+         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  mat_diffuse_1);
             glColor3f(0, 0.25, 0);
             glVertex3f(heightMap[i][j].x, heightMap[i][j].y, heightMap[i][j].z);
 
@@ -308,6 +321,15 @@ void init()
    glLoadIdentity( );
    gluPerspective(abertura, aspect, znear, zfar);
    glMatrixMode(GL_MODELVIEW);
+
+   //seta os parametros fixos da luz. A posicao eh atualizada a cada frame.
+   glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_0_difuse);
+   glLightfv(GL_LIGHT0, GL_AMBIENT,  light_0_ambient);
+
+
+   glEnable(GL_LIGHTING);
+   glEnable(GL_LIGHT0);
+   glEnable(GL_DEPTH_TEST);
 
    glClearColor(0, 0, 0, 1);
 
@@ -374,6 +396,21 @@ void display(void)
    */
 
    //desenha o mapa de altura
+
+   light_0_position[0] = cos(angLight)*9; //x
+   light_0_position[1] = sin(angLight)*9; //y
+   light_0_position[2] = 0; //z
+
+   glPushMatrix();
+      glTranslated(100,0,1000);
+      glLightfv(GL_LIGHT0, GL_POSITION, light_0_position);
+   glPopMatrix();
+
+   //desenha a fonte
+   /*
+   glTranslated(light_0_position[0], light_0_position[1],light_0_position[2]);
+   glutSolidSphere (1.0, 20, 16);*/
+
    drawHeightMap();
 
 
