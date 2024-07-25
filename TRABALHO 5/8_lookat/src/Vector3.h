@@ -1,3 +1,6 @@
+#pragma once
+// Conteúdo do arquivo de cabeçalho
+
 #ifndef __VECTOR_3_H__
 #define __VECTOR_3_H__
 
@@ -76,6 +79,12 @@ public:
         y = v.y;
         z = v.z;
         return *this;
+    }
+
+    Vector3 cross (const Vector3& v)
+    {
+        Vector3 aux( y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x);
+        return( aux );
     }
 
 

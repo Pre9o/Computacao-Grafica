@@ -1,4 +1,4 @@
-modules =  
+modules = lookat
 files = $(addprefix ./.src/, $(modules))
 objs = $(addsuffix .o, $(modules))
 libs = libfreeglut32.a libopengl32.a libglu32.a
@@ -10,7 +10,7 @@ all: main
 	./main
 
 main: $(modules)
-	g++ ./src/lookat.cpp -o main.exe $(objs) $(libpaths) $(err) $(opt) -I../include
+	g++ ./src/lookat.cpp -o lookat.exe $(objs) $(libpaths) $(err) $(opt) -I../include
 
 $(modules): %: src/%.cpp
 	g++ -g -c src/$@.cpp -o $@.o $(libpaths) $(opt) $(err) -I../include

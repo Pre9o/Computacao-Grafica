@@ -118,3 +118,28 @@
 1721780196 c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\vector3.h
 	<math.h>
 
+1721854842 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 5\8_lookat\src\lookat.cpp
+	<GL/glut.h>
+	<stdlib.h>
+	<ctype.h>
+	<stdio.h>
+	"Vector3.h"
+	<time.h>
+
+1721827394 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 5\include\gl\glut.h
+	"freeglut_std.h"
+
+1721827394 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 5\include\gl\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+
+1721841699 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 5\8_lookat\src\vector3.h
+	<math.h>
+
