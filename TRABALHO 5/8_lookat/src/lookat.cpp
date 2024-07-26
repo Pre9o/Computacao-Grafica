@@ -41,6 +41,18 @@ float aspect = 16.0/9.0;
 GLfloat mat_diffuse_1[] = {1, 1 ,1}; //definicao do material para esfera 1
 GLfloat mat_diffuse_2[] = {0, 1 ,0}; //definicao do material para esfera 2
 
+GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat shininess[] = { 50.0 };
+
+GLfloat terrain_ambient[] = { 0.2, 1, 0.2, 1.0 };
+GLfloat terrain_diffuse[] = { 0.6, 1, 0.2, 1.0 };
+
+GLfloat log_ambient[] = { 0.6, 0.3, 0.1, 1.0 };
+GLfloat log_diffuse[] = { 0.6, 0.3, 0.1, 1.0 };
+
+GLfloat leaf_ambient[] = { 0.0, 0.5, 0.0, 1.0 };
+GLfloat leaf_diffuse[] = { 0.0, 1.0, 0.0, 1.0 };
+
 GLfloat light_0_position[] = { 1, 1, 1, 0};
 GLfloat light_0_difuse[]   = { 1, 1, 1 };  //luz branca
 GLfloat light_0_ambient[]  = { 0.4, 0.4, 0.4 }; //branco
@@ -51,7 +63,11 @@ Vector3 up(0, 1, 0);
 
 Vector3 heightMap[100][100];
 
-Vector3 cilindros[5][5];
+Vector3 normalsHeightMap[100][100];
+Vector3 normalsSphere[4];
+
+
+Vector3 cilindros[6][6];
 
 Vector3 controlPoints[4][4] = {
         {{0, 0, 0}, {1, 0, 0}, {2, -1, 0}, {3, 0, 0}},
@@ -100,6 +116,46 @@ Vector3 bezierSurfacePoint(Vector3 points[4][4], float u, float v) {
     return bezierPoint(tempPoints, 4, v);
 }
 
+Vector3 calculateNormal(Vector3 v1, Vector3 v2, Vector3 v3) {
+    Vector3 normal;
+    Vector3 u = {v2.x - v1.x, v2.y - v1.y, v2.z - v1.z};
+    Vector3 v = {v3.x - v1.x, v3.y - v1.y, v3.z - v1.z};
+
+    normal.x = u.y * v.z - u.z * v.y;
+    normal.y = u.z * v.x - u.x * v.z;
+    normal.z = u.x * v.y - u.y * v.x;
+
+    float length = sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
+    if (length != 0) {
+        normal.x /= length;
+        normal.y /= length;
+        normal.z /= length;
+    }
+
+    // Invertendo as normais
+    normal.x = -normal.x;
+    normal.y = -normal.y;
+    normal.z = -normal.z;
+
+    return normal;
+}
+
+void calculateNormalsHeightMap() {
+    for (int i = 0; i < 100 - 1; i++) {
+        for (int j = 0; j < 100 - 1; j++) {
+            // Ajuste a ordem dos vértices para garantir que as normais estejam corretas
+            Vector3 normal1 = calculateNormal(heightMap[i][j], heightMap[i+1][j], heightMap[i][j+1]);
+            Vector3 normal2 = calculateNormal(heightMap[i+1][j], heightMap[i+1][j+1], heightMap[i][j+1]);
+
+            normalsHeightMap[i][j] = normal1;
+            normalsHeightMap[i][j+1] = normal1;
+            normalsHeightMap[i+1][j] = normal2;
+            normalsHeightMap[i+1][j+1] = normal2;
+        }
+    }
+}
+
+
 // Modificar a função generateHeightMap para usar a superfície de Bézier
 void generateHeightMap() {
     // Usar os pontos de controle para gerar o mapa de altura
@@ -111,6 +167,7 @@ void generateHeightMap() {
         }
     }
 
+    calculateNormalsHeightMap();
 }
 
 // Função para calcular a altura de um ponto no terreno
@@ -125,22 +182,37 @@ Vector3 calculateHeight(float x, float z) {
 
 
 void generateCylinderOnTerrain(){
-   for(int i=0; i<5; i+=1)
+   for(int i=0; i<6; i+=1)
    {
-      for(int j=0; j<5; j+=1)
+      for(int j=0; j<6; j+=1)
       {
          float x = rand() % 290/100;
          float z = rand() % 290/100;
-         printf("x: %f, z: %f\n", x, z);
-         //float y = calculateHeight(x, z);
          Vector3 teste = calculateHeight(x, z);
-         //printf("x: %f, y: %f, z: %f\n", x, y, z);
-         printf("x: %f, y: %f, z: %f\n", teste.x, teste.y, teste.z);
 
          cilindros[i][j] = Vector3(teste.x, teste.y, teste.z);
       }
 
   }
+}
+
+void drawTriangle(float *a, float *b, float *c, Vector3 normalA, Vector3 normalB, Vector3 normalC) {
+   if(a == b || a == c || b == c) {
+      return;
+   }
+    
+   glBegin(GL_TRIANGLES);
+      glVertex3fv(a);
+      glNormal3f(normalA.x, normalA.y, normalA.z);
+
+      glVertex3fv(b);
+      glNormal3f(normalB.x, normalB.y, normalB.z);
+   
+      glVertex3fv(c);
+      glNormal3f(normalC.x, normalC.y, normalC.z);
+
+      
+   glEnd();
 }
 
 void normalizePoint(float &x, float &y, float &z) {
@@ -152,49 +224,68 @@ void normalizePoint(float &x, float &y, float &z) {
     }
 }
 
-void drawTriangle(float *a, float *b, float *c) {
-    glBegin(GL_TRIANGLES);
-        glVertex3fv(a);
-        glVertex3fv(b);
-        glVertex3fv(c);
-    glEnd();
-}
-
-void divideFace(float *a, float *b, float *c, int depth) {
+void divideFace(float *a, float *b, float *c, Vector3 normalA, Vector3 normalB, Vector3 normalC, int depth, float edgeSize) {
     if (depth == 0) {
-        drawTriangle(a, b, c);
+        drawTriangle(a, b, c, normalA, normalB, normalC);
     } else {
         float ab[3], ac[3], bc[3];
+        Vector3 normalAB, normalAC, normalBC;
 
         for (int i = 0; i < 3; i++) {
             ab[i] = (a[i] + b[i]) / 2;
             ac[i] = (a[i] + c[i]) / 2;
             bc[i] = (b[i] + c[i]) / 2;
         }
+        
         normalizePoint(ab[0], ab[1], ab[2]);
         normalizePoint(ac[0], ac[1], ac[2]);
         normalizePoint(bc[0], bc[1], bc[2]);
 
-        divideFace(a, ab, ac, depth - 1);
-        divideFace(ab, b, bc, depth - 1);
-        divideFace(ac, bc, c, depth - 1);
-        divideFace(ab, bc, ac, depth - 1);
+        normalAB = Vector3(ab[0], ab[1], ab[2]);
+
+         normalAC = Vector3(ac[0], ac[1], ac[2]);
+
+         normalBC = Vector3(bc[0], bc[1], bc[2]);
+
+        for(int i = 0; i < 3; i++) {
+            ab[i] *= edgeSize;
+            ac[i] *= edgeSize;
+            bc[i] *= edgeSize;
+        }
+
+         
+        divideFace(a, ab, ac, normalA, normalAB, normalAC, depth - 1, edgeSize);
+        divideFace(ab, b, bc, normalAB, normalB, normalBC, depth - 1, edgeSize);
+        divideFace(ac, bc, c, normalAC, normalBC, normalC, depth - 1, edgeSize);
+        divideFace(ab, bc, ac, normalAB, normalBC, normalAC, depth - 1, edgeSize);
     }
 }
 
-void drawSphereFromTetrahedron(int depth, float scale) {
+void drawSphereFromTetrahedron(int depth, float edgeSize) {
+    // Pontos base do tetraedro
     float v[4][3] = {
-        {0, 0, 1 * scale},
-        {0, 2 * sqrt(2.0f / 3.0f) * scale, -1.0f / 3 * scale},
-        {-sqrt(2.0f / 3.0f) * scale, -sqrt(2.0f / 3.0f) * scale, -1.0f / 3 * scale},
-        {sqrt(2.0f / 3.0f) * scale, -sqrt(2.0f / 3.0f) * scale, -1.0f / 3 * scale}
+        { 1 , 0, float((-1 / sqrt(2)))  }, // Topo
+        { -1  , 0, float((-1 / sqrt(2))) }, // Base esquerda
+        { 0, 1  , float((1 / sqrt(2))) }, // Base direita
+        { 0, -1  , float((1 / sqrt(2))) } // Base frente
     };
 
-    divideFace(v[0], v[1], v[2], depth);
-    divideFace(v[0], v[2], v[3], depth);
-    divideFace(v[0], v[3], v[1], depth);
-    divideFace(v[1], v[3], v[2], depth);
+    for(int i = 0; i < 4; i++) {
+        normalizePoint(v[i][0], v[i][1], v[i][2]);
+        Vector3 vertex = Vector3(v[i][0], v[i][1], v[i][2]);
+        normalsSphere[i] = vertex;
+        for (int j = 0; j < 3; j++) {
+            v[i][j] *= edgeSize;
+        }
+      }
+
+    divideFace(v[0], v[1], v[3], normalsSphere[0], normalsSphere[1], normalsSphere[3], depth, edgeSize);
+    divideFace(v[0], v[2], v[3], normalsSphere[0], normalsSphere[2], normalsSphere[3], depth, edgeSize);
+    divideFace(v[0], v[1], v[2], normalsSphere[0], normalsSphere[1], normalsSphere[2], depth, edgeSize);
+    divideFace(v[1], v[2], v[3], normalsSphere[1], normalsSphere[2], normalsSphere[3], depth, edgeSize);
+
 }
+
 
 void drawTetrahedron(float edgeSize) {
     // Altura do tetraedro equilátero a partir do comprimento da aresta
@@ -233,14 +324,18 @@ void drawTetrahedron(float edgeSize) {
 }
 
 void drawCylindersOnTerrain(){
-   for(int i=0; i<5; i+=1)
+   for(int i=0; i<6; i+=1)
    {
-      for(int j=0; j<5; j+=1)
+      for(int j=0; j<6; j+=1)
       {
          GLUquadric *quadric = gluNewQuadric();
 
          glPushMatrix();
-         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  mat_diffuse_1);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, log_diffuse);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, log_ambient);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+            glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+
             glColor3f(0.545098, 0.270588, 0.07450980); // Cor do tronco
             glTranslatef(cilindros[i][j].x, cilindros[i][j].y, cilindros[i][j].z);
             glRotatef(270, 1, 0, 0); // Rotaciona para que o cilindro fique de pé
@@ -250,9 +345,14 @@ void drawCylindersOnTerrain(){
          // Desenha o tetraedro no topo do cilindro
          glPushMatrix();
             glColor3f(0.0, 1.0, 0.0); // Cor da copa da árvore (verde)
+            glMaterialfv(GL_FRONT, GL_AMBIENT, leaf_ambient);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, leaf_diffuse);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+            glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+
             // Ajusta a posição para o topo do cilindro. Ajuste o 0.2 conforme a altura do seu cilindro
             glTranslatef(cilindros[i][j].x, cilindros[i][j].y + 0.2, cilindros[i][j].z);
-            drawTetrahedron(0.1); // Desenha o tetraedro
+            drawSphereFromTetrahedron(6, 0.1); // Desenha a copa da árvore
          glPopMatrix();
       }
    }
@@ -267,29 +367,28 @@ void drawHeightMap()
       for(j = 0; j < 100 - 1; j++)
       {
          glBegin(GL_TRIANGLE_STRIP);
-         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  mat_diffuse_1);
-            glColor3f(0, 0.25, 0);
-            glVertex3f(heightMap[i][j].x, heightMap[i][j].y, heightMap[i][j].z);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, terrain_ambient);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, terrain_diffuse);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+            glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
 
-            glColor3f(0, 0.25, 0);
+            glNormal3f(normalsHeightMap[i][j+1].x, normalsHeightMap[i][j+1].y, normalsHeightMap[i][j+1].z);
             glVertex3f(heightMap[i][j+1].x, heightMap[i][j+1].y, heightMap[i][j+1].z);
 
-            glColor3f(0, 0.25, 0);
-            glVertex3f(heightMap[i+1][j].x, heightMap[i+1][j].y, heightMap[i+1][j].z);
+            glNormal3f(normalsHeightMap[i][j].x, normalsHeightMap[i][j].y, normalsHeightMap[i][j].z);
+            glVertex3f(heightMap[i][j].x, heightMap[i][j].y, heightMap[i][j].z);
 
-            glColor3f(0, 0.25, 0);
+            glNormal3f(normalsHeightMap[i+1][j+1].x, normalsHeightMap[i+1][j+1].y, normalsHeightMap[i+1][j+1].z);
             glVertex3f(heightMap[i+1][j+1].x, heightMap[i+1][j+1].y, heightMap[i+1][j+1].z);
 
+            glNormal3f(normalsHeightMap[i+1][j].x, normalsHeightMap[i+1][j].y, normalsHeightMap[i+1][j].z);
+            glVertex3f(heightMap[i+1][j].x, heightMap[i+1][j].y, heightMap[i+1][j].z);
 
-         glEnd();
-      }
+            glEnd();
+        }
    }
       drawCylindersOnTerrain();
-
-   //drawLinesOnControlPoints();
 }
-
-
 
 
 Vector3 rotateX(Vector3 v, float angle) {
@@ -325,13 +424,16 @@ void init()
    //seta os parametros fixos da luz. A posicao eh atualizada a cada frame.
    glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_0_difuse);
    glLightfv(GL_LIGHT0, GL_AMBIENT,  light_0_ambient);
-
+   
 
    glEnable(GL_LIGHTING);
    glEnable(GL_LIGHT0);
    glEnable(GL_DEPTH_TEST);
+   glEnable(GL_CULL_FACE);
 
-   glClearColor(0, 0, 0, 1);
+   glCullFace(GL_FRONT);
+
+   glClearColor(0.5294117, 0.807843, 0.9803921, 1);
 
    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -360,40 +462,6 @@ void display(void)
    glLoadIdentity( );
    cameraDir.normalize();
    gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z, cameraPos.x + cameraDir.x, cameraPos.y + cameraDir.y, cameraPos.z + cameraDir.z, up.x, up.y, up.z);
-   //glRotatef ((GLfloat) rx, 0.0f, 1.0f, 0.0f);
-   //glRotatef ((GLfloat) rz, 1.0f, 0.0f, 0.0f);
-
-   //todos os objetos estao definidos na origem do sistema global fixo
-   //e sao transladados para a posicao destino.
-   /*
-   glColor3f(1, 1, 1);
-   glBegin(GL_POLYGON);
-      glVertex3f(-1, 0, 1);
-      glVertex3f(1, 0, 1);
-      glVertex3f(1, 0, -1);
-      glVertex3f(-1, 0, -1);
-   glEnd();
-
-   //bule 1
-   glPushMatrix();
-      glColor3f(1, 0, 1);
-      glTranslated(-0.5, 0.15, 0.5);
-      glutWireTeapot(0.2);
-   glPopMatrix();
-
-   //bule 2
-   glPushMatrix();
-      glColor3f(0, 1, 0);
-      glTranslated(0.5, 0.15, -0.5);
-      glRotated(90, 0, 1, 0);
-      glutWireTeapot(0.2);
-   glPopMatrix();
-
-   //bule 3
-   glColor3f(0, 0, 1);
-   //glutSolidIcosahedron();
-   glutSolidTeapot(1.2);
-   */
 
    //desenha o mapa de altura
 
