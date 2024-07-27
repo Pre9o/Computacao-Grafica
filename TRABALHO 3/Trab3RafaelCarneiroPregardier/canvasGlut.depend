@@ -540,3 +540,169 @@
 1716849073 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 2\trab3rafaelcarneiropregardier\src\tabuleiro.cpp
 	"Tabuleiro.h"
 
+1716847316 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\bloco.cpp
+	"Bloco.h"
+
+1716847155 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\bloco.h
+	<vector>
+	"Vector2.h"
+	"Explosoes.h"
+	<algorithm>
+
+1716845672 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\vector2.h
+	<math.h>
+	<stdio.h>
+
+1716848849 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\explosoes.h
+	"gl_canvas2d.h"
+	<time.h>
+	<vector>
+
+1716845672 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\gl_canvas2d.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<string.h>
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	"Vector2.h"
+
+1632060799 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\include\gl\glut.h
+	"freeglut_std.h"
+
+1632060797 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\include\gl\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+
+1632060794 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\include\gl\freeglut_ext.h
+	<stdarg.h>
+
+1721909753 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\bola.cpp
+	"Bola.h"
+
+1716847390 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\bola.h
+	"Vector2.h"
+	"Canhao.h"
+	"gl_canvas2d.h"
+
+1716849325 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\canhao.h
+	"Vector2.h"
+	"Tabuleiro.h"
+	<stdio.h>
+	<stdlib.h>
+
+1716849144 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\tabuleiro.h
+	<vector>
+	"Vector2.h"
+	"Bloco.h"
+
+1716847563 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\canhao.cpp
+	"Canhao.h"
+
+1716851098 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\controle.cpp
+	"Controle.h"
+
+1716848433 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\controle.h
+	<string>
+	"gl_canvas2d.h"
+	"Vector2.h"
+	<vector>
+	<time.h>
+	<chrono>
+	"windows.h"
+	"mmsystem.h"
+	"Bola.h"
+	"Bloco.h"
+	"Canhao.h"
+	"Tabuleiro.h"
+
+1716848704 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\explosoes.cpp
+	"Explosoes.h"
+
+1716845672 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\gl_canvas2d.cpp
+	"gl_canvas2d.h"
+	<GL/glut.h>
+
+1712625091 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\image.cpp
+	"Image.h"
+	<string.h>
+	<algorithm>
+	"gl_canvas2d.h"
+	<iostream>
+
+1712624135 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\image.h
+	<stdio.h>
+	<stdlib.h>
+	<algorithm>
+	<string.h>
+	<vector>
+
+1716820576 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\imagesfunctions.cpp
+	<vector>
+	<algorithm>
+	"gl_canvas2d.h"
+	"Image.h"
+	<numeric>
+
+1716851070 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\main.cpp
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<algorithm>
+	"gl_canvas2d.h"
+	"Image.h"
+	"ImagesFunctions.h"
+	"Botao.h"
+	"Sidebar.h"
+	"ImageManager.h"
+	"Controle.h"
+	"Render.h"
+	<chrono>
+	<thread>
+	"windows.h"
+	"mmsystem.h"
+
+1716820580 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\imagesfunctions.h
+	<vector>
+	<algorithm>
+	<string>
+	"gl_canvas2d.h"
+
+1716849832 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\sidebar.h
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	"Botao.h"
+	"Image.h"
+	"ImagesFunctions.h"
+	"ImageManager.h"
+	<time.h>
+
+1712625174 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\imagemanager.h
+	<vector>
+	"Image.h"
+
+1716850192 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\render.h
+	"Sidebar.h"
+	"Controle.h"
+
+1716850210 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\render.cpp
+	"render.h"
+
+1716849073 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\tabuleiro.cpp
+	"Tabuleiro.h"
+
+1716847459 c:\users\naoca\documents\github\computacao-grafica\trabalho 3\trab3rafaelcarneiropregardier\src\botao.h
+	"gl_canvas2d.h"
+	<functional>
+

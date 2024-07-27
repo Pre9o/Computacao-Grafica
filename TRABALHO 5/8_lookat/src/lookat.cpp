@@ -29,8 +29,6 @@
 
 int polygonMode = 1;
 
-float rx = 0, rz = 0; //parametros de rotacao do objeto.
-
 float angLight = 0;
 
 float abertura = 59.0;
@@ -163,7 +161,7 @@ void generateHeightMap() {
         for (int j = 0; j < 100; j++) {
             float u = i / 99.0; // Normaliza i para o intervalo [0, 1]
             float v = j / 99.0; // Normaliza j para o intervalo [0, 1]
-            heightMap[i][j] = bezierSurfacePoint(controlPoints, u, v);
+            heightMap[i][j] = bezierSurfacePoint(controlPoints, u, v) * 3;
         }
     }
 
@@ -177,17 +175,17 @@ Vector3 calculateHeight(float x, float z) {
       float u = x/3;
       float v = z/3;
       // Calcula a altura do ponto na superfície de Bézier
-      return bezierSurfacePoint(controlPoints, u, v);
+      return bezierSurfacePoint(controlPoints, u, v) * 3;
    }
 
 
 void generateCylinderOnTerrain(){
-   for(int i=0; i<6; i+=1)
+   for(int i=1; i<6; i++)
    {
-      for(int j=0; j<6; j+=1)
+      for(int j=1; j<6; j++)
       {
-         float x = rand() % 290/100;
-         float z = rand() % 290/100;
+         float x = i * 3.0 / 6;
+         float z = j * 3.0 / 6;
          Vector3 teste = calculateHeight(x, z);
 
          cilindros[i][j] = Vector3(teste.x, teste.y, teste.z);
@@ -202,14 +200,18 @@ void drawTriangle(float *a, float *b, float *c, Vector3 normalA, Vector3 normalB
    }
     
    glBegin(GL_TRIANGLES);
-      glVertex3fv(a);
-      glNormal3f(normalA.x, normalA.y, normalA.z);
+      
+      glNormal3f(normalC.x, normalC.y, normalC.z);
+
+      glVertex3fv(c);
+
+      glNormal3f(normalB.x, normalB.y, normalB.z);
 
       glVertex3fv(b);
-      glNormal3f(normalB.x, normalB.y, normalB.z);
-   
-      glVertex3fv(c);
-      glNormal3f(normalC.x, normalC.y, normalC.z);
+
+      glNormal3f(normalA.x, normalA.y, normalA.z);
+
+      glVertex3fv(a);
 
       
    glEnd();
@@ -253,11 +255,11 @@ void divideFace(float *a, float *b, float *c, Vector3 normalA, Vector3 normalB, 
             bc[i] *= edgeSize;
         }
 
-         
+
         divideFace(a, ab, ac, normalA, normalAB, normalAC, depth - 1, edgeSize);
         divideFace(ab, b, bc, normalAB, normalB, normalBC, depth - 1, edgeSize);
-        divideFace(ac, bc, c, normalAC, normalBC, normalC, depth - 1, edgeSize);
         divideFace(ab, bc, ac, normalAB, normalBC, normalAC, depth - 1, edgeSize);
+        divideFace(ac, bc, c, normalAC, normalBC, normalC, depth - 1, edgeSize);
     }
 }
 
@@ -279,54 +281,22 @@ void drawSphereFromTetrahedron(int depth, float edgeSize) {
         }
       }
 
+    divideFace(v[0], v[1], v[2], normalsSphere[0], normalsSphere[1], normalsSphere[2], depth, edgeSize);
     divideFace(v[0], v[1], v[3], normalsSphere[0], normalsSphere[1], normalsSphere[3], depth, edgeSize);
     divideFace(v[0], v[2], v[3], normalsSphere[0], normalsSphere[2], normalsSphere[3], depth, edgeSize);
-    divideFace(v[0], v[1], v[2], normalsSphere[0], normalsSphere[1], normalsSphere[2], depth, edgeSize);
     divideFace(v[1], v[2], v[3], normalsSphere[1], normalsSphere[2], normalsSphere[3], depth, edgeSize);
-
 }
 
 
-void drawTetrahedron(float edgeSize) {
-    // Altura do tetraedro equilátero a partir do comprimento da aresta
-    float height = sqrt(2.0f / 3.0f) * edgeSize;
-    float sideHeight = sqrt(3.0f) / 2 * edgeSize; // Altura de um lado do triângulo equilátero
-
-    // Pontos base do tetraedro
-    float points[4][3] = {
-        { 0, height, 0 }, // Topo
-        { -edgeSize / 2, 0, -sideHeight / 3 }, // Base esquerda
-        { edgeSize / 2, 0, -sideHeight / 3 }, // Base direita
-        { 0, 0, 2.0f / 3.0f * sideHeight } // Base frente
-    };
-
-    glBegin(GL_TRIANGLES);
-         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,  mat_diffuse_1);
-
-        // Base
-        glVertex3fv(points[1]);
-        glVertex3fv(points[2]);
-        glVertex3fv(points[3]);
-
-        // Lados
-        glVertex3fv(points[0]);
-        glVertex3fv(points[2]);
-        glVertex3fv(points[1]);
-
-        glVertex3fv(points[0]);
-        glVertex3fv(points[3]);
-        glVertex3fv(points[2]);
-
-        glVertex3fv(points[0]);
-        glVertex3fv(points[1]);
-        glVertex3fv(points[3]);
-    glEnd();
+float calculateDistance(Vector3 point){
+   return sqrt(cameraPos.x * point.x + cameraPos.y * point.y + cameraPos.z * point.z);
 }
+
 
 void drawCylindersOnTerrain(){
-   for(int i=0; i<6; i+=1)
+   for(int i=1; i<6; i++)
    {
-      for(int j=0; j<6; j+=1)
+      for(int j=1; j<6; j++)
       {
          GLUquadric *quadric = gluNewQuadric();
 
@@ -352,7 +322,20 @@ void drawCylindersOnTerrain(){
 
             // Ajusta a posição para o topo do cilindro. Ajuste o 0.2 conforme a altura do seu cilindro
             glTranslatef(cilindros[i][j].x, cilindros[i][j].y + 0.2, cilindros[i][j].z);
-            drawSphereFromTetrahedron(6, 0.1); // Desenha a copa da árvore
+            if(i % 2 == 0 && j % 2 == 0) {
+               if(calculateDistance(cilindros[i][j]) > 0.5){
+                drawSphereFromTetrahedron(5, 0.1); // Desenha a copa da árvore
+               }
+               else{
+                  drawSphereFromTetrahedron(1, 0.1); // Desenha a copa da árvore
+               }
+            }
+            else if (i % 2 == 0) {
+               glutSolidCube(0.1);
+            }
+            else{
+               glutSolidTeapot(0.1);
+            }
          glPopMatrix();
       }
    }
@@ -429,9 +412,9 @@ void init()
    glEnable(GL_LIGHTING);
    glEnable(GL_LIGHT0);
    glEnable(GL_DEPTH_TEST);
-   glEnable(GL_CULL_FACE);
+   //glEnable(GL_CULL_FACE);
 
-   glCullFace(GL_FRONT);
+   //glCullFace(GL_FRONT);
 
    glClearColor(0.5294117, 0.807843, 0.9803921, 1);
 
@@ -552,8 +535,6 @@ void keyboard(unsigned char key, int x, int y)
 void MotionFunc(int x, int y)
 {
 //   float dx, dy;
-   rx = x;
-   rz = y;
 }
 
 void MouseFunc(int botao, int estado, int x, int y)
