@@ -36,6 +36,21 @@ float znear  = 0.1;
 float zfar   = 5000;
 float aspect = 16.0/9.0;
 
+bool W_APERTADO = false;
+bool A_APERTADO = false;
+bool S_APERTADO = false;
+bool D_APERTADO = false;
+
+bool wireframe = false;
+
+bool ESPACO_APERTADO = false;
+bool SHIFT_APERTADO = false;
+
+bool SETA_ESQUERDA_APERTADA = false;
+bool SETA_DIREITA_APERTADA = false;
+bool SETA_CIMA_APERTADA = false;
+bool SETA_BAIXO_APERTADA = false;
+
 GLfloat mat_diffuse_1[] = {1, 1 ,1}; //definicao do material para esfera 1
 GLfloat mat_diffuse_2[] = {0, 1 ,0}; //definicao do material para esfera 2
 
@@ -63,7 +78,6 @@ Vector3 heightMap[100][100];
 
 Vector3 normalsHeightMap[100][100];
 Vector3 normalsSphere[4];
-
 
 Vector3 cilindros[6][6];
 
@@ -180,12 +194,12 @@ Vector3 calculateHeight(float x, float z) {
 
 
 void generateCylinderOnTerrain(){
-   for(int i=1; i<6; i++)
+   for(int i=0; i<6; i++)
    {
-      for(int j=1; j<6; j++)
+      for(int j=0; j<6; j++)
       {
-         float x = i * 3.0 / 6;
-         float z = j * 3.0 / 6;
+         float x = i * 3.0 / 6 + rand() % 100 / 100.0;
+         float z = j * 3.0 / 6 + rand() % 100 / 100.0;
          Vector3 teste = calculateHeight(x, z);
 
          cilindros[i][j] = Vector3(teste.x, teste.y, teste.z);
@@ -289,14 +303,14 @@ void drawSphereFromTetrahedron(int depth, float edgeSize) {
 
 
 float calculateDistance(Vector3 point){
-   return sqrt(cameraPos.x * point.x + cameraPos.y * point.y + cameraPos.z * point.z);
+   return sqrt((cameraPos.x - point.x) * (cameraPos.x - point.x) + (cameraPos.y - point.y) * (cameraPos.y - point.y) + (cameraPos.z - point.z) * (cameraPos.z - point.z));
 }
 
 
 void drawCylindersOnTerrain(){
-   for(int i=1; i<6; i++)
+   for(int i=0; i<6; i++)
    {
-      for(int j=1; j<6; j++)
+      for(int j=0; j<6; j++)
       {
          GLUquadric *quadric = gluNewQuadric();
 
@@ -323,7 +337,7 @@ void drawCylindersOnTerrain(){
             // Ajusta a posição para o topo do cilindro. Ajuste o 0.2 conforme a altura do seu cilindro
             glTranslatef(cilindros[i][j].x, cilindros[i][j].y + 0.2, cilindros[i][j].z);
             if(i % 2 == 0 && j % 2 == 0) {
-               if(calculateDistance(cilindros[i][j]) > 0.5){
+               if(calculateDistance(cilindros[i][j]) < 5){
                 drawSphereFromTetrahedron(5, 0.1); // Desenha a copa da árvore
                }
                else{
@@ -350,7 +364,7 @@ void drawHeightMap()
       for(j = 0; j < 100 - 1; j++)
       {
          glBegin(GL_TRIANGLE_STRIP);
-            glMaterialfv(GL_FRONT, GL_AMBIENT, terrain_ambient);
+            glMaterialfv(GL_FRONT, GL_AMBIENT, terrain_ambient);  
             glMaterialfv(GL_FRONT, GL_DIFFUSE, terrain_diffuse);
             glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
             glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
@@ -433,12 +447,9 @@ void display(void)
 
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity( );
-   //glOrtho(-1,1,-1,1,1,-1);
 
 
    gluPerspective(abertura, aspect, znear, zfar);
-
-
 
    glMatrixMode(GL_MODELVIEW);
 
@@ -448,14 +459,27 @@ void display(void)
 
    //desenha o mapa de altura
 
-   light_0_position[0] = cos(angLight)*9; //x
-   light_0_position[1] = sin(angLight)*9; //y
-   light_0_position[2] = 0; //z
+   light_0_position[0] = 6 * sin(angLight);
+   light_0_position[1] = 4;
+   light_0_position[2] = 4 + 6 * cos(angLight); //z
+   angLight+=0.004;
 
    glPushMatrix();
-      glTranslated(100,0,1000);
       glLightfv(GL_LIGHT0, GL_POSITION, light_0_position);
+      glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_0_difuse);
+      glLightfv(GL_LIGHT0, GL_AMBIENT,  light_0_ambient);
+      glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+      glLightfv(GL_LIGHT0, GL_SHININESS, shininess);
+
+      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, light_0_difuse);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, light_0_ambient);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+      glTranslated(light_0_position[0], light_0_position[1],light_0_position[2]);
+      glutSolidSphere (1.0, 20, 16);
+      
    glPopMatrix();
+
 
    //desenha a fonte
    /*
@@ -464,6 +488,41 @@ void display(void)
 
    drawHeightMap();
 
+   if(W_APERTADO){
+      cameraPos = cameraPos + cameraDir * 0.1;
+   }
+   if(A_APERTADO){
+      Vector3 right = cameraDir.cross(up);
+      right.normalize();
+      cameraPos = cameraPos - right * 0.1;
+   }
+   if(S_APERTADO){
+      cameraPos = cameraPos - cameraDir * 0.1;
+   }
+   if(D_APERTADO){
+      Vector3 right = cameraDir.cross(up);
+      right.normalize();
+      cameraPos = cameraPos + right * 0.1;
+   }
+   if(ESPACO_APERTADO){
+      cameraPos.y += 0.01;
+   }
+   if(SHIFT_APERTADO){
+      cameraPos.y -= 0.01;
+   }
+   if(SETA_ESQUERDA_APERTADA){
+      cameraDir = rotateY(cameraDir, 0.5);
+   }
+   if(SETA_DIREITA_APERTADA){
+      cameraDir = rotateY(cameraDir, -0.5);
+   }
+   if(SETA_CIMA_APERTADA){
+      cameraDir = rotateX(cameraDir, -0.5);
+   }
+   if(SETA_BAIXO_APERTADA){
+      cameraDir = rotateX(cameraDir, 0.5);
+   }
+
 
    glutSwapBuffers();
 }
@@ -471,12 +530,18 @@ void display(void)
 
 //faz a leitura da entrada do usuario
 void keyboard(unsigned char key, int x, int y)
+
 {
    key = tolower(key);
 
+   key = int(key);
+
+   //printar a tecla com seu valor inteiro
+   printf("\n\nTecla: %c  Valor: %d", key, key);
+   
+
    Vector3 right = cameraDir.cross(up);
    right.normalize();
-
 
    switch(key)
    {
@@ -485,17 +550,16 @@ void keyboard(unsigned char key, int x, int y)
 	  break;
 
       case 'w': //wireframe
-         cameraPos = cameraPos + cameraDir * 0.1;
+         W_APERTADO = true;
          break;
-
       case 'a':
-         cameraPos = cameraPos - right * 0.1;
+         A_APERTADO = true;
          break;
       case 'd':
-         cameraPos = cameraPos + right * 0.1;
+         D_APERTADO = true;
          break;
       case 's':
-         cameraPos = cameraPos - cameraDir * 0.1;
+         S_APERTADO = true;
          break;
       case 'r':
          if(polygonMode==1)
@@ -509,27 +573,76 @@ void keyboard(unsigned char key, int x, int y)
 		    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		 }
          break;
-      case '-':
-         cameraDir = rotateY(cameraDir, -0.5);
+      case 200: //seta para esquerda
+         SETA_ESQUERDA_APERTADA = true;
+
 		break;
-      case '+':
-         cameraDir = rotateY(cameraDir, 0.5);
+      case 201: //seta para cima
+         SETA_CIMA_APERTADA = true;
+
+
          break;
-      case '/':
-         cameraDir = rotateX(cameraDir, -0.5);
+      case 202: //seta para direita
+         SETA_DIREITA_APERTADA = true;
          break;
-      case '*':
-         cameraDir = rotateX(cameraDir, 0.5);
+      case 203: //seta para baixo
+         SETA_BAIXO_APERTADA = true;         
+         
          break;
 
-         case '1':
-         cameraPos.y += 0.05;
+      case ' ':
+         ESPACO_APERTADO = true;
          break;
-
-      case '2':
-         cameraPos.y -= 0.05;
+      case 212:
+         SHIFT_APERTADO = true;
          break;
    }
+}
+
+void keyboardUp(unsigned char key, int , int){
+   key = int(key);
+   switch(key){
+      case 'w':
+         W_APERTADO = false;
+         break;
+      case 'a':
+         A_APERTADO = false;
+         break;
+      case 's':
+         S_APERTADO = false;
+         break;
+      case 'd':
+         D_APERTADO = false;
+         break;
+      case ' ':
+         ESPACO_APERTADO = false;
+         break;
+      case 212:
+         SHIFT_APERTADO = false;
+         break;
+      case 200:
+         SETA_ESQUERDA_APERTADA = false;
+         break;
+      case 201:
+         SETA_CIMA_APERTADA = false;
+         break;
+      case 202:
+         SETA_DIREITA_APERTADA = false;
+         break;
+      case 203:
+         SETA_BAIXO_APERTADA = false;
+         break;
+   }
+}
+
+void special(int key, int , int )
+{
+   keyboard(key+100, 0, 0);
+}
+
+void specialUp(int key, int , int )
+{
+   keyboardUp(key+100, 0, 0);
 }
 
 void MotionFunc(int x, int y)
@@ -567,6 +680,10 @@ int main ()
    glutMouseFunc(MouseFunc);
    glutIdleFunc(display);
    glutKeyboardFunc(keyboard);
+   glutKeyboardUpFunc(keyboardUp);
+   glutSpecialFunc(special);
+   glutSpecialUpFunc(specialUp);
+
 
    glutMainLoop();
    return 0;
