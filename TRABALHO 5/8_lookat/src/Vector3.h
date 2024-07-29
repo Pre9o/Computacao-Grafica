@@ -5,6 +5,7 @@
 #define __VECTOR_3_H__
 
 #include <math.h>
+#include <stdio.h>
 
 class Vector3
 {
