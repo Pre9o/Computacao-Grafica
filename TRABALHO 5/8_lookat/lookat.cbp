@@ -3,6 +3,7 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="lookat" />
+		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -15,14 +16,12 @@
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
-				<Linker>
-				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="../__bin/Release/lookat" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../" />
 				<Option object_output="../__obj/Release/" />
 				<Option type="1" />
-				<Option working_dir="../" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2 -Wall" />
@@ -40,10 +39,23 @@
 		</Compiler>
 		<Linker>
 			<Add library="../lib/libfreeglut32.a" />
-			<Add library="../lib/libopengl32.a"/>
-			<Add library="../lib/libglu32.a"/>
+			<Add library="../lib/libopengl32.a" />
+			<Add library="../lib/libglu32.a" />
 		</Linker>
+		<Unit filename="src/Vector3.h" />
+		<Unit filename="src/anotherFunctions.cpp" />
+		<Unit filename="src/anotherFunctions.h" />
+		<Unit filename="src/draw.cpp" />
+		<Unit filename="src/draw.h" />
+		<Unit filename="src/heightMap.cpp" />
+		<Unit filename="src/heightMap.h" />
 		<Unit filename="src/lookat.cpp" />
-
+		<Unit filename="src/trees.cpp" />
+		<Unit filename="src/trees.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

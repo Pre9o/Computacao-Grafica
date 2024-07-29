@@ -156,16 +156,16 @@
 1722266011 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\anotherfunctions.cpp
 	"anotherFunctions.h"
 
-1722271289 c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\anotherfunctions.h
+1722271710 c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\anotherfunctions.h
 	"Vector3.h"
 
 1722271271 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\heightmap.cpp
 	"heightMap.h"
 
-1722271108 c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\heightmap.h
+1722271819 c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\heightmap.h
 	"anotherFunctions.h"
 
-1722271190 c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\trees.h
+1722271842 c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\trees.h
 	"Vector3.h"
 	<stdlib.h>
 	<math.h>
@@ -174,12 +174,12 @@
 	"trees.h"
 	"draw.h"
 
-1722271313 c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\draw.h
+1722271773 c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\draw.h
 	<GL/glut.h>
 	"Vector3.h"
 	"heightMap.h"
 
-1722270824 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\draw.cpp
+1722271601 source:c:\users\naoca\documents\github\computacao-grafica\trabalho 5\8_lookat\src\draw.cpp
 	"draw.h"
 	"anotherFunctions.h"
 	"trees.h"
