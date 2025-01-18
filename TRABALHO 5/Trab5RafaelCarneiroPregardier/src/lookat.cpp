@@ -122,8 +122,8 @@ void init(){
    glEnable(GL_LIGHT0);
    glEnable(GL_DEPTH_TEST);
 
-   //glEnable(GL_CULL_FACE);
-   //glCullFace(GL_FRONT);
+   glEnable(GL_CULL_FACE);
+   glCullFace(GL_FRONT);
 
    glClearColor(0.5294117, 0.807843, 0.9803921, 1);
 
