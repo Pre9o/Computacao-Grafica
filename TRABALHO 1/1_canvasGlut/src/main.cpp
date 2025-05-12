@@ -34,6 +34,7 @@ Feito por Rafael Carneiro Pregardier.
 #include "ImageManager.h"
 
 #include <chrono>
+#include <iostream>
 
 // Início do tempo para calcular a duração da execução do programa
 std::chrono::steady_clock::time_point inicio;
@@ -196,6 +197,14 @@ void mouse(int button, int state, int /*wheel*/, int /*direction*/, int x, int y
             if (image->contains(x, y)) {
                imageManager.selectedImage = image;
                imageManager.draggingImage = image;
+               // Só atribui nova fourthImage se a original for diferente
+               if(imageManager.fourthImage == nullptr || imageManager.fourthImage->getOriginalImage() != image->getOriginalImage()){
+                  if(imageManager.fourthImage != nullptr){
+                     delete imageManager.fourthImage;
+                  }
+                  imageManager.fourthImage = new Bmp(*image);
+               }
+               // Se for igual, não faz nada
                clicando = 1;
             }
          }

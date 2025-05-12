@@ -227,6 +227,73 @@ void DesenharHistogramaGray(Bmp* image){
    }
 }
 
+Bmp* NormalizarHistograma(Bmp* image, int channel){
+   // Inicializa o histograma
+   int histogram[256] = {0};
+   int width = image->getWidth();
+   int height = image->getHeight();
+
+   // Calcula o histograma do canal selecionado
+   for(int i = 0; i < height; i++) {
+      for(int j = 0; j < width; j++) {
+         int pos = i * width * 3 + j * 3;
+         int valor = 0;
+         switch (channel) {
+            case 1: // Vermelho
+               valor = image->getImage()[pos];
+               break;
+            case 2: // Verde
+               valor = image->getImage()[pos + 1];
+               break;
+            case 3: // Azul
+               valor = image->getImage()[pos + 2];
+               break;
+            case 4: // Cinza
+               valor = (image->getImage()[pos] + image->getImage()[pos + 1] + image->getImage()[pos + 2]) / 3;
+               break;
+         }
+         histogram[valor]++;
+      }
+   }
+
+   // Calcula o mapeamento de normalização (equalização simples)
+   int totalPixels = width * height;
+   int lut[256] = {0};
+   int sum = 0;
+   for(int i = 0; i < 256; i++) {
+      sum += histogram[i];
+      lut[i] = (sum * 255) / totalPixels;
+   }
+
+   // Aplica a normalização apenas no canal selecionado
+   for(int i = 0; i < height; i++) {
+      for(int j = 0; j < width; j++) {
+         int pos = i * width * 3 + j * 3;
+         switch (channel) {
+            case 1: // Vermelho
+               image->getImage()[pos] = lut[image->getImage()[pos]];
+               break;
+            case 2: // Verde
+               image->getImage()[pos + 1] = lut[image->getImage()[pos + 1]];
+               break;
+            case 3: // Azul
+               image->getImage()[pos + 2] = lut[image->getImage()[pos + 2]];
+               break;
+            case 4: { // Cinza
+               int gray = (image->getImage()[pos] + image->getImage()[pos + 1] + image->getImage()[pos + 2]) / 3;
+               int newGray = lut[gray];
+               image->getImage()[pos] = newGray;
+               image->getImage()[pos + 1] = newGray;
+               image->getImage()[pos + 2] = newGray;
+               break;
+            }
+         }
+      }
+   }
+
+   return image;
+}
+
 // Função para rotacionar a imagem
 void rotateImage(Bmp* image, double angle) {
     // Usa a imagem original como base

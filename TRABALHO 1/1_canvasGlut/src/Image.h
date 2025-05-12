@@ -99,9 +99,13 @@ public:
       bits = other.bits;
       bytesPerLine = other.bytesPerLine;
 
-      
       data = new unsigned char[3 * other.width * other.height];
       memcpy(data, other.data, 3 * other.width * other.height);
+
+      // Copia o ponteiro da imagem original (não o buffer!)
+      this->originalImage = other.originalImage;
+      this->originalWidth = other.originalWidth;
+      this->originalHeight = other.originalHeight;
    }
 
    ~Bmp() {

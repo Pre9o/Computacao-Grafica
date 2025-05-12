@@ -22,6 +22,7 @@ void Sidebar::ConstruirBotoes(ImageManager &imageManager){
                     delete imageManager.fourthImage;
                 }
                 imageManager.fourthImage = new Bmp(*imageManager.selectedImage);
+                imageManager.fourthImage->storeOriginalImage();
                 imageManager.fourthImage->image_Gray();
             }
         }));
@@ -32,6 +33,7 @@ void Sidebar::ConstruirBotoes(ImageManager &imageManager){
                     delete imageManager.fourthImage;
                 }
                 imageManager.fourthImage = new Bmp(*imageManager.selectedImage);
+                imageManager.fourthImage->storeOriginalImage();
                 imageManager.fourthImage->image_R();
             }
         }));
@@ -42,6 +44,7 @@ void Sidebar::ConstruirBotoes(ImageManager &imageManager){
                     delete imageManager.fourthImage;
                 }
                 imageManager.fourthImage = new Bmp(*imageManager.selectedImage);
+                imageManager.fourthImage->storeOriginalImage();
                 imageManager.fourthImage->image_G();
             }
         }));
@@ -52,6 +55,7 @@ void Sidebar::ConstruirBotoes(ImageManager &imageManager){
                     delete imageManager.fourthImage;
                 }
                 imageManager.fourthImage = new Bmp(*imageManager.selectedImage);
+                imageManager.fourthImage->storeOriginalImage();
                 imageManager.fourthImage->image_B();
             }
         }));
@@ -88,6 +92,15 @@ void Sidebar::ConstruirBotoes(ImageManager &imageManager){
             if (imageManager.selectedImage != NULL) {
                 !imageManager.histograma ? imageManager.histograma = true : imageManager.histograma = false;
                 imageManager.OpcaoHistograma = 4;
+            }
+        }));
+        botoes.push_back(new Botao(900, -175, 150, 50, "Normalizacao", 1, 1, 0, [&imageManager](){
+            if (imageManager.selectedImage != NULL) {
+                if(imageManager.fourthImage != NULL){
+                    delete imageManager.fourthImage;
+                }
+                imageManager.fourthImage = new Bmp(*imageManager.selectedImage);
+                imageManager.fourthImage = NormalizarHistograma(imageManager.fourthImage, imageManager.OpcaoHistograma);
             }
         }));
     }

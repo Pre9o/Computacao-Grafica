@@ -22,6 +22,8 @@ void DesenharHistogramaGreen(Bmp* image);
 void DesenharHistogramaBlue(Bmp* image);
 void DesenharHistogramaGray(Bmp* image);
 
+Bmp* NormalizarHistograma(Bmp* image, int channel);
+
 void rotateImage(Bmp* image, double angle);
 
 void desenharDigito(int digito, int posX, int posY);
