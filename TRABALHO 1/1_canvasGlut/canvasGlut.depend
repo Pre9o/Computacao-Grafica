@@ -201,3 +201,98 @@
 	<vector>
 	"Image.h"
 
+1720981249 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\gl_canvas2d.cpp
+	"gl_canvas2d.h"
+	<GL/glut.h>
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\gl_canvas2d.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<string.h>
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	"Vector2.h"
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\include\gl\glut.h
+	"freeglut_std.h"
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\include\gl\freeglut_std.h
+	<windows.h>
+	<EGL/egl.h>
+	<GLES/gl.h>
+	<GLES2/gl2.h>
+	<OpenGL/gl.h>
+	<OpenGL/glu.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<stdlib.h>
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\include\gl\freeglut_ext.h
+	<stdarg.h>
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\vector2.h
+
+1720981249 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\image.cpp
+	"Image.h"
+	<string.h>
+	<algorithm>
+	"gl_canvas2d.h"
+	<iostream>
+
+1747059187 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\image.h
+	<stdio.h>
+	<stdlib.h>
+	<algorithm>
+	<string.h>
+	<vector>
+
+1747058488 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\imagesfunctions.cpp
+	<vector>
+	<algorithm>
+	"gl_canvas2d.h"
+	"Image.h"
+	<numeric>
+
+1747057971 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\main.cpp
+	<GL/glut.h>
+	<GL/freeglut_ext.h>
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	<algorithm>
+	"gl_canvas2d.h"
+	"Image.h"
+	"ImagesFunctions.h"
+	"Botao.h"
+	"Sidebar.h"
+	"ImageManager.h"
+	<chrono>
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\imagesfunctions.h
+	<vector>
+	<algorithm>
+	<string>
+	"gl_canvas2d.h"
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\botao.h
+	"gl_canvas2d.h"
+	<functional>
+
+1747057660 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\sidebar.h
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+	"Botao.h"
+	"Image.h"
+	"ImagesFunctions.h"
+	"ImageManager.h"
+
+1720981249 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\imagemanager.h
+	<vector>
+	"Image.h"
+
+1747057000 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\sidebar.cpp
+	"Sidebar.h"
+

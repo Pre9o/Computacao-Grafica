@@ -87,6 +87,8 @@ void LoadImages(std::vector<Bmp*> &images, const char* path){
    InicializarParametros(image_loaded, images.size() * 100);
    // Converte a imagem de BGR para RGB
    image_loaded->convertBGRtoRGB();
+   // Armazena a imagem original para futuras rotações
+   image_loaded->storeOriginalImage();
    // Adiciona a imagem ao vetor de imagens
    images.push_back(image_loaded);
 }
@@ -227,9 +229,10 @@ void DesenharHistogramaGray(Bmp* image){
 
 // Função para rotacionar a imagem
 void rotateImage(Bmp* image, double angle) {
-    // Calcula a nova largura e altura da imagem após a rotação
-    int width = image->getWidth();
-    int height = image->getHeight();
+    // Usa a imagem original como base
+    unsigned char* originalImage = image->getOriginalImage();
+    int width = image->getOriginalWidth();
+    int height = image->getOriginalHeight();
 
     double rad = angle * M_PI / 180.0;
     double cosAngle = cos(rad);
@@ -239,32 +242,44 @@ void rotateImage(Bmp* image, double angle) {
     int newHeight = abs(width * sinAngle) + abs(height * cosAngle);
 
     // Cria uma nova imagem com a nova largura e altura
-    unsigned char* newImage = new unsigned char[newWidth * newHeight * 3];
+    unsigned char* newImage = new unsigned char[newWidth * newHeight * 3]();
 
     int centerX = width / 2;
     int centerY = height / 2;
+    int newCenterX = newWidth / 2;
+    int newCenterY = newHeight / 2;
 
-    // Rotaciona a imagem
+    // Rotação inversa para evitar perda de informação
     for (int y = 0; y < newHeight; y++) {
         for (int x = 0; x < newWidth; x++) {
-            int oldX = round(cosAngle * (x - newWidth / 2) + sinAngle * (y - newHeight / 2) + centerX);
-            int oldY = round(-sinAngle * (x - newWidth / 2) + cosAngle * (y - newHeight / 2) + centerY);
+            // Calcula as coordenadas na imagem original
+            double oldX = cosAngle * (x - newCenterX) - sinAngle * (y - newCenterY) + centerX;
+            double oldY = sinAngle * (x - newCenterX) + cosAngle * (y - newCenterY) + centerY;
 
             if (oldX >= 0 && oldX < width && oldY >= 0 && oldY < height) {
-                newImage[(y * newWidth + x) * 3] = image->getImage()[(oldY * width + oldX) * 3];
-                newImage[(y * newWidth + x) * 3 + 1] = image->getImage()[(oldY * width + oldX) * 3 + 1];
-                newImage[(y * newWidth + x) * 3 + 2] = image->getImage()[(oldY * width + oldX) * 3 + 2];
-            } else {
-                newImage[(y * newWidth + x) * 3] = 0;
-                newImage[(y * newWidth + x) * 3 + 1] = 0;
-                newImage[(y * newWidth + x) * 3 + 2] = 0;
+                // Interpolação bilinear
+                int x1 = (int)oldX;
+                int y1 = (int)oldY;
+                int x2 = x1 + 1 < width ? x1 + 1 : x1;
+                int y2 = y1 + 1 < height ? y1 + 1 : y1;
+
+                double dx = oldX - x1;
+                double dy = oldY - y1;
+
+                for (int c = 0; c < 3; c++) {
+                    double value = (1 - dx) * (1 - dy) * originalImage[(y1 * width + x1) * 3 + c] +
+                                   dx * (1 - dy) * originalImage[(y1 * width + x2) * 3 + c] +
+                                   (1 - dx) * dy * originalImage[(y2 * width + x1) * 3 + c] +
+                                   dx * dy * originalImage[(y2 * width + x2) * 3 + c];
+
+                    newImage[(y * newWidth + x) * 3 + c] = (unsigned char)value;
+                }
             }
         }
     }
 
-    // Recorta a imagem rotacionada para remover os espaços em branco
+    // Recorta a imagem rotacionada para remover áreas pretas
     int minX = newWidth, minY = newHeight, maxX = 0, maxY = 0;
-
     for (int y = 0; y < newHeight; y++) {
         for (int x = 0; x < newWidth; x++) {
             if (newImage[(y * newWidth + x) * 3] != 0 ||
@@ -281,19 +296,19 @@ void rotateImage(Bmp* image, double angle) {
     int croppedWidth = maxX - minX + 1;
     int croppedHeight = maxY - minY + 1;
 
-    // Cria uma nova imagem com a largura e altura recortadas
     unsigned char* croppedImage = new unsigned char[croppedWidth * croppedHeight * 3];
-
     for (int y = 0; y < croppedHeight; y++) {
         for (int x = 0; x < croppedWidth; x++) {
             for (int c = 0; c < 3; c++) {
-                croppedImage[(y * croppedWidth + x) * 3 + c] = newImage[((y + minY) * newWidth + (x + minX)) * 3 + c];
+                croppedImage[(y * croppedWidth + x) * 3 + c] =
+                    newImage[((y + minY) * newWidth + (x + minX)) * 3 + c];
             }
         }
     }
 
     // Libera a memória da imagem antiga e define a nova imagem
     delete[] newImage;
+    delete[] image->getImage();
     image->setImage(croppedImage);
     image->setWidth(croppedWidth);
     image->setHeight(croppedHeight);

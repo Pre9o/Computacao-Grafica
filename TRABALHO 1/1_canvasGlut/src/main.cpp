@@ -50,6 +50,8 @@ int opcao  = 50;
 int mouseX, mouseY;
 int clicando = 0;
 
+int grausRotacao = 0;
+
 // Sidebar que contém os botões para manipular as imagens
 Sidebar sidebar;
 // Gerenciador de imagens que contém as imagens carregadas e a imagem selecionada
@@ -128,11 +130,13 @@ void keyboard(int key){
       break;
       case 200:
          // Se a tecla 200 for pressionada, rotaciona a imagem selecionada 90 graus
-         rotateImage(imageManager.selectedImage, 90);
+         grausRotacao += 1;
+         rotateImage(imageManager.selectedImage, grausRotacao);
       break;
       case 202:
          // Se a tecla 202 for pressionada, rotaciona a imagem selecionada -90 graus
-         rotateImage(imageManager.selectedImage, -90);
+         grausRotacao -= 1;
+         rotateImage(imageManager.selectedImage, -grausRotacao);
       break;
       case 'B':
          // Se a tecla 'B' for pressionada, aumenta o brilho da imagem selecionada
