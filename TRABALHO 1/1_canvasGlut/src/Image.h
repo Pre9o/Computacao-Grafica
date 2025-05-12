@@ -66,6 +66,7 @@ public:
    void   image_G(void);
    void   image_B(void);
    void   image_Gray(void);
+   void   blurGaussian(int kernelSize);
    int    x_start, y_start, x_end, y_end;
 
    void storeOriginalImage() {

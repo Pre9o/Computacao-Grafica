@@ -52,6 +52,7 @@ int mouseX, mouseY;
 int clicando = 0;
 
 int grausRotacao = 0;
+int quantidadeBlur = 1;
 
 // Sidebar que contém os botões para manipular as imagens
 Sidebar sidebar;
@@ -141,20 +142,37 @@ void keyboard(int key){
       break;
       case 'B':
          // Se a tecla 'B' for pressionada, aumenta o brilho da imagem selecionada
-         imageManager.selectedImage->adjustBrightness(5);
+         imageManager.fourthImage->adjustBrightness(5);
       break;
       case 'b':
          // Se a tecla 'b' for pressionada, diminui o brilho da imagem selecionada
-         imageManager.selectedImage->adjustBrightness(-5);
+         imageManager.fourthImage->adjustBrightness(-5);
       break;
       case 'C':
          // Se a tecla 'C' for pressionada, aumenta o contraste da imagem selecionada
-         imageManager.selectedImage->adjustContrast(5);
+         imageManager.fourthImage->adjustContrast(5);
       break;
       case 'c':
          // Se a tecla 'c' for pressionada, diminui o contraste da imagem selecionada
-         imageManager.selectedImage->adjustContrast(-5);
+         imageManager.fourthImage->adjustContrast(-5);
       break;
+      case 'G':
+         // Se a tecla 'G' for pressionada, aplica um blur gaussiano à imagem selecionada
+         if (imageManager.fourthImage == nullptr){
+            imageManager.fourthImage = new Bmp(*imageManager.selectedImage);
+            imageManager.fourthImage->storeOriginalImage();
+         }
+         quantidadeBlur += 1;
+         imageManager.fourthImage->blurGaussian(quantidadeBlur);
+      break;
+      case 'g':
+         // Se a tecla 'g' for pressionada, aplica um blur gaussiano à imagem selecionada
+         if (imageManager.fourthImage == nullptr){
+            imageManager.fourthImage = new Bmp(*imageManager.selectedImage);
+            imageManager.fourthImage->storeOriginalImage();
+         }
+         quantidadeBlur -= 1;
+         imageManager.fourthImage->blurGaussian(quantidadeBlur);
    }
 }
 

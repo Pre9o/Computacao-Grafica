@@ -206,6 +206,67 @@ void Bmp::image_Gray(void) {
    }
 }
 
+// Aplica um blur gaussiano na imagem.
+void Bmp::blurGaussian(int quantidadeBlur) {
+      if (quantidadeBlur > 10) {
+         quantidadeBlur = 10;
+      }
+      if (quantidadeBlur < 1) {
+         quantidadeBlur = 1;
+      }
+
+   int width = this->getOriginalWidth();
+   int height = this->getOriginalHeight();
+   unsigned char* src = this->getOriginalImage();
+   unsigned char* dst = new unsigned char[width * height * 3];
+
+   for (int i = 0; i < quantidadeBlur; i++) {
+      // Kernel Gaussiano 3x3 fixo (sigma ~1.0)
+      float kernel[3][3] = {
+         {1/16.f, 2/16.f, 1/16.f},
+         {2/16.f, 4/16.f, 2/16.f},
+         {1/16.f, 2/16.f, 1/16.f}
+      };
+
+      for (int y = 1; y < height-1; y++) {
+         for (int x = 1; x < width-1; x++) {
+               for (int c = 0; c < 3; c++) {
+                  float sum = 0.0f;
+                  for (int ky = -1; ky <= 1; ky++) {
+                     for (int kx = -1; kx <= 1; kx++) {
+                           int px = x + kx;
+                           int py = y + ky;
+                           int pos = (py * width + px) * 3 + c;
+                           sum += src[pos] * kernel[ky+1][kx+1];
+                     }
+                  }
+                  dst[(y * width + x) * 3 + c] = (unsigned char)sum;
+               }
+         }
+      }
+
+      // Copia bordas sem alteração
+      for (int y = 0; y < height; y++) {
+         for (int x = 0; x < width; x++) {
+               if (y == 0 || y == height-1 || x == 0 || x == width-1) {
+                  for (int c = 0; c < 3; c++) {
+                     dst[(y * width + x) * 3 + c] = src[(y * width + x) * 3 + c];
+                  }
+               }
+         }
+      }
+
+      // Atualiza a imagem
+      delete[] this->data;
+      this->data = dst;
+
+      width = this->getWidth();
+      height = this->getHeight();
+      src = this->getImage();
+      dst = new unsigned char[width * height * 3];
+   }
+}
+
 // Carrega uma imagem BMP do arquivo especificado.
 void Bmp::load(const char *fileName)
 {

@@ -240,21 +240,21 @@
 	"gl_canvas2d.h"
 	<iostream>
 
-1747077598 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\image.h
+1747078448 c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\image.h
 	<stdio.h>
 	<stdlib.h>
 	<algorithm>
 	<string.h>
 	<vector>
 
-1747075101 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\imagesfunctions.cpp
+1747078250 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\imagesfunctions.cpp
 	<vector>
 	<algorithm>
 	"gl_canvas2d.h"
 	"Image.h"
 	<numeric>
 
-1747076996 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\main.cpp
+1747079395 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\main.cpp
 	<GL/glut.h>
 	<GL/freeglut_ext.h>
 	<math.h>
@@ -294,6 +294,6 @@
 	<vector>
 	"Image.h"
 
-1747075322 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\sidebar.cpp
+1747077705 source:c:\users\naoca\onedrive\documentos\github\computacao-grafica\trabalho 1\1_canvasglut\src\sidebar.cpp
 	"Sidebar.h"
 
