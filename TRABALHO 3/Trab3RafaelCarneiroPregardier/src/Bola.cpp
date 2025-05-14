@@ -14,12 +14,14 @@ bool Bola::operator==(const Bola& outra) const {
  * Construtor da classe Bola.
  *
  */
-Bola::Bola(){
+Bola::Bola() {
     posicao = Vector2(0, 0);
     velocidade = 0;
     direcao = Vector2(0, 0);
     raio = 0;
     atrasoInicial = 0.0;
+    emAnimacao = false;
+    progressoAnimacao = 0.0f;
 }
 
 /**
@@ -52,4 +54,25 @@ void Bola::desenhaBola(){
  */
 void Bola::moverBola(double deltaTime){
     this->posicao = this->posicao + this->direcao * this->velocidade * deltaTime;
+}
+
+void Bola::iniciarAnimacaoRetorno(const Vector2& destino) {
+    posicaoInicialAnimacao = posicao;
+    posicaoFinalAnimacao = destino;
+    progressoAnimacao = 0.0f;
+    emAnimacao = true;
+}
+
+void Bola::atualizarAnimacao(float deltaTime) {
+    if (!emAnimacao) return;
+
+    progressoAnimacao += deltaTime * 2.0f; // Ajuste a velocidade da animação aqui
+    if (progressoAnimacao >= 1.0f) {
+        progressoAnimacao = 1.0f;
+        emAnimacao = false;
+    }
+
+    // Interpolação linear entre a posição inicial e final
+    posicao.x = posicaoInicialAnimacao.x + (posicaoFinalAnimacao.x - posicaoInicialAnimacao.x) * progressoAnimacao;
+    posicao.y = posicaoInicialAnimacao.y + (posicaoFinalAnimacao.y - posicaoInicialAnimacao.y) * progressoAnimacao;
 }

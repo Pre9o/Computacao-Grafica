@@ -55,7 +55,7 @@ Explosao::Explosao(float x, float y, clock_t tempoInicial, int cor) {
  * 
  */
 void Explosao::desenha() {
-    if (double(tempoRestante - tempoInicial) / 1000.0f < 1.5) {
+    if (double(tempoRestante - tempoInicial) / 1000.0f < 0.5f) {
         for(int i = 0; i < 100; i++) {
             for(auto& particula : particulas) {
                 particula.atualiza(double(tempoRestante - tempoInicial) / 1000.0f);

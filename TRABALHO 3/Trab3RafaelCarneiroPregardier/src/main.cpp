@@ -79,10 +79,6 @@ std::string username = "Guest";
 
 // Função para renderizar a tela
 void render(){
-   clock_t end = clock();
-   float duration = (float)(end - start) / CLOCKS_PER_SEC;
-   float frameDeltaTime = 1.0f / 60.0f; // Para 60 FPS
-
    CV::clear(0.08235, 0.17647, 0.28627);
 
    switch (opcaoMenu){
@@ -108,10 +104,6 @@ void render(){
       break;
    }
 
-   if (duration < frameDeltaTime) {
-      Sleep((frameDeltaTime - duration) * 1000);
-      start = clock();
-   }
 }
 
 // Função para lidar com a entrada do teclado
@@ -141,6 +133,13 @@ void keyboard(int key){
          else if(opcaoMenu == 2){
             opcaoMenu = 1;
          }
+      break;
+      case 'r': 
+            if (opcaoMenu == 1) {
+                for (auto& bola : controle.bolas) {
+                    bola.iniciarAnimacaoRetorno(Vector2(canhao.origem.x - 2, canhao.origem.y - 2));
+                }
+            }
       break;
    }
 }
@@ -209,7 +208,7 @@ int main(){
 
    srand(time(0));
 
-   PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/Embalo.wav"), NULL, SND_ASYNC);
+   //PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/Embalo.wav"), NULL, SND_ASYNC);
 
    CV::run();
 

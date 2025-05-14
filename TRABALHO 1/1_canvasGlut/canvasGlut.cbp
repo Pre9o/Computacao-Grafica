@@ -49,6 +49,7 @@
 		<Unit filename="src/ImageManager.h" />
 		<Unit filename="src/ImagesFunctions.cpp" />
 		<Unit filename="src/ImagesFunctions.h" />
+		<Unit filename="src/Sidebar.cpp" />
 		<Unit filename="src/Sidebar.h" />
 		<Unit filename="src/Vector2.h" />
 		<Unit filename="src/gl_canvas2d.cpp" />

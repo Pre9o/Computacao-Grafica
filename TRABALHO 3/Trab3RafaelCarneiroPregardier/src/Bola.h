@@ -17,16 +17,23 @@
 class Bola {
     public:
         Vector2 posicao;
-        int velocidade;
         Vector2 direcao;
+        Vector2 posicaoInicialAnimacao;
+        Vector2 posicaoFinalAnimacao;
+        int velocidade;
+        float progressoAnimacao;
         float raio;
         double atrasoInicial;
+        bool emAnimacao;
 
         bool operator==(const Bola& outra) const;
         Bola();
         void setBola(Canhao& canhao, double atrasoInicial);
         void desenhaBola();
         void moverBola(double deltaTime);
+        void iniciarAnimacaoRetorno(const Vector2& destino);
+        void atualizarAnimacao(float deltaTime);
+        bool estaEmAnimacao() const { return emAnimacao; }
 };
 
 #endif // BOLA_H

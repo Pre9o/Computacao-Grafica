@@ -18,7 +18,7 @@ Controle::Controle(){
 
 /**
  * Define o username do jogador.
- * 
+ *
  * @param username_ O username do jogador.
 */
 void Controle::setUsername(std::string username_){
@@ -35,7 +35,7 @@ void Controle::telaDeModificacaoDeUsername(std::string username_){
 
 /**
  * Define os extremos da tabela de pontos.
- * 
+ *
  * @param p1 O primeiro ponto.
  * @param p2 O segundo ponto.
  * @param p3 O terceiro ponto.
@@ -60,7 +60,7 @@ void Controle::desenharTabelaDePontos(){
 
 /**
  * Adiciona bolas ao vetor de bolas.
- * 
+ *
  * @param num_bolas O número de bolas a serem adicionadas.
  */
 void Controle::adicionarBolas(int num_bolas){
@@ -72,8 +72,8 @@ void Controle::adicionarBolas(int num_bolas){
 
 /**
  * Define o tabuleiro.
- * 
- * @param tabuleiro 
+ *
+ * @param tabuleiro
  */
 void Controle::setTabuleiro(Tabuleiro tabuleiro){
     this->tabuleiro = tabuleiro;
@@ -81,8 +81,8 @@ void Controle::setTabuleiro(Tabuleiro tabuleiro){
 
 /**
  * Define o canhão.
- * 
- * @param canhao 
+ *
+ * @param canhao
  */
 void Controle::setCanhao(Canhao canhao){
     this->canhao = canhao;
@@ -90,19 +90,19 @@ void Controle::setCanhao(Canhao canhao){
 
 /**
  * Verifica se houve colisão entre a bola e o tabuleiro.
- * 
+ *
  * @param tabuleiro O tabuleiro do jogo.
  * @param bola A bola do jogo.
  * @return true se houve colisão, false caso contrário.
  */
 bool Controle::testaColisaoTabuleiro(Tabuleiro& tabuleiro, Bola& bola){
     if(bola.posicao.x - bola.raio < tabuleiro.extremos_tabuleiro[0].x || bola.posicao.x + bola.raio > tabuleiro.extremos_tabuleiro[2].x){
-        PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
+        //PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
         bola.direcao.x *= -1;
         return true;
     }
     if(bola.posicao.y + bola.raio > tabuleiro.extremos_tabuleiro[0].y){
-        PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
+        //PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
         bola.direcao.y *= -1;
         return true;
     }
@@ -118,7 +118,7 @@ bool Controle::testaColisaoTabuleiro(Tabuleiro& tabuleiro, Bola& bola){
 
 /**
  * Verifica se houve colisão entre a bola e os blocos do tabuleiro.
- * 
+ *
  * @param tabuleiro O tabuleiro do jogo.
  * @param bola A bola do jogo.
  * @return true se houve colisão, false caso contrário.
@@ -154,21 +154,21 @@ bool Controle::testaColisaoBlocos(Tabuleiro& tabuleiro, Bola& bola){
                 if(dx <= bola.raio && dy <= bola.raio){
                     if(distancia_y > distancia_x){
                         if(dy > 0){
-                            PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
+                            //PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
                             bola.direcao.y *= -1;
                         }
                         else{
-                            PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
+                            //PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
                             bola.direcao.y *= -1;
                         }
                     }
                     else{
                         if(dx > 0){
-                            PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
+                            //PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
                             bola.direcao.x *= -1;
                         }
                         else{
-                            PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
+                            //PlaySound(TEXT("./Trab3RafaelCarneiroPregardier/audios/TUC.wav"), NULL, SND_ASYNC);
                             bola.direcao.x *= -1;
                         }
                     }
@@ -183,18 +183,20 @@ bool Controle::testaColisaoBlocos(Tabuleiro& tabuleiro, Bola& bola){
 
 /**
  * Executa a jogada.
- * 
+ *
  * @param deltaTime O tempo que passou desde o último frame.
  */
-void Controle::executaJogada(double deltaTime){
+void Controle::executaJogada(double deltaTime) {
     Bola bolaAntesColisao;
-    for(auto& bola: bolas){
-        if(bola.atrasoInicial > 0){
-            bola.atrasoInicial -= deltaTime; // decrementa o atraso inicial
+    for (auto& bola : bolas) {
+        if (bola.estaEmAnimacao()) {
+            bola.atualizarAnimacao(deltaTime);
+        } else if (bola.atrasoInicial > 0) {
+            bola.atrasoInicial -= deltaTime;
         } else {
             bolaAntesColisao = bola;
             bola.moverBola(deltaTime);
-            if(testaColisaoTabuleiro(tabuleiro, bola) || testaColisaoBlocos(tabuleiro, bola)){
+            if (testaColisaoTabuleiro(tabuleiro, bola) || testaColisaoBlocos(tabuleiro, bola)) {
                 bola.posicao = bolaAntesColisao.posicao;
             }
         }
@@ -203,7 +205,7 @@ void Controle::executaJogada(double deltaTime){
 
 /**
  * Controla o jogo.
- * 
+ *
  * @param deltaTime O tempo que passou desde o último frame.
  * @param firstMove Indica se é o primeiro movimento do jogador.
  */
